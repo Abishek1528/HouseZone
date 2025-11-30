@@ -11,34 +11,31 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-
-      <Text style={styles.label}>Name</Text>
+       <Text style={styles.label}>Name</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your name"
+        placeholder="Name"
         value={name}
         onChangeText={setName}
       />
-
       <Text style={styles.label}>Phone Number</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter phone number"
+        placeholder="Phone Number"
         keyboardType="phone-pad"
         value={phone}
         onChangeText={setPhone}
       />
-
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.label}>Password</Text>  
       <TextInput
         style={styles.input}
-        placeholder="Enter password"
+        placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
-      <Button title="Login" onPress={() => {}} />
+      <Button title="Login" onPress={() => navigation.navigate("Home")} />
 
       <View style={{ marginTop: 15, flexDirection: "row" }}>
         <Text>Don't have an account? </Text>
