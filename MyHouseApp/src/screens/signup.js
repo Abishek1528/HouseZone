@@ -13,52 +13,47 @@ export default function Signup() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Signup</Text>
-
-      <Text style={styles.label}>Name</Text>
+   <Text style={styles.label}>Name</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your name"
+        placeholder="Name"
         value={name}
         onChangeText={setName}
       />
-
-      <Text style={styles.label}>Age</Text>
+         <Text style={styles.label}>Age</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your age"
+        placeholder="Age"
         keyboardType="number-pad"
         value={age}
         onChangeText={setAge}
       />
-
       <Text style={styles.label}>Contact Number</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter contact number"
+        placeholder="Contact Number"
         keyboardType="phone-pad"
         value={contact}
         onChangeText={setContact}
       />
-
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter email"
+        placeholder="Email"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
       />
-
       <Text style={styles.label}>Password</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter password"
+        placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
-      <Button title="Signup" onPress={() => {}} />
+      <Button title="Signup" onPress={() => navigation.navigate("Home")} />
 
       <View style={{ marginTop: 15, flexDirection: "row" }}>
         <Text>Already have an account? </Text>
