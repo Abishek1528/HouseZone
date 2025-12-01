@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import loginStyles from '../styles/loginStyles';
 
 export default function Login() {
   const [name, setName] = useState("");
@@ -9,26 +10,26 @@ export default function Login() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-       <Text style={styles.label}>Name</Text>
+    <View style={loginStyles.container}>
+      <Text style={loginStyles.title}>Login</Text>
+      <Text style={loginStyles.label}>Name</Text>
       <TextInput
-        style={styles.input}
+        style={loginStyles.input}
         placeholder="Name"
         value={name}
         onChangeText={setName}
       />
-      <Text style={styles.label}>Phone Number</Text>
+      <Text style={loginStyles.label}>Phone Number</Text>
       <TextInput
-        style={styles.input}
+        style={loginStyles.input}
         placeholder="Phone Number"
         keyboardType="phone-pad"
         value={phone}
         onChangeText={setPhone}
       />
-      <Text style={styles.label}>Password</Text>  
+      <Text style={loginStyles.label}>Password</Text>  
       <TextInput
-        style={styles.input}
+        style={loginStyles.input}
         placeholder="Password"
         secureTextEntry
         value={password}
@@ -46,29 +47,3 @@ export default function Login() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  label: {
-    width: "100%",
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-});

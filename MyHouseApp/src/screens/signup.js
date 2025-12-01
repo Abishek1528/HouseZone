@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import signupStyles from '../styles/signupStyles';
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -11,42 +12,42 @@ export default function Signup() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Signup</Text>
-   <Text style={styles.label}>Name</Text>
+    <View style={signupStyles.container}>
+      <Text style={signupStyles.title}>Signup</Text>
+      <Text style={signupStyles.label}>Name</Text>
       <TextInput
-        style={styles.input}
+        style={signupStyles.input}
         placeholder="Name"
         value={name}
         onChangeText={setName}
       />
-         <Text style={styles.label}>Age</Text>
+      <Text style={signupStyles.label}>Age</Text>
       <TextInput
-        style={styles.input}
+        style={signupStyles.input}
         placeholder="Age"
         keyboardType="number-pad"
         value={age}
         onChangeText={setAge}
       />
-      <Text style={styles.label}>Contact Number</Text>
+      <Text style={signupStyles.label}>Contact Number</Text>
       <TextInput
-        style={styles.input}
+        style={signupStyles.input}
         placeholder="Contact Number"
         keyboardType="phone-pad"
         value={contact}
         onChangeText={setContact}
       />
-      <Text style={styles.label}>Email</Text>
+      <Text style={signupStyles.label}>Email</Text>
       <TextInput
-        style={styles.input}
+        style={signupStyles.input}
         placeholder="Email"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
       />
-      <Text style={styles.label}>Password</Text>
+      <Text style={signupStyles.label}>Password</Text>
       <TextInput
-        style={styles.input}
+        style={signupStyles.input}
         placeholder="Password"
         secureTextEntry
         value={password}
@@ -64,29 +65,3 @@ export default function Signup() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  label: {
-    width: "100%",
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-});
