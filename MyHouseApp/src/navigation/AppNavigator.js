@@ -5,6 +5,10 @@ import Login from '../screens/login';
 import Signup from '../screens/signup';
 import Dummy from '../screens/dummy';
 import Home from '../screens/home';
+import Residential from '../screens/residential';
+import Business from '../screens/business';
+import Vehicles from '../screens/vehicles';
+import Machinery from '../screens/machinery';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +20,10 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Residential" component={Residential} />
+        <Stack.Screen name="Business" component={Business} />
+        <Stack.Screen name="Vehicles" component={Vehicles} />
+        <Stack.Screen name="Machinery" component={Machinery} />
       </Stack.Navigator>
     </NavigationContainer>
   );

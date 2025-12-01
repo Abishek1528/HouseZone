@@ -1,162 +1,138 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import homeContentStyles from '../styles/homeContentStyles';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export default function Home() {
+  const navigation = useNavigation();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const handleCategoryPress = (category) => {
+    setSelectedCategory(category);
+    setSelectedRole(""); // Reset role selection
+    setModalVisible(true); // Show dropdown modal
+  };
+
+  const handleRoleSelection = () => {
+    if (!selectedRole) {
+      alert("Please select a role");
+      return;
+    }
+    
+    setModalVisible(false);
+    // Navigate to the specific category page with role information
+    navigation.navigate(selectedCategory, { role: selectedRole });
+  };
+
+  const roles = ["Tenant", "Owner"];
+
   return (
-    <View style={styles.container}>
-
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.menu}>☰</Text>
-        </TouchableOpacity>
-
-        <View style={styles.headerCenter}>
-          <Image
-            source={{ uri: "https://cdn-icons-png.flaticon.com/512/25/25694.png" }}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>MyRentalApp</Text>
-        </View>
-
-        <View style={{ width: 30 }} />
-      </View>
+    <View style={homeContentStyles.container}>
+      <Header />
 
       {/* BUTTONS */}
-      <View style={styles.middle}>
-        <View style={styles.row}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.btnText}>Residential</Text>
+      <View style={homeContentStyles.middle}>
+        <View style={homeContentStyles.row}>
+          <Text style={homeContentStyles.pageTitle}>Categories</Text>
+        </View>
+        
+        <View style={homeContentStyles.row}>
+          <TouchableOpacity 
+            style={homeContentStyles.button}
+            onPress={() => handleCategoryPress("Residential")}
+          >
+            <Text style={homeContentStyles.btnText}>Residential</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.btnText}>Business</Text>
+          <TouchableOpacity 
+            style={homeContentStyles.button}
+            onPress={() => handleCategoryPress("Business")}
+          >
+            <Text style={homeContentStyles.btnText}>Business</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.row}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.btnText}>Vehicles</Text>
+        <View style={homeContentStyles.row}>
+          <TouchableOpacity 
+            style={homeContentStyles.button}
+            onPress={() => handleCategoryPress("Vehicles")}
+          >
+            <Text style={homeContentStyles.btnText}>Vehicles</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.btnText}>Machinery</Text>
+          <TouchableOpacity 
+            style={homeContentStyles.button}
+            onPress={() => handleCategoryPress("Machinery")}
+          >
+            <Text style={homeContentStyles.btnText}>Machinery</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-   
-{/* FOOTER */}
-<View style={styles.footer}>
-  
-  <TouchableOpacity style={styles.footerItem}>
-    <Text style={styles.footerIcon}>⌂</Text>
-    <Text style={styles.footerLabel}>Home</Text>
-  </TouchableOpacity>
+      {/* Role Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={homeContentStyles.modalContainer}>
+          <View style={homeContentStyles.modalView}>
+            <Text style={homeContentStyles.modalTitle}>Select Your Role</Text>
+            <Text style={homeContentStyles.modalText}>Category: {selectedCategory}</Text>
+            
+            <TouchableOpacity 
+              style={homeContentStyles.dropdown}
+              onPress={() => setDropdownVisible(!dropdownVisible)}
+            >
+              <Text style={homeContentStyles.dropdownText}>
+                {selectedRole || "Select a role"}
+              </Text>
+              <Text style={homeContentStyles.arrow}>{dropdownVisible ? "▲" : "▼"}</Text>
+            </TouchableOpacity>
 
-  <TouchableOpacity style={styles.footerItem}>
-    <Text style={styles.footerheart}>♡</Text>
-    <Text style={styles.footerLabel}>Favorites</Text>
-  </TouchableOpacity>
+            {dropdownVisible && (
+              <View style={homeContentStyles.dropdownList}>
+                {roles.map((role) => (
+                  <TouchableOpacity
+                    key={role}
+                    style={homeContentStyles.dropdownItem}
+                    onPress={() => {
+                      setSelectedRole(role);
+                      setDropdownVisible(false);
+                    }}
+                  >
+                    <Text style={homeContentStyles.dropdownItemText}>{role}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+            
+            <View style={homeContentStyles.modalButtonContainer}>
+              <TouchableOpacity
+                style={[homeContentStyles.modalButton, homeContentStyles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={homeContentStyles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[homeContentStyles.modalButton, homeContentStyles.submitButton]}
+                onPress={handleRoleSelection}
+              >
+                <Text style={homeContentStyles.modalButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
-  <TouchableOpacity style={styles.footerItem}>
-    <Text style={styles.footerIcon}>👥</Text>
-    <Text style={styles.footerLabel}>Profile</Text>
-  </TouchableOpacity>
-
-  <TouchableOpacity style={styles.footerItem}>
-    <Text style={styles.footerIcon}>⚙</Text>
-    <Text style={styles.footerLabel}>Settings</Text>
-  </TouchableOpacity>
-
-</View>
-
+      <Footer />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    height: 70,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 15,
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
-  },
-  menu: {
-    fontSize: 24,
-  },
-  headerCenter: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  logo: {
-    width: 30,
-    height: 30,
-    marginRight: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  middle: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  row: {
-    flexDirection: "row",
-    marginBottom: 25,
-  },
-  button: {
-    width: 150,
-    height: 150,
-    backgroundColor: "#4A90E2",
-    marginHorizontal: 12,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
- footer: {
-  height: 70,
-  flexDirection: "row",
-  justifyContent: "space-around",
-  alignItems: "center",
-  borderTopWidth: 1,
-  borderColor: "#ddd",
-  backgroundColor: "#f4f4f4",
-},
-footerItem: {
-  alignItems: "center",
-},
-footerIcon: {
-  fontSize: 22,
-  color: "#000",
-  marginBottom: 2,
-},
-footerheart: {
-  fontSize: 22,
-  color: "#000",
-  marginBottom: 0.5,
-},
-
-
-footerLabel: {
-  fontSize: 11,
-  color: "#000",
-  marginBottom:10
-},
-
-
-});
