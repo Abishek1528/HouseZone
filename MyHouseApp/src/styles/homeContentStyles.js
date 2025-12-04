@@ -76,7 +76,7 @@ const homeContentStyles = StyleSheet.create({
     minWidth: 100,
   },
   cancelButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#FF6B6B", // Changed from grey to red/pink color
   },
   submitButton: {
     backgroundColor: "#4A90E2",
@@ -117,9 +117,11 @@ const homeContentStyles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+    alignItems: 'center', // Center the text
   },
   dropdownItemText: {
     fontSize: 16,
+    textAlign: 'center', // Center the text
   }
 });
 

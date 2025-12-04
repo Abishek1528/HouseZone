@@ -30,7 +30,7 @@ const Step3PaymentImages = ({ formData, handleInputChange, handleImageSelect, ha
         {/* Image Upload Section */}
         <Text style={[categoryContentStyles.label, { marginTop: 20 }]}>Upload House Images *</Text>
         <Text style={[categoryContentStyles.pageText, { textAlign: 'left', marginBottom: 15 }]}>
-          Please upload minimum 6 images of your house
+          Please upload between 4 and 8 images of your house
         </Text>
         
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
@@ -69,29 +69,31 @@ const Step3PaymentImages = ({ formData, handleInputChange, handleImageSelect, ha
             </View>
           ))}
           
-          {/* Add new image button */}
-          <View style={{ width: '30%', marginBottom: 15 }}>
-            <TouchableOpacity 
-              style={{
-                height: 100,
-                borderWidth: 1,
-                borderColor: '#ddd',
-                borderRadius: 5,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#f9f9f9'
-              }}
-              onPress={() => handleImageSelect(formData.images.length)}
-            >
-              <Text style={{ color: '#4A90E2', fontSize: 30 }}>+</Text>
-              <Text style={{ color: '#999', textAlign: 'center', fontSize: 12 }}>Add Image</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Add new image button - only show if less than 8 images */}
+          {formData.images.length < 8 && (
+            <View style={{ width: '30%', marginBottom: 15 }}>
+              <TouchableOpacity 
+                style={{
+                  height: 100,
+                  borderWidth: 1,
+                  borderColor: '#ddd',
+                  borderRadius: 5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#f9f9f9'
+                }}
+                onPress={() => handleImageSelect(formData.images.length)}
+              >
+                <Text style={{ color: '#4A90E2', fontSize: 30 }}>+</Text>
+                <Text style={{ color: '#999', textAlign: 'center', fontSize: 12 }}>Add Image</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
         
         <View style={{ marginTop: 10 }}>
           <Text style={{ fontSize: 14, color: '#666', textAlign: 'center' }}>
-            {formData.images.length} image(s) uploaded (Minimum 6 required)
+            {formData.images.length} image(s) uploaded (Between 4 and 8 required)
           </Text>
         </View>
       </View>

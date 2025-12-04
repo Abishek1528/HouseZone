@@ -24,6 +24,7 @@ export default function Residential() {
         <Text style={categoryContentStyles.pageText}>This is the Residential category page.</Text>
         <Text style={categoryContentStyles.roleInfo}>Role: {role}</Text>
         
+        
         {role === "Owner" && (
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 

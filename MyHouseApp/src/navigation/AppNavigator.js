@@ -10,6 +10,9 @@ import Business from '../screens/business';
 import Vehicles from '../screens/vehicles';
 import Machinery from '../screens/machinery';
 import AddHouse from '../screens/residential/index';
+import AddBusiness from '../screens/business/index';
+import AddMachinery from '../screens/machinery/index';
+import AddVehicles from '../screens/vehicles/index';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,8 +27,11 @@ export default function AppNavigator() {
         <Stack.Screen name="Residential" component={Residential} />
         <Stack.Screen name="AddHouse" component={AddHouse} />
         <Stack.Screen name="Business" component={Business} />
+        <Stack.Screen name="AddBusiness" component={AddBusiness} />
         <Stack.Screen name="Vehicles" component={Vehicles} />
+        <Stack.Screen name="AddVehicles" component={AddVehicles} />
         <Stack.Screen name="Machinery" component={Machinery} />
+        <Stack.Screen name="AddMachinery" component={AddMachinery} />
       </Stack.Navigator>
     </NavigationContainer>
   );

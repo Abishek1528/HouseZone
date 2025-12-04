@@ -1,0 +1,20 @@
+// Logic for Step 2: House Details
+export const step2InitialData = {
+  facingDirection: "",
+  hallLength: "",
+  hallBreadth: "",
+  noOfBedrooms: "",
+  bedroom1Length: "",
+  bedroom1Breadth: "",
+  bedroom2Length: "",
+  bedroom2Breadth: "",
+  bedroom3Length: "",
+  bedroom3Breadth: "",
+  kitchenLength: "",
+  kitchenBreadth: "",
+  noOfBathrooms: "",
+  bathroom1Type: "",
+  bathroom2Type: "",
+  bathroom3Type: "",
+  floorNo: "",
+};

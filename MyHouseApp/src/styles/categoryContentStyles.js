@@ -40,12 +40,12 @@ const categoryContentStyles = StyleSheet.create({
     color: '#000',
   },
   pickerContainer: {
+    height: 50,
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
     width: '100%',
-    height: 50,
     justifyContent: 'center',
     backgroundColor: '#fff',
   },
@@ -86,7 +86,10 @@ const categoryContentStyles = StyleSheet.create({
     backgroundColor: '#4A90E2',
   },
   secondaryButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#FF6B6B', // Changed from grey to red/pink color
+  },
+  cancelButton: {
+    backgroundColor: '#FF6B6B', // Added specific cancel button style
   },
   buttonText: {
     color: 'white',

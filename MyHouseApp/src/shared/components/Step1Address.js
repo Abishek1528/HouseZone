@@ -2,14 +2,6 @@ import React from "react";
 import { View, Text, TextInput, ScrollView } from "react-native";
 import categoryContentStyles from '../../styles/categoryContentStyles';
 
-// Calculate total square feet when length or breadth changes
-const calculateTotalSqft = (length, breadth) => {
-  if (length && breadth) {
-    return (parseFloat(length) * parseFloat(breadth)).toString();
-  }
-  return "";
-};
-
 const Step1Address = ({ formData, handleInputChange }) => {
   return (
     <ScrollView style={{ width: '100%' }}>
@@ -49,6 +41,14 @@ const Step1Address = ({ formData, handleInputChange }) => {
           keyboardType="numeric"
         />
         
+        <Text style={categoryContentStyles.label}>Area *</Text>
+        <TextInput
+          style={categoryContentStyles.input}
+          placeholder="Area"
+          value={formData.area}
+          onChangeText={(value) => handleInputChange('area', value)}
+        />
+        
         <Text style={categoryContentStyles.label}>City *</Text>
         <TextInput
           style={categoryContentStyles.input}
@@ -71,4 +71,3 @@ const Step1Address = ({ formData, handleInputChange }) => {
 };
 
 export default Step1Address;
-export { calculateTotalSqft };
