@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import loginStyles from '../styles/loginStyles';
 import categoryContentStyles from '../styles/categoryContentStyles';
@@ -9,6 +9,41 @@ export default function Login() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const handleLogin = async () => {
+    // Basic validation
+    if (!name || !phone || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://10.86.202.103:3000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          contact: phone,
+          password
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Login successful!", [
+          { text: "OK", onPress: () => navigation.navigate("Home") }
+        ]);
+      } else {
+        Alert.alert("Error", result.message || "Login failed");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert("Error", "Failed to connect to server");
+    }
+  };
 
   return (
     <View style={loginStyles.container}>
@@ -40,7 +75,7 @@ export default function Login() {
 
         <TouchableOpacity 
           style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
-          onPress={() => navigation.navigate("Home")}
+          onPress={handleLogin}
         >
           <Text style={categoryContentStyles.buttonText}>Login</Text>
         </TouchableOpacity>

@@ -6,10 +6,10 @@ export const initialFormData = {
   ...baseInitialFormData,
   
   // Step 2: Business Details (specific to business)
-  businessType: "",
-  businessName: "",
-  registrationNumber: "",
-  yearEstablished: "",
-  numberOfEmployees: "",
-  annualRevenue: "",
+  doorFacing: "",
+  propertyType: "",
+  areaLength: "",
+  areaBreadth: "",
+  restroomAvailable: false,
+  floorNumber: "",
 };

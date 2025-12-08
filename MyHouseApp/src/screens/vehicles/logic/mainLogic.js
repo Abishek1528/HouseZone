@@ -6,10 +6,17 @@ export const initialFormData = {
   ...baseInitialFormData,
   
   // Step 2: Vehicles Details (specific to vehicles)
-  vehicleType: "",
-  brand: "",
-  model: "",
-  year: "",
-  fuelType: "",
-  mileage: "",
+  vehicles: [
+    {
+      id: 1,
+      type: "",
+      name: "",
+      model: "",
+      seatCapacity: "",
+      fuelType: "",
+      acAvailable: false,
+      chargeType: "",
+      chargeAmount: ""
+    }
+  ],
 };

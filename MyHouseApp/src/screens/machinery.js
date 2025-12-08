@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import categoryContentStyles from '../styles/categoryContentStyles';
 import Header from '../components/Header';
@@ -23,17 +23,14 @@ export default function Machinery() {
         <Text style={categoryContentStyles.pageTitle}>Machinery</Text>
         <Text style={categoryContentStyles.pageText}>This is the Machinery category page.</Text>
         
-        <View style={{ marginTop: 20 }}>
-          <Text style={categoryContentStyles.pageText}>
-            Would you like to add new machinery listing?
-          </Text>
-          <Text 
-            style={{ color: '#4A90E2', textDecorationLine: 'underline', marginTop: 10 }}
+        {role === "Owner" && (
+          <TouchableOpacity 
+            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
             onPress={handleAddMachinery}
           >
-            Add Machinery
-          </Text>
-        </View>
+            <Text style={categoryContentStyles.buttonText}>Add Details</Text>
+          </TouchableOpacity>
+        )}
       </View>
       
       <Footer />

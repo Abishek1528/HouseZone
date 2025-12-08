@@ -63,7 +63,7 @@ const BaseForm = ({
       }
     }
     
-    // Here you would typically send the data to your backend
+    // Show success message
     Alert.alert(
       "Success",
       successMessage,

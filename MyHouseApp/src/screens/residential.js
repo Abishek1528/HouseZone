@@ -30,7 +30,7 @@ export default function Residential() {
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
             onPress={handleAddHouse}
           >
-            <Text style={categoryContentStyles.buttonText}>Add My House</Text>
+            <Text style={categoryContentStyles.buttonText}>Add Details</Text>
           </TouchableOpacity>
         )}
       </View>
