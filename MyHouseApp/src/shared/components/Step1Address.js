@@ -14,6 +14,8 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="Name of the Person"
           value={formData.name}
           onChangeText={(value) => handleInputChange('name', value)}
+          secureTextEntry={false}
+          autoCapitalize="words"
         />
         
         <Text style={categoryContentStyles.label}>Door No *</Text>
@@ -22,6 +24,8 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="Door No"
           value={formData.doorNo}
           onChangeText={(value) => handleInputChange('doorNo', value)}
+          secureTextEntry={false}
+          keyboardType="default"
         />
         
         <Text style={categoryContentStyles.label}>Street *</Text>
@@ -30,6 +34,8 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="Street"
           value={formData.street}
           onChangeText={(value) => handleInputChange('street', value)}
+          secureTextEntry={false}
+          autoCapitalize="sentences"
         />
         
         <Text style={categoryContentStyles.label}>Pincode *</Text>
@@ -38,6 +44,7 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="Pincode"
           value={formData.pincode}
           onChangeText={(value) => handleInputChange('pincode', value)}
+          secureTextEntry={false}
           keyboardType="numeric"
         />
         
@@ -47,6 +54,8 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="Area"
           value={formData.area}
           onChangeText={(value) => handleInputChange('area', value)}
+          secureTextEntry={false}
+          autoCapitalize="sentences"
         />
         
         <Text style={categoryContentStyles.label}>City *</Text>
@@ -55,6 +64,8 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="City"
           value={formData.city}
           onChangeText={(value) => handleInputChange('city', value)}
+          secureTextEntry={false}
+          autoCapitalize="words"
         />
         
         <Text style={categoryContentStyles.label}>Contact No *</Text>
@@ -63,6 +74,7 @@ const Step1Address = ({ formData, handleInputChange }) => {
           placeholder="Contact No"
           value={formData.contactNo}
           onChangeText={(value) => handleInputChange('contactNo', value)}
+          secureTextEntry={false}
           keyboardType="phone-pad"
         />
       </View>

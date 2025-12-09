@@ -16,7 +16,8 @@ const BaseForm = ({
   initialFormData, 
   validationFunction, 
   successMessage, 
-  navigationTarget 
+  navigationTarget,
+  category // Added category prop to identify the form type
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -45,8 +46,53 @@ const BaseForm = ({
   // Handle image removal
   const handleImageRemoval = handleRemoveImage(formData, setFormData);
 
-  // Handle form submission
-  const handleFormSubmit = () => {
+  // Handle saving step 1 data
+  const handleSaveStep1 = async () => {
+    // Validate Step 1 fields
+    if (!formData.name || !formData.doorNo || !formData.street || !formData.pincode || 
+        !formData.area || !formData.city || !formData.contactNo) {
+      Alert.alert("Validation Error", "Please fill in all required fields");
+      return;
+    }
+    
+    // If this is a residential form, save step 1 data to the database
+    if (category === "residential") {
+      try {
+        // Prepare step 1 data for submission
+        const step1Data = {
+          name: formData.name,
+          doorNo: formData.doorNo,
+          street: formData.street,
+          pincode: formData.pincode,
+          area: formData.area,
+          city: formData.city,
+          contactNo: formData.contactNo
+        };
+        
+        // Import the API function dynamically
+        const { saveResidentialStep1 } = await import('../../screens/residential/logic/api');
+        
+        // Save step 1 data to the database
+        const response = await saveResidentialStep1(step1Data);
+        
+        console.log("Step 1 data saved successfully with ID:", response.id);
+        
+        // Store the ID in formData for potential future use
+        setFormData({
+          ...formData,
+          residentialId: response.id
+        });
+        
+        Alert.alert("Success", "Step 1 data saved successfully!");
+      } catch (error) {
+        console.error("Error saving step 1 data:", error);
+        Alert.alert("Error", "Failed to save step 1 data: " + error.message);
+      }
+    }
+  };
+
+  // Handle form submission (for final submit)
+  const handleFormSubmit = async () => {
     // Use the provided validation function or default validation
     if (validationFunction) {
       const isValid = validationFunction(formData);
@@ -138,8 +184,18 @@ const BaseForm = ({
             </TouchableOpacity>
           )}
           
-          {/* Spacer for first step to push Next button to the right */}
-          {step === 1 && <View style={{ flex: 1 }} />}
+          {/* Save button for step 1 - positioned on the left side */}
+          {step === 1 && (
+            <TouchableOpacity 
+              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
+              onPress={handleSaveStep1}
+            >
+              <Text style={categoryContentStyles.buttonText}>Save</Text>
+            </TouchableOpacity>
+          )}
+          
+          {/* Spacer to push Next button to the right */}
+          <View style={{ flex: 1 }} />
           
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 

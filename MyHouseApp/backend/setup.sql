@@ -12,3 +12,8 @@ USE cdmrental;
 --     password VARCHAR(255) NOT NULL,
 --     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 -- );
+
+-- Note: The resowndet table already exists with the following structure:
+-- Table: resowndet
+-- Columns: roNo, roName, roDoor, roStreet, roArea, roPin, roCity, roPhNo
+-- This table is already being used by the application for residential owner details

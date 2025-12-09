@@ -56,6 +56,7 @@ export default function AddHouse() {
       validationFunction={validateResidentialForm}
       successMessage="House details added successfully!"
       navigationTarget="Residential"
+      category="residential" // Added category prop
     />
   );
 }
