@@ -45,9 +45,54 @@ const BaseForm = ({
   // Handle image removal
   const handleImageRemoval = handleRemoveImage(formData, setFormData);
 
+<<<<<<< Updated upstream
   // Handle form submission
   const handleFormSubmit = () => {
     // Use the provided validation function or default validation
+=======
+  // Validate step 1 separately
+  const validateStep1 = () => {
+    if (!formData.name || !formData.doorNo || !formData.street || !formData.pincode || 
+        !formData.area || !formData.city || !formData.contactNo) {
+      Alert.alert("Validation Error", "Please fill in all required fields in Step 1");
+      return false;
+    }
+    return true;
+  };
+
+  // Validate step 2 separately (will be overridden by specific form validation)
+  const validateStep2 = () => {
+    // This will be replaced by the specific validation function passed as prop
+    return true;
+  };
+
+  // Validate step 3 separately
+  const validateStep3 = () => {
+    if (!formData.advanceAmount || !formData.rentAmount) {
+      Alert.alert("Validation Error", "Please fill in all required fields in Step 3");
+      return false;
+    }
+    
+    // Validate images - minimum 4 required
+    const images = formData.images || [];
+    if (images.length < 4) {
+      Alert.alert("Validation Error", "Please add at least 4 images of your property");
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Handle form submission (for final submit) - validate all steps separately
+  const handleFormSubmit = async () => {
+    // Validate step 1
+    if (!validateStep1()) {
+      setStep(1); // Go back to step 1 to show the error
+      return;
+    }
+    
+    // Validate step 2 using the provided validation function
+>>>>>>> Stashed changes
     if (validationFunction) {
       const isValid = validationFunction(formData);
       if (!isValid) {
@@ -138,8 +183,13 @@ const BaseForm = ({
             </TouchableOpacity>
           )}
           
+<<<<<<< Updated upstream
           {/* Spacer for first step to push Next button to the right */}
           {step === 1 && <View style={{ flex: 1 }} />}
+=======
+          {/* Spacer to push Next/Submit button to the right */}
+          <View style={{ flex: 1 }} />
+>>>>>>> Stashed changes
           
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 

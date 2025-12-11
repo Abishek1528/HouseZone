@@ -1,96 +1,36 @@
 # HouseZone
 
+**HouseZone** is a multi-category platform for listing and managing various types of properties and assets including Residential, Business, Vehicles, and Machinery. The app allows users to register, choose their role (Tenant or Owner), and list or browse items within their selected category.
 
-**HouseZone** is a simple, user-friendly platform designed to help people Rent, Buy, and Sell houses in one place. The app allows users to create an account, explore available properties, and post their own listings easily.
+The platform is designed to make asset listing and discovery simple, organized, and accessible for everyone. Users can browse different categories, and owners can list their properties or assets with detailed information.
 
-The platform is built to make real estate transactions simple, transparent, and accessible for everyone. Whether someone wants to rent a home, purchase a property, or sell their house, HomeRental provides a clean and organized experience.
+## Key Features
 
-By bringing all three services into a single app, HomeRental eliminates the need to visit multiple websites or brokers. Users can browse, filter, and contact property owners directly, making the process quick and hassle-free.
+### Multi-Category Support
 
-**Key Features of HomeRental**
+Users can choose from four main categories:
 
-**User Authentication**
+- **Residential**: Houses and apartments for rent/sale
+- **Business**: Commercial properties and business spaces
+- **Vehicles**: Cars, bikes, and other vehicles
+- **Machinery**: Industrial equipment and machinery
 
-    Signup and login system
+### Role-Based Access
 
-    Secure JWT authentication
+- **Tenant**: Browse and view listings
+- **Owner**: Create and manage listings
 
-    Separate pages after login
 
-**Home Page Options**
+## Tech Stack
 
-    Users can choose from:
+### Frontend
 
-    Rent House
+- React Native for building the mobile app
+- React Navigation for screen navigation
+- Custom CSS / React Native Stylesheet for UI
+### Backend
+- Node.js with Express for server-side logic
 
-    Buy House
-
-    Sell House
-
-    Each option opens a complete page with its own features and listings.
-
-**Rent House Module**
-
-    Browse all rental houses
-
-    Apply filters (location, price, type)
-
-    View full property details
-
-    Contact owner (optional feature)
-
-**Buy House Module**
-
-    View homes available for sale
-
-    Full details with price, location, images
-
-    Easy contact option to reach seller
-
-**Sell House Module**
-
-    Upload property details
-
-    Add images, price, description & location
-
-    Manage your active listings
-
-**User Profile**
-
-    View your posted properties
-
-    Edit/delete your listings
-
-    Logout
-
-**Tech Stack**
-
-Frontend
-
-React Native for building the mobile app
-
-React Navigation for screen navigation
-
-Custom CSS / React Native Stylesheet for UI
-
-Backend
-
-Node.js + Express.js for the REST API
-
-JWT Authentication for secure login
-
-bcryptjs for password hashing
-
-Multer for house image uploads
-
-Database
-
-MongoDB to store:
-
-User accounts
-
-Property listings (Rent/Buy/Sell)
-
-Images
-
-Contact details
+### Database
+mysql database for data storage
+- RESTful API for communication between frontend and backend
