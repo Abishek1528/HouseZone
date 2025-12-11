@@ -18,8 +18,6 @@ app.get('/', (req, res) => {
 // Use routes
 app.use('/api', routes);
 
-
-
 // Start server
 app.listen(PORT, async() => {
   console.log(`Server running at http://localhost:${PORT}`);

@@ -46,12 +46,35 @@ const BaseForm = ({
   // Handle image removal
   const handleImageRemoval = handleRemoveImage(formData, setFormData);
 
+  // Validate step 1 separately
+  const validateStep1 = () => {
+    if (!formData.name || !formData.doorNo || !formData.street || !formData.pincode || 
+        !formData.area || !formData.city || !formData.contactNo) {
+      Alert.alert("Validation Error", "Please fill in all required fields in Step 1");
+      return false;
+    }
+    return true;
+  };
+
+  // Validate step 2 separately (will be overridden by specific form validation)
+  const validateStep2 = () => {
+    // This will be replaced by the specific validation function passed as prop
+    return true;
+  };
+
+  // Validate step 3 separately
+  const validateStep3 = () => {
+    if (!formData.advanceAmount || !formData.rentAmount) {
+      Alert.alert("Validation Error", "Please fill in all required fields in Step 3");
+      return false;
+    }
+    return true;
+  };
+
   // Handle saving step 1 data
   const handleSaveStep1 = async () => {
     // Validate Step 1 fields
-    if (!formData.name || !formData.doorNo || !formData.street || !formData.pincode || 
-        !formData.area || !formData.city || !formData.contactNo) {
-      Alert.alert("Validation Error", "Please fill in all required fields");
+    if (!validateStep1()) {
       return;
     }
     
@@ -83,7 +106,7 @@ const BaseForm = ({
           residentialId: response.id
         });
         
-        Alert.alert("Success", "Step 1 data saved successfully!");
+        // Don't show success message for step 1 save
       } catch (error) {
         console.error("Error saving step 1 data:", error);
         Alert.alert("Error", "Failed to save step 1 data: " + error.message);
@@ -91,40 +114,172 @@ const BaseForm = ({
     }
   };
 
-  // Handle form submission (for final submit)
+  // Handle form submission (for final submit) - validate all steps separately
   const handleFormSubmit = async () => {
-    // Use the provided validation function or default validation
+    // Validate step 1
+    if (!validateStep1()) {
+      setStep(1); // Go back to step 1 to show the error
+      return;
+    }
+    
+    // Validate step 2 using the provided validation function
     if (validationFunction) {
+      // Temporarily set step 2 data for validation
       const isValid = validationFunction(formData);
       if (!isValid) {
+        setStep(2); // Go back to step 2 to show the error
         return;
       }
     } else {
-      // Default validation
-      if (!formData.name || !formData.doorNo || !formData.street || !formData.pincode || 
-          !formData.area || !formData.city || !formData.contactNo || !formData.advanceAmount || 
-          !formData.rentAmount || formData.images.length < 4 || formData.images.length > 8) {
-        Alert.alert("Validation Error", "Please fill in all required fields and upload between 4 and 8 images");
+      // Default validation for step 2
+      if (!validateStep2()) {
+        setStep(2); // Go back to step 2 to show the error
         return;
       }
     }
     
-    // Show success message
-    Alert.alert(
-      "Success",
-      successMessage,
-      [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate(navigationTarget, { role: "Owner" })
+    // Validate step 3
+    if (!validateStep3()) {
+      setStep(3); // Go back to step 3 to show the error
+      return;
+    }
+    
+    // If all validations pass, save step 1, step 2, and step 3 data if it's residential form
+    if (category === "residential") {
+      try {
+        // Save step 1 data first
+        // Prepare step 1 data for submission
+        const step1Data = {
+          name: formData.name,
+          doorNo: formData.doorNo,
+          street: formData.street,
+          pincode: formData.pincode,
+          area: formData.area,
+          city: formData.city,
+          contactNo: formData.contactNo
+        };
+        
+        // Import the API function dynamically
+        const { saveResidentialStep1 } = await import('../../screens/residential/logic/api');
+        
+        // Save step 1 data to the database
+        const step1Response = await saveResidentialStep1(step1Data);
+        
+        console.log("Step 1 data saved successfully with ID:", step1Response.id);
+        
+        // Store the ID in formData for step 2 and step 3 submission
+        const roNo = step1Response.id;
+        
+        // Now save step 2 data
+        try {
+          // Prepare step 2 data for submission
+          const step2Data = {
+            roNo: roNo,
+            facingDirection: formData.facingDirection,
+            hallLength: formData.hallLength,
+            hallBreadth: formData.hallBreadth,
+            noOfBedrooms: formData.noOfBedrooms,
+            kitchenLength: formData.kitchenLength,
+            kitchenBreadth: formData.kitchenBreadth,
+            noOfBathrooms: formData.noOfBathrooms,
+            bathroom1Type: formData.bathroom1Type,
+            floorNo: formData.floorNo,
+            bedrooms: []
+          };
+          
+          // Add bedroom data based on number of bedrooms
+          const numBedrooms = parseInt(formData.noOfBedrooms);
+          if (numBedrooms >= 1) {
+            step2Data.bedrooms.push({
+              number: 1,
+              length: formData.bedroom1Length,
+              breadth: formData.bedroom1Breadth
+            });
+          }
+          if (numBedrooms >= 2) {
+            step2Data.bedrooms.push({
+              number: 2,
+              length: formData.bedroom2Length,
+              breadth: formData.bedroom2Breadth
+            });
+          }
+          if (numBedrooms >= 3) {
+            step2Data.bedrooms.push({
+              number: 3,
+              length: formData.bedroom3Length,
+              breadth: formData.bedroom3Breadth
+            });
+          }
+          
+          // Import the step 2 API function dynamically
+          const { saveResidentialStep2 } = await import('../../screens/residential/logic/api');
+          
+          // Save step 2 data to the database
+          await saveResidentialStep2(step2Data);
+          
+          console.log("Step 2 data saved successfully");
+          
+          // Now save step 3 data
+          try {
+            // Prepare step 3 data for submission
+            const step3Data = {
+              roNo: roNo,
+              advanceAmount: formData.advanceAmount,
+              monthlyRent: formData.rentAmount
+            };
+            
+            // Import the step 3 API function dynamically
+            const { saveResidentialStep3 } = await import('../../screens/residential/logic/api');
+            
+            // Save step 3 data to the database
+            await saveResidentialStep3(step3Data);
+            
+            console.log("Step 3 data saved successfully");
+            
+            // Show only one success message for house details saved
+            Alert.alert(
+              "Success",
+              successMessage, // "House details added successfully!"
+              [
+                {
+                  text: "OK",
+                  onPress: () => navigation.navigate(navigationTarget, { role: "Owner" })
+                }
+              ]
+            );
+          } catch (step3Error) {
+            console.error("Error saving step 3 data:", step3Error);
+            Alert.alert("Error", "Failed to save step 3 data: " + step3Error.message);
+            return;
+          }
+        } catch (step2Error) {
+          console.error("Error saving step 2 data:", step2Error);
+          Alert.alert("Error", "Failed to save step 2 data: " + step2Error.message);
+          return;
         }
-      ]
-    );
+      } catch (step1Error) {
+        console.error("Error saving step 1 data:", step1Error);
+        Alert.alert("Error", "Failed to save step 1 data: " + step1Error.message);
+        return;
+      }
+    } else {
+      // For non-residential forms, show success message directly
+      Alert.alert(
+        "Success",
+        successMessage,
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate(navigationTarget, { role: "Owner" })
+          }
+        ]
+      );
+    }
   };
 
-  // Handle next step
+  // Handle next step (without validation)
   const handleNextStep = () => {
-    handleNext(step, setStep, handleFormSubmit);
+    handleNext(step, setStep, () => {}); // Empty function since we don't want validation on next
   };
 
   // Handle previous step
@@ -194,12 +349,12 @@ const BaseForm = ({
             </TouchableOpacity>
           )}
           
-          {/* Spacer to push Next button to the right */}
+          {/* Spacer to push Next/Submit button to the right */}
           <View style={{ flex: 1 }} />
           
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
-            onPress={handleNextStep}
+            onPress={step < 3 ? handleNextStep : handleFormSubmit}
           >
             <Text style={categoryContentStyles.buttonText}>{step < 3 ? "Next" : "Submit"}</Text>
           </TouchableOpacity>

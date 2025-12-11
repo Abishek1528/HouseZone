@@ -1,0 +1,44 @@
+IP ADDRESS CONFIGURATION GUIDE
+============================
+
+To configure the IP addresses for your application, you need to update the following files:
+
+1. BACKEND SERVER IP ADDRESS
+--------------------------
+File: src/screens/residential/logic/api.js
+Location: Line 2
+Current setting: const API_BASE_URL = 'http://10.86.202.103:3000/api';
+
+Change the IP address (10.86.202.103) to your backend server's IP address.
+Keep the port (3000) and path (/api) unchanged.
+
+Example for local development:
+const API_BASE_URL = 'http://localhost:3000/api';
+
+Example for remote server:
+const API_BASE_URL = 'http://192.168.1.100:3000/api';
+
+2. DATABASE CONNECTION (if needed)
+-------------------------------
+File: backend/.env
+Location: Line 1
+Current setting: DB_HOST=localhost
+
+Change 'localhost' to your MySQL server's IP address if it's hosted remotely.
+
+3. TESTING THE CONNECTION
+-----------------------
+After making changes:
+1. Restart your backend server
+2. Restart your frontend application
+3. Test by submitting the residential form
+
+The application should now connect to your specified IP addresses.
+
+SEPARATE ROUTES IMPLEMENTED:
+--------------------------
+- Step 1 data is saved to: /residential/step1
+- Step 2 data is saved to: /residential/step2
+- Step 3 data is saved to: /residential/step3
+- Only one success message is shown: "House details added successfully!"
+- Error messages indicate which step failed

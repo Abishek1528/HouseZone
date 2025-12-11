@@ -17,7 +17,7 @@ export const saveResidentialStep1 = async (step1Data) => {
       contactNo
     };
 
-    const response = await fetch(`${API_BASE_URL}/residential/save-step1`, {
+    const response = await fetch(`${API_BASE_URL}/residential/step1`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,12 +28,60 @@ export const saveResidentialStep1 = async (step1Data) => {
     const result = await response.json();
     
     if (!response.ok) {
-      throw new Error(result.message || 'Failed to save residential step 1 details');
+      throw new Error(result.message || 'Failed to save step 1 details');
     }
     
     return result;
   } catch (error) {
-    console.error('Error saving residential step 1 details:', error);
+    console.error('Error saving step 1 details:', error);
+    throw error;
+  }
+};
+
+// Save residential step 2 details
+export const saveResidentialStep2 = async (step2Data) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/residential/step2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(step2Data),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to save step 2 details');
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error saving step 2 details:', error);
+    throw error;
+  }
+};
+
+// Save residential step 3 details
+export const saveResidentialStep3 = async (step3Data) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/residential/step3`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(step3Data),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to save step 3 details');
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error saving step 3 details:', error);
     throw error;
   }
 };
@@ -51,12 +99,12 @@ export const getResidentialStep1 = async (id) => {
     const result = await response.json();
     
     if (!response.ok) {
-      throw new Error(result.message || 'Failed to fetch residential step 1 details');
+      throw new Error(result.message || 'Failed to fetch step 1 details');
     }
     
     return result;
   } catch (error) {
-    console.error('Error fetching residential step 1 details:', error);
+    console.error('Error fetching step 1 details:', error);
     throw error;
   }
 };

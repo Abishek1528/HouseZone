@@ -3,22 +3,14 @@ import BaseForm from '../../shared/components/BaseForm';
 import Step2DetailsComponent from './Step2Details';
 import { initialFormData } from './logic/mainLogic';
 
-// Custom validation for residential form
+// Custom validation for residential form - step 2 validation only
 const validateResidentialForm = (formData) => {
-  // Validate Step 1 fields
-  if (!formData.name || !formData.doorNo || !formData.street || !formData.pincode || 
-      !formData.area || !formData.city || !formData.contactNo || !formData.advanceAmount || 
-      !formData.rentAmount || formData.images.length < 4 || formData.images.length > 8) {
-    alert("Validation Error", "Please fill in all required fields and upload between 4 and 8 images");
-    return false;
-  }
-
-  // Validate Step 2 fields
+  // Validate Step 2 fields only
   if (!formData.facingDirection || !formData.hallLength || !formData.hallBreadth || 
       !formData.noOfBedrooms || !formData.bedroom1Length || !formData.bedroom1Breadth || 
       !formData.kitchenLength || !formData.kitchenBreadth || !formData.noOfBathrooms || 
       !formData.bathroom1Type || !formData.floorNo) {
-    alert("Validation Error", "Please fill in all required house details");
+    alert("Validation Error", "Please fill in all required house details in Step 2");
     return false;
   }
 
