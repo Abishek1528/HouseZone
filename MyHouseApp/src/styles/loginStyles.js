@@ -24,6 +24,19 @@ const loginStyles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
   },
+  button: {
+    backgroundColor: "black",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  btnText: {
+    color: "white",
+    fontSize: 18,
+  },
 });
 
 export default loginStyles;

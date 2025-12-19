@@ -16,6 +16,8 @@ import AddVehicles from '../screens/vehicles/index';
 import PropertiesList from '../screens/residential/tenant';
 import PropertyDetails from '../screens/residential/tenant/PropertyDetails';
 import TenantDetails from '../screens/residential/tenant/TenantDetails';
+// Removed AdminPassword import as it's no longer used
+import AdminDashboard from '../screens/AdminDashboard';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +40,8 @@ export default function AppNavigator() {
         <Stack.Screen name="PropertiesList" component={PropertiesList} />
         <Stack.Screen name="PropertyDetails" component={PropertyDetails} />
         <Stack.Screen name="TenantDetails" component={TenantDetails} />
+        {/* Removed AdminPassword screen as it's no longer used */}
+        <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
       </Stack.Navigator>
     </NavigationContainer>
   );

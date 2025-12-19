@@ -29,7 +29,8 @@ app.get('/', (req, res) => {
 app.use('/api', routes);
 
 // Start server
-app.listen(PORT, async() => {
+// Bind to all interfaces to allow external connections
+app.listen(PORT, '0.0.0.0', async() => {
   console.log(`Server running at http://localhost:${PORT}`);
   try {
     await checkConnection();

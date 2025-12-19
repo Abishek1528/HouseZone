@@ -4,6 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import loginStyles from '../styles/loginStyles';
 import categoryContentStyles from '../styles/categoryContentStyles';
 
+// Use the same API configuration as other parts of the app
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function Login() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -13,12 +16,13 @@ export default function Login() {
   const handleLogin = async () => {
     // Basic validation
     if (!name || !phone || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert("Validation Error", "Please fill in all fields");
       return;
     }
 
     try {
-      const response = await fetch('http://10.86.202.103:3000/api/login', {
+      console.log(`Attempting to login with API URL: ${API_BASE_URL}/login`);
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,18 +34,36 @@ export default function Login() {
         }),
       });
 
+      console.log(`Response status: ${response.status}`);
+      
       const result = await response.json();
+      console.log('Response data:', result);
 
       if (response.ok) {
         Alert.alert("Success", "Login successful!", [
           { text: "OK", onPress: () => navigation.navigate("Home") }
         ]);
       } else {
-        Alert.alert("Error", result.message || "Login failed");
+        Alert.alert("Login Error", result.message || `Login failed with status ${response.status}`);
       }
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert("Error", "Failed to connect to server");
+      
+      // More detailed error handling
+      let errorMessage = "Failed to connect to server. ";
+      
+      if (error.message && error.message.includes('network')) {
+        errorMessage += "Network error detected. Please check: \n\n" +
+                       "1. If the backend server is running on port 3000\n" +
+                       `2. If you're using the correct protocol (should be http:// not https://)\n` +
+                       `3. If the API URL is correct: ${API_BASE_URL}\n` +
+                       "4. If your firewall is blocking the connection\n\n" +
+                       `Technical error: ${error.message}`;
+      } else {
+        errorMessage += `Error: ${error.message || error}`;
+      }
+      
+      Alert.alert("Connection Error", errorMessage);
     }
   };
 

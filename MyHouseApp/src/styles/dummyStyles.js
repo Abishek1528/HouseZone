@@ -21,6 +21,10 @@ const dummyStyles = StyleSheet.create({
     color: "white",
     fontSize: 18,
   },
+  adminButton: {
+    marginTop: 20,
+    backgroundColor: '#800080',
+  }
 });
 
 export default dummyStyles;
