@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
   res.send('HouseZone Backend Server is Running!');
 });
 
-// Use routes
+// Use routes with /api prefix
 app.use('/api', routes);
 
 // Start server

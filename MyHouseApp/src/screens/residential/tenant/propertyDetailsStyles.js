@@ -23,7 +23,8 @@ const propertyDetailsStyles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#4A90E2',
-    borderRadius: 8
+    borderRadius: 8,
+    width: '100%'
   },
   sectionTitle: {
     fontSize: 20,
@@ -56,19 +57,19 @@ const propertyDetailsStyles = StyleSheet.create({
     borderBottomColor: '#ddd'
   },
   label: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#34495e',
     fontWeight: '600',
     flex: 1.2
   },
   separator: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#34495e',
     fontWeight: '600',
     paddingHorizontal: 5
   },
   value: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#2c3e50',
     flex: 1,
     textAlign: 'right',
@@ -76,3 +77,5 @@ const propertyDetailsStyles = StyleSheet.create({
     paddingLeft: 10
   }
 });
+
+export default propertyDetailsStyles;

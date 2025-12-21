@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Alert, TouchableOpacity } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import Header from '../../../components/Header';
@@ -70,10 +70,15 @@ export default function PropertyDetails() {
     navigation.navigate('TenantDetails');
   };
 
-  // Helper function to format dimensions
+  // Helper function to format dimensions - now displays whole numbers
   const formatDimensions = (length, breadth, totalArea) => {
     if (length && breadth) {
-      return `${length} × ${breadth} = ${totalArea} sq.ft`;
+      // Convert to whole numbers if they are numeric
+      const formattedLength = isNaN(length) ? length : Math.round(Number(length));
+      const formattedBreadth = isNaN(breadth) ? breadth : Math.round(Number(breadth));
+      const formattedArea = isNaN(totalArea) ? totalArea : Math.round(Number(totalArea));
+      
+      return `${formattedLength} × ${formattedBreadth} = ${formattedArea} sq.ft`;
     }
     return 'N/A';
   };
@@ -99,7 +104,7 @@ export default function PropertyDetails() {
             </View>
             <View style={propertyDetailsStyles.detailRow}>
               <Text style={propertyDetailsStyles.label}>Agreement:</Text>
-              <Text style={propertyDetailsStyles.value}></Text>
+              <Text style={propertyDetailsStyles.value}>N/A</Text>
             </View>
           </View>
           
@@ -146,9 +151,11 @@ export default function PropertyDetails() {
                 <View key={index} style={propertyDetailsStyles.detailRow}>
                   <Text style={propertyDetailsStyles.label}>Bedroom {bedroom.bedroomNumber} (L X B):</Text>
                   <Text style={propertyDetailsStyles.value}>
-                    {bedroom.length && bedroom.breadth 
-                      ? `${bedroom.length} × ${bedroom.breadth}= ${bedroom.totalArea} sq.ft` 
-                      : 'N/A'}
+                    {formatDimensions(
+                      bedroom.length,
+                      bedroom.breadth,
+                      bedroom.totalArea
+                    )}
                   </Text>
                 </View>
               ))}
@@ -167,7 +174,7 @@ export default function PropertyDetails() {
               {/* Parking Slot */}
               <View style={propertyDetailsStyles.detailRow}>
                 <Text style={propertyDetailsStyles.label}>Parking Slot:</Text>
-                <Text style={propertyDetailsStyles.value}></Text>
+                <Text style={propertyDetailsStyles.value}>N/A</Text>
               </View>
             </View>
           )}

@@ -36,4 +36,27 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// API endpoint to get today's signups
+router.get('/signups/today', async (req, res) => {
+  try {
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const dateString = today.toISOString().split('T')[0];
+    
+    // Query to get signups from today
+    const [rows] = await pool.execute(
+      `SELECT id, name, age, contact_number, email, created_at 
+       FROM signup 
+       WHERE DATE(created_at) = ?
+       ORDER BY created_at DESC`,
+      [dateString]
+    );
+    
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching today\'s signups:', error);
+    res.status(500).json({ message: 'Error fetching signups', error: error.message });
+  }
+});
+
 export default router;

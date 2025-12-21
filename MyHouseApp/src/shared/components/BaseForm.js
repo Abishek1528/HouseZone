@@ -95,7 +95,8 @@ const BaseForm = ({
           residentialId: response.id
         });
       } catch (error) {
-        Alert.alert("Error", "Failed to save step 1 data: " + error.message);
+        console.error("Error saving step 1:", error);
+        Alert.alert("Error", "Failed to save step 1 data: " + (error.message || "Unknown error"));
       }
     }
   };
@@ -154,7 +155,9 @@ const BaseForm = ({
           let roNo;
           try {
             const { saveResidentialStep1 } = await import("../../screens/residential/logic/api");
+            console.log("Saving step 1 data:", step1Data);
             const step1Response = await saveResidentialStep1(step1Data);
+            console.log("Step 1 response:", step1Response);
             roNo = step1Response.roNo || step1Response.id; // Handle both possible return values
             
             if (!roNo) {
@@ -210,9 +213,11 @@ const BaseForm = ({
               bedrooms: bedrooms
             };
 
+            console.log("Saving step 2 data:", step2Data);
             try {
               const { saveResidentialStep2 } = await import("../../screens/residential/logic/api");
               await saveResidentialStep2(step2Data);
+              console.log("Step 2 saved successfully");
               
               // Save step 3 data to the database
               try {
@@ -222,9 +227,11 @@ const BaseForm = ({
                   monthlyRent: formData.rentAmount
                 };
 
+                console.log("Saving step 3 data:", step3Data);
                 try {
                   const { saveResidentialStep3 } = await import("../../screens/residential/logic/api");
                   await saveResidentialStep3(step3Data);
+                  console.log("Step 3 saved successfully");
 
                   // Show only one success message for house details saved
                   Alert.alert(

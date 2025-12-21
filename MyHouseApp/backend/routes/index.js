@@ -8,7 +8,7 @@ import tenantRoutes from './tenantRoutes.js';
 
 const router = Router();
 
-// Mount all routes
+// Mount all routes (without /api prefix since it's added in server.js)
 router.use('/', signupRoutes);
 router.use('/', loginRoutes);
 router.use('/', residentialStep1Routes);

@@ -9,13 +9,24 @@ const handleFetchRequest = async (url, options) => {
     const response = await fetch(url, options);
     console.log(`Response status: ${response.status}`);
     
-    const result = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
+    // Check if response has content before trying to parse JSON
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.indexOf('application/json') !== -1) {
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return result;
+    } else {
+      // Handle non-JSON responses
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}. Response: ${text}`);
+      }
+      return { message: 'Success', data: text };
     }
-    
-    return result;
   } catch (error) {
     console.error(`Fetch error for ${url}:`, error);
     throw error;

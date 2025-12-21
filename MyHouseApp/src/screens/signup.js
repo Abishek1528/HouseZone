@@ -4,6 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import signupStyles from '../styles/signupStyles';
 import categoryContentStyles from '../styles/categoryContentStyles';
 
+// Use the same API configuration as other parts of the app
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function Signup() {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
@@ -20,7 +23,8 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch('http://10.86.202.103:3000/api/signup', {
+      console.log(`Attempting to signup with API URL: ${API_BASE_URL}/signup`);
+      const response = await fetch(`${API_BASE_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,18 +38,36 @@ export default function Signup() {
         }),
       });
 
+      console.log(`Response status: ${response.status}`);
+      
       const result = await response.json();
+      console.log('Response data:', result);
 
       if (response.ok) {
         Alert.alert("Success", "User registered successfully!", [
           { text: "OK", onPress: () => navigation.navigate("Home") }
         ]);
       } else {
-        Alert.alert("Error", result.message || "Signup failed");
+        Alert.alert("Error", result.message || `Signup failed with status ${response.status}`);
       }
     } catch (error) {
       console.error('Signup error:', error);
-      Alert.alert("Error", "Failed to connect to server");
+      
+      // More detailed error handling
+      let errorMessage = "Failed to connect to server. ";
+      
+      if (error.message && error.message.includes('network')) {
+        errorMessage += "Network error detected. Please check: \n\n" +
+                       "1. If the backend server is running on port 3000\n" +
+                       `2. If you're using the correct protocol (should be http:// not https://)\n` +
+                       `3. If the API URL is correct: ${API_BASE_URL}\n` +
+                       "4. If your firewall is blocking the connection\n\n" +
+                       `Technical error: ${error.message}`;
+      } else {
+        errorMessage += `Error: ${error.message || error}`;
+      }
+      
+      Alert.alert("Connection Error", errorMessage);
     }
   };
 
