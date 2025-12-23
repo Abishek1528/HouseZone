@@ -13,10 +13,7 @@ export const initialFormData = {
       name: "",
       model: "",
       seatCapacity: "",
-      fuelType: "",
-      acAvailable: false,
-      chargeType: "",
-      chargeAmount: ""
+      fuelType: ""
     }
   ],
 };

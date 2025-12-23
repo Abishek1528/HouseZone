@@ -15,6 +15,19 @@ const validateResidentialForm = (formData) => {
     return false;
   }
 
+  // Validate that numeric fields are actually numbers
+  const numericFields = [
+    'hallLength', 'hallBreadth', 'bedroom1Length', 'bedroom1Breadth',
+    'kitchenLength', 'kitchenBreadth'
+  ];
+
+  for (const field of numericFields) {
+    if (formData[field] && (isNaN(parseFloat(formData[field])) || parseFloat(formData[field]) <= 0)) {
+      Alert.alert("Validation Error", `Please enter a valid positive number for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+      return false;
+    }
+  }
+
   // Validate conditional bedroom fields
   const numBedrooms = parseInt(formData.noOfBedrooms);
   if (numBedrooms >= 2 && (!formData.bedroom2Length || !formData.bedroom2Breadth)) {
@@ -24,6 +37,15 @@ const validateResidentialForm = (formData) => {
   if (numBedrooms >= 3 && (!formData.bedroom3Length || !formData.bedroom3Breadth)) {
     Alert.alert("Validation Error", "Please fill in Bedroom 3 dimensions");
     return false;
+  }
+
+  // Validate that bedroom numeric fields are actually numbers
+  const bedroomFields = ['bedroom2Length', 'bedroom2Breadth', 'bedroom3Length', 'bedroom3Breadth'];
+  for (const field of bedroomFields) {
+    if (formData[field] && (isNaN(parseFloat(formData[field])) || parseFloat(formData[field]) <= 0)) {
+      Alert.alert("Validation Error", `Please enter a valid positive number for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+      return false;
+    }
   }
 
   // Validate conditional bathroom fields
