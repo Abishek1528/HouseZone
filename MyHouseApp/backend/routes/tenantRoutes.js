@@ -29,7 +29,45 @@ router.get('/residential/properties', async (req, res) => {
   }
 });
 
-// API endpoint for getting detailed residential property information
+// API endpoint for saving tenant details
+router.post('/residential/tenant-details', async (req, res) => {
+  try {
+    const {
+      tenant_name,
+      job,
+      salary,
+      native_place,
+      current_address,
+      mobile_number,
+      alternate_number
+    } = req.body;
+    
+    const [result] = await pool.execute(
+      `INSERT INTO tenant_details (
+        tenant_name, job, salary, native_place, current_address, mobile_number, alternate_number
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        tenant_name,
+        job,
+        parseFloat(salary),
+        native_place,
+        current_address,
+        mobile_number,
+        alternate_number
+      ]
+    );
+    
+    res.status(201).json({
+      message: 'Tenant details saved successfully',
+      id: result.insertId
+    });
+  } catch (error) {
+    console.error('Error saving tenant details:', error);
+    res.status(500).json({ message: 'Error saving tenant details', error: error.message });
+  }
+});
+
+
 router.get('/residential/properties/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,6 +108,8 @@ router.get('/residential/properties/:id', async (req, res) => {
           kitchen_breadth as kitchenBreadth,
           number_of_bathrooms as numberOfBathrooms,
           bathroom1_type as bathroom1Type,
+          bathroom2_type as bathroom2Type,
+          bathroom3_type as bathroom3Type,
           floor_number as floorNumber,
           parking_2wheeler as parking2Wheeler,
           parking_4wheeler as parking4Wheeler

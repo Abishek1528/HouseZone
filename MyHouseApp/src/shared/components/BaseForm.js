@@ -10,6 +10,8 @@ import { handleStep1InputChange } from "./logic/step1Logic";
 import { handleImageSelect, handleRemoveImage } from "./logic/step3Logic";
 import { handleNext, handlePrevious } from "./logic/navigationLogic";
 
+
+
 const BaseForm = ({
   title,
   step2Component: Step2Component,
@@ -296,6 +298,8 @@ const BaseForm = ({
                 kitchenBreadth: formData.kitchenBreadth,
                 noOfBathrooms: formData.noOfBathrooms,
                 bathroom1Type: formData.bathroom1Type,
+                bathroom2Type: formData.bathroom2Type,
+                bathroom3Type: formData.bathroom3Type,
                 floorNo: formData.floorNo,
                 parking2Wheeler: formData.parking2Wheeler,
                 parking4Wheeler: formData.parking4Wheeler,

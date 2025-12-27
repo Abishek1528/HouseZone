@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
+import { saveTenantDetails } from './api';
 
 const TenantDetails = () => {
   const navigation = useNavigation();
@@ -12,6 +13,7 @@ const TenantDetails = () => {
     job: '',
     salary: '',
     nativePlace: '',
+    currentAddress: '',
     mobileNumber: '',
     alternateNumber: ''
   });
@@ -23,7 +25,7 @@ const TenantDetails = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validation
     if (!tenantData.name || !tenantData.job || !tenantData.salary || 
         !tenantData.nativePlace || !tenantData.mobileNumber) {
@@ -48,20 +50,35 @@ const TenantDetails = () => {
       return;
     }
 
-    // In a real app, you would save this data to your backend here
-    console.log('Tenant Data:', tenantData);
-    
-    // Show success message
-    Alert.alert(
-      'Success',
-      'Tenant details submitted successfully!',
-      [
-        {
-          text: 'OK',
-          onPress: () => navigation.goBack()
-        }
-      ]
-    );
+    // Save tenant data to backend
+    try {
+      const tenantDetails = {
+        tenant_name: tenantData.name,
+        job: tenantData.job,
+        salary: tenantData.salary,
+        native_place: tenantData.nativePlace,
+        current_address: tenantData.currentAddress,
+        mobile_number: tenantData.mobileNumber,
+        alternate_number: tenantData.alternateNumber || null
+      };
+      
+      await saveTenantDetails(tenantDetails);
+      
+      // Show success message
+      Alert.alert(
+        'Success',
+        'Tenant details submitted successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack()
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Error saving tenant details:', error);
+      Alert.alert('Error', `Failed to save tenant details: ${error.message || 'Network connection failed. Please check your internet connection and backend server status.'}`);
+    }
   };
 
   return (
@@ -104,6 +121,16 @@ const TenantDetails = () => {
               placeholder="Native Place"
               value={tenantData.nativePlace}
               onChangeText={(value) => handleInputChange('nativePlace', value)}
+            />
+            
+            <Text style={categoryContentStyles.label}>Current Address</Text>
+            <TextInput
+              style={categoryContentStyles.input}
+              placeholder="Current Address"
+              value={tenantData.currentAddress}
+              onChangeText={(value) => handleInputChange('currentAddress', value)}
+              multiline={true}
+              numberOfLines={3}
             />
             
             <Text style={categoryContentStyles.label}>Mobile Number *</Text>

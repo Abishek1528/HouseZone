@@ -19,7 +19,7 @@ USE cdmrental;
 --
 -- 2. resownho - For residential owner step 2 common details
 --    Columns: roNo, facing_direction, hall_length, hall_breadth, number_of_bedrooms, 
---             kitchen_length, kitchen_breadth, number_of_bathrooms, bathroom1_type, floor_number,
+--             kitchen_length, kitchen_breadth, number_of_bathrooms, bathroom1_type, bathroom2_type, bathroom3_type, floor_number,
 --             parking_2wheeler, parking_4wheeler
 --
 -- 3. bedroom_sizes - For residential owner step 2 bedroom details
@@ -27,3 +27,25 @@ USE cdmrental;
 --
 -- 4. resownpay - For residential owner step 3 payment details
 --    Columns: roNo, advance_amount, monthly_rent, lease_amount
+--
+-- 5. tenant_details - For tenant information
+--    Columns: id, tenant_name, job, salary, native_place, current_address, mobile_number, alternate_number, property_id, created_at
+
+-- Add bathroom2_type and bathroom3_type columns to resownho table if they don't exist
+-- ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom2_type VARCHAR(50);
+-- ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom3_type VARCHAR(50);
+
+-- -- Create tenant_details table if it doesn't exist
+-- CREATE TABLE IF NOT EXISTS tenant_details (
+--   id INT AUTO_INCREMENT PRIMARY KEY,
+--   tenant_name VARCHAR(255) NOT NULL,
+--   job VARCHAR(255) NOT NULL,
+--   salary DECIMAL(10,2) NOT NULL,
+--   native_place VARCHAR(255) NOT NULL,
+--   current_address TEXT,
+--   mobile_number VARCHAR(20) NOT NULL,
+--   alternate_number VARCHAR(20),
+--   property_id INT,
+--   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   FOREIGN KEY (property_id) REFERENCES resowndet(roNo)
+-- );

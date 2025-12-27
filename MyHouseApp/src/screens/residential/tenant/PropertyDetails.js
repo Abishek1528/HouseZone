@@ -181,9 +181,23 @@ export default function PropertyDetails() {
               </View>
               
               <View style={propertyDetailsStyles.detailRow}>
-                <Text style={propertyDetailsStyles.label}>  Bathroom Type:</Text>
+                <Text style={propertyDetailsStyles.label}>Bathroom 1 Type:</Text>
                 <Text style={propertyDetailsStyles.value}>{property.houseDetails.bathroom1Type || 'N/A'}</Text>
               </View>
+              
+              {property.houseDetails.bathroom2Type !== undefined && (
+              <View style={propertyDetailsStyles.detailRow}>
+                <Text style={propertyDetailsStyles.label}>Bathroom 2 Type:</Text>
+                <Text style={propertyDetailsStyles.value}>{property.houseDetails.bathroom2Type || 'N/A'}</Text>
+              </View>
+              )}
+              
+              {property.houseDetails.bathroom3Type !== undefined && (
+              <View style={propertyDetailsStyles.detailRow}>
+                <Text style={propertyDetailsStyles.label}>Bathroom 3 Type:</Text>
+                <Text style={propertyDetailsStyles.value}>{property.houseDetails.bathroom3Type || 'N/A'}</Text>
+              </View>
+              )}
               
               {/* Parking Details */}
               {property.houseDetails && (

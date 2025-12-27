@@ -204,6 +204,16 @@ export default function ResidentialOwnerPage() {
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Bathroom 1 Type:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.bathroom1Type || 'N/A'}</Text>
               </Text>
+              {item.bathroom2Type !== undefined && (
+              <Text style={residentialOwnerStyles.detailText}>
+                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 2 Type:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.bathroom2Type || 'N/A'}</Text>
+              </Text>
+              )}
+              {item.bathroom3Type !== undefined && (
+              <Text style={residentialOwnerStyles.detailText}>
+                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 3 Type:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.bathroom3Type || 'N/A'}</Text>
+              </Text>
+              )}
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Floor Number:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.floorNumber || 'N/A'}</Text>
               </Text>
