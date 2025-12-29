@@ -180,23 +180,17 @@ export default function PropertyDetails() {
                 <Text style={propertyDetailsStyles.value}>{property.houseDetails.numberOfBathrooms || 'N/A'}</Text>
               </View>
               
-              <View style={propertyDetailsStyles.detailRow}>
-                <Text style={propertyDetailsStyles.label}>Bathroom 1 Type:</Text>
-                <Text style={propertyDetailsStyles.value}>{property.houseDetails.bathroom1Type || 'N/A'}</Text>
-              </View>
-              
-              {property.houseDetails.bathroom2Type !== undefined && (
-              <View style={propertyDetailsStyles.detailRow}>
-                <Text style={propertyDetailsStyles.label}>Bathroom 2 Type:</Text>
-                <Text style={propertyDetailsStyles.value}>{property.houseDetails.bathroom2Type || 'N/A'}</Text>
-              </View>
-              )}
-              
-              {property.houseDetails.bathroom3Type !== undefined && (
-              <View style={propertyDetailsStyles.detailRow}>
-                <Text style={propertyDetailsStyles.label}>Bathroom 3 Type:</Text>
-                <Text style={propertyDetailsStyles.value}>{property.houseDetails.bathroom3Type || 'N/A'}</Text>
-              </View>
+              {/* Render bathrooms based on the selected number of bathrooms */}
+              {property.houseDetails.numberOfBathrooms && (
+                Array.from({ length: parseInt(property.houseDetails.numberOfBathrooms) }, (_, index) => {
+                  const bathroomType = property.houseDetails[`bathroom${index + 1}Type`];
+                  return (
+                    <View key={index + 1} style={propertyDetailsStyles.detailRow}>
+                      <Text style={propertyDetailsStyles.label}>Bathroom {index + 1} Type:</Text>
+                      <Text style={propertyDetailsStyles.value}>{bathroomType || 'N/A'}</Text>
+                    </View>
+                  );
+                })
               )}
               
               {/* Parking Details */}
