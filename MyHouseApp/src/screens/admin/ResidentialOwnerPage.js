@@ -33,6 +33,7 @@ export default function ResidentialOwnerPage() {
     try {
       setLoading(true);
       const data = await getAllResidentialOwners();
+      console.log('Loaded residential owners data:', data);
       setOwners(data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load residential owners. Please try again.');
@@ -51,7 +52,6 @@ export default function ResidentialOwnerPage() {
 
   const handleUpdateDetails = (item) => {
     setSelectedOwner(item);
-    // Reset form data when opening modal
     setUpdateFormData({
       streetSizeBreadth: '',
       nearbyBusStop: '',
@@ -139,7 +139,7 @@ export default function ResidentialOwnerPage() {
         <View style={residentialOwnerStyles.summaryContainer}>
           <View style={residentialOwnerStyles.summaryLeft}>
             <Text style={residentialOwnerStyles.ownerName}>{item.ownerName}</Text>
-            <Text style={residentialOwnerStyles.summaryText}>Bedrooms: {item.numberOfBedrooms || 'N/A'}</Text>
+            <Text style={residentialOwnerStyles.summaryText}>{item.numberOfBedrooms ? `${item.numberOfBedrooms} BHK` : 'N/A BHK'}</Text>
             <Text style={residentialOwnerStyles.summaryText}>Rent: ₹{item.monthlyRent || 'N/A'}/month</Text>
           </View>
           <TouchableOpacity 
@@ -201,17 +201,31 @@ export default function ResidentialOwnerPage() {
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Number of Bathrooms:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.numberOfBathrooms || 'N/A'}</Text>
               </Text>
+              {item.numberOfBathrooms && parseInt(item.numberOfBathrooms) >= 1 && (
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 1 Type:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.bathroom1Type || 'N/A'}</Text>
-              </Text>
-              {item.bathroom2Type !== undefined && (
-              <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 2 Type:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.bathroom2Type || 'N/A'}</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 1:</Text> <Text style={residentialOwnerStyles.detailValue}>
+                  {(item.bathroom1Access && item.bathroom1Type) ? `${item.bathroom1Access} - ${item.bathroom1Type}` : 
+                   (item.bathroom1Access ? item.bathroom1Access : 
+                   (item.bathroom1Type || 'N/A'))}
+                </Text>
               </Text>
               )}
-              {item.bathroom3Type !== undefined && (
+              {item.numberOfBathrooms && parseInt(item.numberOfBathrooms) >= 2 && (
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 3 Type:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.bathroom3Type || 'N/A'}</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 2:</Text> <Text style={residentialOwnerStyles.detailValue}>
+                  {(item.bathroom2Access && item.bathroom2Type) ? `${item.bathroom2Access} - ${item.bathroom2Type}` : 
+                   (item.bathroom2Access ? item.bathroom2Access : 
+                   (item.bathroom2Type || 'N/A'))}
+                </Text>
+              </Text>
+              )}
+              {item.numberOfBathrooms && parseInt(item.numberOfBathrooms) >= 3 && (
+              <Text style={residentialOwnerStyles.detailText}>
+                <Text style={residentialOwnerStyles.detailLabel}>Bathroom 3:</Text> <Text style={residentialOwnerStyles.detailValue}>
+                  {(item.bathroom3Access && item.bathroom3Type) ? `${item.bathroom3Access} - ${item.bathroom3Type}` : 
+                   (item.bathroom3Access ? item.bathroom3Access : 
+                   (item.bathroom3Type || 'N/A'))}
+                </Text>
               </Text>
               )}
               <Text style={residentialOwnerStyles.detailText}>
@@ -233,19 +247,19 @@ export default function ResidentialOwnerPage() {
             <View style={residentialOwnerStyles.detailSection}>
               <Text style={residentialOwnerStyles.sectionTitle}>Location & Nearby Amenities</Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Street Size:</Text> <Text style={residentialOwnerStyles.detailValue}>N/A</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Street Size:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.streetSize ? `${item.streetSize} ft` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby Bus Stop:</Text> <Text style={residentialOwnerStyles.detailValue}>N/A</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Nearby Bus Stop:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyBusStop ? `${item.nearbyBusStop}${item?.nearbyBusStopDistance ? ` - ${item.nearbyBusStopDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby School:</Text> <Text style={residentialOwnerStyles.detailValue}>N/A</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Nearby School:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbySchool ? `${item.nearbySchool}${item?.nearbySchoolDistance ? ` - ${item.nearbySchoolDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby Shopping Mall:</Text> <Text style={residentialOwnerStyles.detailValue}>N/A</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Nearby Shopping Mall:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyShoppingMall ? `${item.nearbyShoppingMall}${item?.nearbyShoppingMallDistance ? ` - ${item.nearbyShoppingMallDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby Bank:</Text> <Text style={residentialOwnerStyles.detailValue}>N/A</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Nearby Bank:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyBank ? `${item.nearbyBank}${item?.nearbyBankDistance ? ` - ${item.nearbyBankDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
             </View>
             
@@ -340,7 +354,7 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby Bus Stop */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Nearby Bus Stop</Text>
+                <Text style={residentialOwnerStyles.formLabel}>Bus Stop</Text>
                 <View style={residentialOwnerStyles.pickerContainer}>
                   <Picker
                     selectedValue={updateFormData.nearbyBusStop}
@@ -374,7 +388,7 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby School */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Nearby School</Text>
+                <Text style={residentialOwnerStyles.formLabel}>School</Text>
                 <View style={residentialOwnerStyles.pickerContainer}>
                   <Picker
                     selectedValue={updateFormData.nearbySchool}
@@ -393,7 +407,7 @@ export default function ResidentialOwnerPage() {
                   </Picker>
                 </View>
                 
-                {/* Distance input field - shown only when a school is selected */}
+                
                 {updateFormData.nearbySchool !== '' && (
                   <View style={{ marginTop: 10 }}>
                     <Text style={residentialOwnerStyles.formLabel}>Distance (km)</Text>
@@ -410,7 +424,7 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby Shopping Mall */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Nearby Shopping Mall</Text>
+                <Text style={residentialOwnerStyles.formLabel}>Shopping Mall</Text>
                 <View style={residentialOwnerStyles.pickerContainer}>
                   <Picker
                     selectedValue={updateFormData.nearbyShoppingMall}
@@ -444,7 +458,7 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby Bank */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Nearby Bank</Text>
+                <Text style={residentialOwnerStyles.formLabel}>Bank</Text>
                 <View style={residentialOwnerStyles.pickerContainer}>
                   <Picker
                     selectedValue={updateFormData.nearbyBank}

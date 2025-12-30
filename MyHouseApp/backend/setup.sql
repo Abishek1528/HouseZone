@@ -30,10 +30,18 @@ USE cdmrental;
 --
 -- 5. tenant_details - For tenant information
 --    Columns: id, tenant_name, job, salary, native_place, current_address, mobile_number, alternate_number, property_id, created_at
+-- 
+-- 6. residential_amenities - For admin updated location & amenities information
+--    Columns: id, roNo, street_size_breadth, nearby_bus_stop, bus_stop_distance, nearby_school, school_distance, nearby_shopping_mall, shopping_mall_distance, nearby_bank, bank_distance, updated_at
 
--- Add bathroom2_type and bathroom3_type columns to resownho table if they don't exist
--- ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom2_type VARCHAR(50);
--- ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom3_type VARCHAR(50);
+-- Add bathroom access columns to resownho table if they don't exist
+ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom1_access VARCHAR(50) DEFAULT NULL;
+ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom2_access VARCHAR(50) DEFAULT NULL;
+ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom3_access VARCHAR(50) DEFAULT NULL;
+
+-- Update any existing bathroom2_type and bathroom3_type columns if they don't exist
+ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom2_type VARCHAR(50) DEFAULT NULL;
+ALTER TABLE resownho ADD COLUMN IF NOT EXISTS bathroom3_type VARCHAR(50) DEFAULT NULL;
 
 -- -- Create tenant_details table if it doesn't exist
 -- CREATE TABLE IF NOT EXISTS tenant_details (
@@ -49,3 +57,21 @@ USE cdmrental;
 --   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 --   FOREIGN KEY (property_id) REFERENCES resowndet(roNo)
 -- );
+
+-- Create location table if it doesn't exist
+CREATE TABLE IF NOT EXISTS location (
+  roNo INT,
+  street_breadth VARCHAR(20),
+  bus_stop VARCHAR(20),
+  bus_stop_distance INT,
+  school VARCHAR(20),
+  school_distance INT,
+  shopping_mall VARCHAR(20),
+  shopping_mall_distance INT,
+  bank VARCHAR(20),
+  bank_distance INT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (roNo) REFERENCES resowndet(roNo)
+);
+
+-- Create residential_amenities table if it doesn't exist

@@ -10,7 +10,7 @@ const validateResidentialForm = (formData) => {
   if (!formData.facingDirection || !formData.hallLength || !formData.hallBreadth || 
       !formData.noOfBedrooms || !formData.bedroom1Length || !formData.bedroom1Breadth || 
       !formData.kitchenLength || !formData.kitchenBreadth || !formData.noOfBathrooms || 
-      !formData.bathroom1Type || !formData.floorNo) {
+      !formData.bathroom1Type || !formData.bathroom1Access || !formData.floorNo) {
     Alert.alert("Validation Error", "Please fill in all required house details in Step 2");
     return false;
   }
@@ -50,12 +50,16 @@ const validateResidentialForm = (formData) => {
 
   // Validate conditional bathroom fields
   const numBathrooms = parseInt(formData.noOfBathrooms);
-  if (numBathrooms >= 2 && !formData.bathroom2Type) {
-    Alert.alert("Validation Error", "Please select Bathroom 2 type");
+  if (!formData.bathroom1Type || !formData.bathroom1Access) {
+    Alert.alert("Validation Error", "Please select Bathroom 1 type and access");
     return false;
   }
-  if (numBathrooms >= 3 && !formData.bathroom3Type) {
-    Alert.alert("Validation Error", "Please select Bathroom 3 type");
+  if (numBathrooms >= 2 && (!formData.bathroom2Type || !formData.bathroom2Access)) {
+    Alert.alert("Validation Error", "Please select Bathroom 2 type and access");
+    return false;
+  }
+  if (numBathrooms >= 3 && (!formData.bathroom3Type || !formData.bathroom3Access)) {
+    Alert.alert("Validation Error", "Please select Bathroom 3 type and access");
     return false;
   }
 

@@ -27,6 +27,17 @@ export default function PropertyDetails() {
       console.log('Fetching property details for ID:', propertyId);
       const data = await getPropertyDetails(propertyId);
       console.log('Received property data:', data);
+      console.log('Location data in property:', {
+        streetSize: data.streetSize,
+        nearbyBusStop: data.nearbyBusStop,
+        nearbyBusStopDistance: data.nearbyBusStopDistance,
+        nearbySchool: data.nearbySchool,
+        nearbySchoolDistance: data.nearbySchoolDistance,
+        nearbyShoppingMall: data.nearbyShoppingMall,
+        nearbyShoppingMallDistance: data.nearbyShoppingMallDistance,
+        nearbyBank: data.nearbyBank,
+        nearbyBankDistance: data.nearbyBankDistance
+      });
       setProperty(data);
     } catch (error) {
       console.error('Error loading property details:', error);
@@ -182,12 +193,17 @@ export default function PropertyDetails() {
               
               {/* Render bathrooms based on the selected number of bathrooms */}
               {property.houseDetails.numberOfBathrooms && (
-                Array.from({ length: parseInt(property.houseDetails.numberOfBathrooms) }, (_, index) => {
+                Array.from({ length: Math.max(0, parseInt(property.houseDetails.numberOfBathrooms) || 0) }, (_, index) => {
                   const bathroomType = property.houseDetails[`bathroom${index + 1}Type`];
+                  const bathroomAccess = property.houseDetails[`bathroom${index + 1}Access`];
                   return (
                     <View key={index + 1} style={propertyDetailsStyles.detailRow}>
-                      <Text style={propertyDetailsStyles.label}>Bathroom {index + 1} Type:</Text>
-                      <Text style={propertyDetailsStyles.value}>{bathroomType || 'N/A'}</Text>
+                      <Text style={propertyDetailsStyles.label}>Bathroom {index + 1}:</Text>
+                      <Text style={propertyDetailsStyles.value}>
+                        {(bathroomAccess && bathroomType) ? `${bathroomAccess} - ${bathroomType}` : 
+                         (bathroomAccess ? bathroomAccess : 
+                         (bathroomType || 'N/A'))}
+                      </Text>
                     </View>
                   );
                 })
@@ -223,31 +239,31 @@ export default function PropertyDetails() {
             <View style={propertyDetailsStyles.firstDetailRow}>
               <Text style={propertyDetailsStyles.label}>Street Size:</Text>
               <Text style={propertyDetailsStyles.value}>
-                {property.streetSize ? `${property.streetSize} ft` : 'N/A'}
+                {property?.streetSize ? `${property.streetSize} ft` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
               <Text style={propertyDetailsStyles.label}>Nearby Bus Stop:</Text>
               <Text style={propertyDetailsStyles.value}>
-                {property.nearbyBusStop ? `${property.nearbyBusStop} km` : 'N/A'}
+                {property?.nearbyBusStop ? `${property.nearbyBusStop}${property?.nearbyBusStopDistance ? ` - ${property.nearbyBusStopDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
               <Text style={propertyDetailsStyles.label}>Nearby School:</Text>
               <Text style={propertyDetailsStyles.value}>
-                {property.nearbySchool ? `${property.nearbySchool} km` : 'N/A'}
+                {property?.nearbySchool ? `${property.nearbySchool}${property?.nearbySchoolDistance ? ` - ${property.nearbySchoolDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
               <Text style={propertyDetailsStyles.label}>Nearby Shopping Mall:</Text>
               <Text style={propertyDetailsStyles.value}>
-                {property.nearbyShoppingMall ? `${property.nearbyShoppingMall} km` : 'N/A'}
+                {property?.nearbyShoppingMall ? `${property.nearbyShoppingMall}${property?.nearbyShoppingMallDistance ? ` - ${property.nearbyShoppingMallDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
               <Text style={propertyDetailsStyles.label}>Nearby Bank:</Text>
               <Text style={propertyDetailsStyles.value}>
-                {property.nearbyBank ? `${property.nearbyBank} km` : 'N/A'}
+                {property?.nearbyBank ? `${property.nearbyBank}${property?.nearbyBankDistance ? ` - ${property.nearbyBankDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
           </View>

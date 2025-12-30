@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import categoryContentStyles from "../../styles/categoryContentStyles";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 export default function ConditionsPage() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { ownerData, formData } = route.params || {};
+  
   const [conditions, setConditions] = useState({
     condition1: false,
     condition2: false,
@@ -32,7 +35,7 @@ export default function ConditionsPage() {
     }));
   };
 
-  const handleUpdateConditions = () => {
+  const handleUpdateConditions = async () => {
     // Validate that at least one condition is selected
     const selectedConditions = Object.values(conditions).filter(value => value === true);
     
@@ -41,10 +44,52 @@ export default function ConditionsPage() {
       return;
     }
 
+    // If there's location amenities data to save, save it first
+    if (formData) {
+      try {
+        // Prepare the data to send to the API
+        const locationData = {
+          roNo: ownerData.id,
+          streetSizeBreadth: formData.streetSizeBreadth,
+          nearbyBusStop: formData.nearbyBusStop,
+          busStopDistance: formData.busStopDistance,
+          nearbySchool: formData.nearbySchool,
+          schoolDistance: formData.schoolDistance,
+          nearbyShoppingMall: formData.nearbyShoppingMall,
+          shoppingMallDistance: formData.shoppingMallDistance,
+          nearbyBank: formData.nearbyBank,
+          bankDistance: formData.bankDistance
+        };
+        
+        // Use the same API base URL pattern as other components
+        const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+        
+        // Call the API to update location & amenities
+        const response = await fetch(`${API_BASE_URL}/residential/location-amenities`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(locationData)
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          Alert.alert('Error', result.message || 'Failed to update location & amenities details');
+          return;
+        }
+      } catch (error) {
+        console.error('Error updating location & amenities details:', error);
+        Alert.alert('Error', 'Failed to update location & amenities details. Please try again.');
+        return;
+      }
+    }
+
     // Show success message
     Alert.alert(
       'Success',
-      'Conditions updated successfully!',
+      'Conditions and location amenities updated successfully!',
       [
         {
           text: 'OK',
