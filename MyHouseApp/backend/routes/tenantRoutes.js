@@ -72,21 +72,37 @@ router.get('/residential/properties/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Get step 1 details (address information)
-    const [step1Rows] = await pool.execute(
-      `SELECT 
-        roNo as id,
-        roName as ownerName,
-        roDoor as doorNo,
-        roStreet as street,
-        roArea as area,
-        roPin as pincode,
-        roCity as city,
-        roPhNo as contactNo
-      FROM resowndet 
-      WHERE roNo = ?`,
-      [id]
-    );
+    // Get step 1 details (address information) and location details
+    let step1Rows = [];
+    try {
+      [step1Rows] = await pool.execute(
+        `SELECT 
+          rd.roNo as id,
+          rd.roName as ownerName,
+          rd.roDoor as doorNo,
+          rd.roStreet as street,
+          rd.roArea as area,
+          rd.roPin as pincode,
+          rd.roCity as city,
+          rd.roPhNo as contactNo,
+          l.street_breadth as streetSize,
+          l.bus_stop as nearbyBusStop,
+          l.bus_stop_distance as nearbyBusStopDistance,
+          l.school as nearbySchool,
+          l.school_distance as nearbySchoolDistance,
+          l.shopping_mall as nearbyShoppingMall,
+          l.shopping_mall_distance as nearbyShoppingMallDistance,
+          l.bank as nearbyBank,
+          l.bank_distance as nearbyBankDistance
+        FROM resowndet rd
+        LEFT JOIN location l ON rd.roNo = l.roNo
+        WHERE rd.roNo = ?`,
+        [id]
+      );
+    } catch (error) {
+      console.error('Error fetching step 1 details:', error);
+      return res.status(500).json({ message: 'Error fetching property details', error: error.message });
+    }
     
     if (step1Rows.length === 0) {
       return res.status(404).json({ message: 'Property not found' });
@@ -110,6 +126,9 @@ router.get('/residential/properties/:id', async (req, res) => {
           bathroom1_type as bathroom1Type,
           bathroom2_type as bathroom2Type,
           bathroom3_type as bathroom3Type,
+          bathroom1_access as bathroom1Access,
+          bathroom2_access as bathroom2Access,
+          bathroom3_access as bathroom3Access,
           floor_number as floorNumber,
           parking_2wheeler as parking2Wheeler,
           parking_4wheeler as parking4Wheeler

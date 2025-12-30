@@ -198,6 +198,20 @@ const Step2Details = ({ formData, handleInputChange }) => {
           </Picker>
         </View>
         
+        {/* Bathroom 1 Access */}
+        <Text style={categoryContentStyles.label}>Bathroom 1 Access *</Text>
+        <View style={categoryContentStyles.pickerContainer}>
+          <Picker
+            selectedValue={formData.bathroom1Access}
+            style={categoryContentStyles.picker}
+            onValueChange={(value) => handleInputChange('bathroom1Access', value)}
+          >
+            <Picker.Item label="Select Access" value="" color="#999999" style={{ fontSize: 15 }} />
+            <Picker.Item label="Common" value="Common" color="#000000" style={{ fontSize: 15 }} />
+            <Picker.Item label="Attached" value="Attached" color="#000000" style={{ fontSize: 15 }} />
+          </Picker>
+        </View>
+        
         {/* Bathroom 1 Type */}
         <Text style={categoryContentStyles.label}>Bathroom 1 Type *</Text>
         <View style={categoryContentStyles.pickerContainer}>
@@ -212,9 +226,24 @@ const Step2Details = ({ formData, handleInputChange }) => {
           </Picker>
         </View>
         
-        {/* Bathroom 2 Type (conditional) */}
+        {/* Bathroom 2 Access and Type (conditional) */}
         {parseInt(formData.noOfBathrooms) >= 2 && (
           <>
+            {/* Bathroom 2 Access */}
+            <Text style={categoryContentStyles.label}>Bathroom 2 Access</Text>
+            <View style={categoryContentStyles.pickerContainer}>
+              <Picker
+                selectedValue={formData.bathroom2Access}
+                style={categoryContentStyles.picker}
+                onValueChange={(value) => handleInputChange('bathroom2Access', value)}
+              >
+                <Picker.Item label="Select Access" value="" color="#999999" style={{ fontSize: 15 }} />
+                <Picker.Item label="Common" value="Common" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Attached" value="Attached" color="#000000" style={{ fontSize: 15 }} />
+              </Picker>
+            </View>
+            
+            {/* Bathroom 2 Type */}
             <Text style={categoryContentStyles.label}>Bathroom 2 Type</Text>
             <View style={categoryContentStyles.pickerContainer}>
               <Picker
@@ -230,9 +259,24 @@ const Step2Details = ({ formData, handleInputChange }) => {
           </>
         )}
         
-        {/* Bathroom 3 Type (conditional) */}
+        {/* Bathroom 3 Access and Type (conditional) */}
         {parseInt(formData.noOfBathrooms) >= 3 && (
           <>
+            {/* Bathroom 3 Access */}
+            <Text style={categoryContentStyles.label}>Bathroom 3 Access</Text>
+            <View style={categoryContentStyles.pickerContainer}>
+              <Picker
+                selectedValue={formData.bathroom3Access}
+                style={categoryContentStyles.picker}
+                onValueChange={(value) => handleInputChange('bathroom3Access', value)}
+              >
+                <Picker.Item label="Select Access" value="" color="#999999" style={{ fontSize: 15 }} />
+                <Picker.Item label="Common" value="Common" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Attached" value="Attached" color="#000000" style={{ fontSize: 15 }} />
+              </Picker>
+            </View>
+            
+            {/* Bathroom 3 Type */}
             <Text style={categoryContentStyles.label}>Bathroom 3 Type</Text>
             <View style={categoryContentStyles.pickerContainer}>
               <Picker
