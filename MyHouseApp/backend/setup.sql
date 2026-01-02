@@ -74,4 +74,13 @@ CREATE TABLE IF NOT EXISTS location (
   FOREIGN KEY (roNo) REFERENCES resowndet(roNo)
 );
 
+-- Create conditions table if it doesn't exist
+CREATE TABLE IF NOT EXISTS conditions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  roNo INT,
+  condition_numbers TEXT, -- JSON array of selected condition numbers
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (roNo) REFERENCES resowndet(roNo)
+);
+
 -- Create residential_amenities table if it doesn't exist

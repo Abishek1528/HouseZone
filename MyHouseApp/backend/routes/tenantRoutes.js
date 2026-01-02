@@ -6,8 +6,11 @@ const router = Router();
 // API endpoint for getting all residential properties for tenant view
 router.get('/residential/properties', async (req, res) => {
   try {
-    // Join all relevant tables to get property details
-    const query = `
+    // Extract filter parameters from query
+    const { rent, bedrooms, area } = req.query;
+    
+    // Build dynamic query with filters
+    let query = `
       SELECT 
         rd.roNo as id,
         rd.roArea as area,
@@ -17,10 +20,48 @@ router.get('/residential/properties', async (req, res) => {
       FROM resowndet rd
       INNER JOIN resownho rh ON rd.roNo = rh.roNo
       INNER JOIN resownpay rp ON rd.roNo = rp.roNo
-      ORDER BY rd.roNo DESC
     `;
     
-    const [rows] = await pool.execute(query);
+    // Build WHERE conditions
+    const conditions = [];
+    const params = [];
+    
+    if (rent) {
+      // Handle rent range like '2000-4000'
+      if (rent.includes('-')) {
+        const [minRent, maxRent] = rent.split('-').map(Number);
+        conditions.push('(rp.monthly_rent BETWEEN ? AND ? OR rp.lease_amount BETWEEN ? AND ?)');
+        params.push(minRent, maxRent, minRent, maxRent);
+      } else {
+        // Handle exact rent value
+        conditions.push('(rp.monthly_rent = ? OR rp.lease_amount = ?)');
+        params.push(Number(rent), Number(rent));
+      }
+    }
+    
+    if (bedrooms) {
+      // Handle bedroom filter
+      if (bedrooms === '4') { // 3+ BHK
+        conditions.push('rh.number_of_bedrooms >= 3');
+      } else {
+        conditions.push('rh.number_of_bedrooms = ?');
+        params.push(Number(bedrooms));
+      }
+    }
+    
+    if (area && area !== '') {
+      conditions.push('rd.roArea LIKE ?');
+      params.push(`%${area}%`);
+    }
+    
+    // Add WHERE clause if there are conditions
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+    
+    query += ' ORDER BY rd.roNo DESC';
+    
+    const [rows] = await pool.execute(query, params);
     
     res.status(200).json(rows);
   } catch (error) {
@@ -72,7 +113,7 @@ router.get('/residential/properties/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Get step 1 details (address information) and location details
+    // Get step 1 details (address information), location details, and conditions
     let step1Rows = [];
     try {
       [step1Rows] = await pool.execute(
@@ -93,9 +134,11 @@ router.get('/residential/properties/:id', async (req, res) => {
           l.shopping_mall as nearbyShoppingMall,
           l.shopping_mall_distance as nearbyShoppingMallDistance,
           l.bank as nearbyBank,
-          l.bank_distance as nearbyBankDistance
+          l.bank_distance as nearbyBankDistance,
+          c.condition_numbers as conditionNumbers
         FROM resowndet rd
         LEFT JOIN location l ON rd.roNo = l.roNo
+        LEFT JOIN conditions c ON rd.roNo = c.roNo
         WHERE rd.roNo = ?`,
         [id]
       );

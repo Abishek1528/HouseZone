@@ -119,6 +119,13 @@ const residentialOwnerStyles = StyleSheet.create({
   detailValue: {
     color: '#7f8c8d',
   },
+  conditionText: {
+    fontSize: 14,
+    color: '#2c3e50',
+    fontWeight: '500',
+    lineHeight: 22,
+    marginBottom: 6,
+  },
   updateButtonContainer: {
     marginTop: 10,
     alignItems: 'flex-end',

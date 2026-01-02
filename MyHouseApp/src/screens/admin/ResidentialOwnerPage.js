@@ -27,7 +27,14 @@ export default function ResidentialOwnerPage() {
 
   useEffect(() => {
     loadOwners();
-  }, []);
+    
+    // Add a focus listener to reload data when returning to this screen
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadOwners();
+    });
+    
+    return unsubscribe;
+  }, [navigation]);
 
   const loadOwners = async () => {
     try {
@@ -89,7 +96,7 @@ export default function ResidentialOwnerPage() {
     }));
   };
 
-  const handleSubmitUpdate = () => {
+  const handleSubmitUpdate = async () => {
     // Validate form
     if (!updateFormData.streetSizeBreadth) {
       Alert.alert('Validation Error', 'Please enter street size width');
@@ -126,7 +133,61 @@ export default function ResidentialOwnerPage() {
     // Navigate to the conditions page with the owner data and form data
     navigation.navigate('ConditionsPage', { 
       ownerData: selectedOwner, 
-      formData: updateFormData 
+      formData: updateFormData,
+      refreshOwners: loadOwners  // Pass the refresh function
+    });
+  }
+  
+  // Helper function to render conditions based on selected condition numbers
+  const renderConditions = (conditionNumbers) => {
+    if (!conditionNumbers) {
+      return (
+        <Text style={residentialOwnerStyles.detailValue}>No conditions specified</Text>
+      );
+    }
+    
+    // Parse condition numbers if it's a JSON string
+    let parsedConditionNumbers = conditionNumbers;
+    if (typeof conditionNumbers === 'string') {
+      try {
+        parsedConditionNumbers = JSON.parse(conditionNumbers);
+      } catch (error) {
+        console.error('Error parsing condition numbers:', error);
+        return (
+          <Text style={residentialOwnerStyles.detailValue}>Error loading conditions</Text>
+        );
+      }
+    }
+    
+    // Array of predefined conditions corresponding to numbers 1-6
+    const predefinedConditions = [
+      'No structural changes without owner’s permission.',
+      'Water and electricity bills must be paid by the tenant.',
+      'Advance/deposit amount is non-refundable.',
+      'No damage to property, repair costs will be deducted from the deposit.',
+      'Pets are not allowed on the premises.',
+      'Only Vegetarian.'
+    ];
+    
+    // If no condition numbers are selected, show a message
+    if (!Array.isArray(parsedConditionNumbers) || parsedConditionNumbers.length === 0) {
+      return (
+        <Text style={residentialOwnerStyles.detailValue}>No conditions specified</Text>
+      );
+    }
+    
+    // Render each selected condition
+    return parsedConditionNumbers.map((conditionNum, index) => {
+      // Condition numbers are 1-indexed, so subtract 1 for array index
+      const conditionText = predefinedConditions[conditionNum - 1];
+      
+      if (!conditionText) {
+        return null; // Skip invalid condition numbers
+      }
+      
+      return (
+        <Text key={index} style={residentialOwnerStyles.conditionText}>{conditionText}</Text>
+      );
     });
   };
 
@@ -250,17 +311,23 @@ export default function ResidentialOwnerPage() {
                 <Text style={residentialOwnerStyles.detailLabel}>Street Size:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.streetSize ? `${item.streetSize} ft` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby Bus Stop:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyBusStop ? `${item.nearbyBusStop}${item?.nearbyBusStopDistance ? ` - ${item.nearbyBusStopDistance} km` : ''}` : 'N/A'}</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Bus Stop:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyBusStop ? `${item.nearbyBusStop}${item?.nearbyBusStopDistance ? ` - ${item.nearbyBusStopDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby School:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbySchool ? `${item.nearbySchool}${item?.nearbySchoolDistance ? ` - ${item.nearbySchoolDistance} km` : ''}` : 'N/A'}</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>School:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbySchool ? `${item.nearbySchool}${item?.nearbySchoolDistance ? ` - ${item.nearbySchoolDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby Shopping Mall:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyShoppingMall ? `${item.nearbyShoppingMall}${item?.nearbyShoppingMallDistance ? ` - ${item.nearbyShoppingMallDistance} km` : ''}` : 'N/A'}</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Shopping Mall:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyShoppingMall ? `${item.nearbyShoppingMall}${item?.nearbyShoppingMallDistance ? ` - ${item.nearbyShoppingMallDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
               <Text style={residentialOwnerStyles.detailText}>
-                <Text style={residentialOwnerStyles.detailLabel}>Nearby Bank:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyBank ? `${item.nearbyBank}${item?.nearbyBankDistance ? ` - ${item.nearbyBankDistance} km` : ''}` : 'N/A'}</Text>
+                <Text style={residentialOwnerStyles.detailLabel}>Bank:</Text> <Text style={residentialOwnerStyles.detailValue}>{item?.nearbyBank ? `${item.nearbyBank}${item?.nearbyBankDistance ? ` - ${item.nearbyBankDistance} km` : ''}` : 'N/A'}</Text>
               </Text>
+            </View>
+            
+            {/* Conditions Section */}
+            <View style={residentialOwnerStyles.detailSection}>
+              <Text style={residentialOwnerStyles.sectionTitle}>Property Conditions</Text>
+              {renderConditions(item?.conditionNumbers)}
             </View>
             
             <View style={residentialOwnerStyles.detailSection}>

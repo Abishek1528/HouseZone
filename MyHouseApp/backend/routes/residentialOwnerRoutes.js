@@ -44,11 +44,13 @@ router.get('/residential/owners', async (req, res) => {
         l.shopping_mall as nearbyShoppingMall,
         l.shopping_mall_distance as nearbyShoppingMallDistance,
         l.bank as nearbyBank,
-        l.bank_distance as nearbyBankDistance
+        l.bank_distance as nearbyBankDistance,
+        c.condition_numbers as conditionNumbers
       FROM resowndet rd
       LEFT JOIN resownho rh ON rd.roNo = rh.roNo
       LEFT JOIN resownpay rp ON rd.roNo = rp.roNo
       LEFT JOIN location l ON rd.roNo = l.roNo
+      LEFT JOIN conditions c ON rd.roNo = c.roNo
       ORDER BY rd.roNo DESC
     `;
     
@@ -165,6 +167,66 @@ router.post('/residential/location-amenities', async (req, res) => {
   } catch (error) {
     console.error('Error updating location & amenities details:', error);
     res.status(500).json({ message: 'Error updating location & amenities details', error: error.message });
+  }
+});
+
+// API endpoint for saving conditions
+router.post('/residential/conditions', async (req, res) => {
+  try {
+    const { roNo, conditionNumbers } = req.body;
+    
+    console.log('Received conditions data:', { roNo, conditionNumbers });
+    
+    // Convert conditionNumbers to JSON string if it's an array
+    const conditionNumbersJson = Array.isArray(conditionNumbers) ? JSON.stringify(conditionNumbers) : conditionNumbers;
+    
+    // Check if conditions record already exists for this roNo
+    let existingRows = [];
+    try {
+      [existingRows] = await pool.execute(
+        'SELECT roNo FROM conditions WHERE roNo = ?',
+        [roNo]
+      );
+      console.log('Found existing conditions records:', existingRows.length);
+    } catch (queryError) {
+      console.error('Error checking existing conditions records:', queryError);
+      throw queryError;
+    }
+    
+    if (existingRows.length > 0) {
+      // Update existing record
+      try {
+        await pool.execute(
+          `UPDATE conditions SET
+            condition_numbers = ?
+          WHERE roNo = ?`,
+          [conditionNumbersJson, roNo]
+        );
+        console.log('Updated existing conditions record');
+      } catch (updateError) {
+        console.error('Error updating conditions record:', updateError);
+        throw updateError;
+      }
+    } else {
+      // Insert new record
+      try {
+        await pool.execute(
+          `INSERT INTO conditions (roNo, condition_numbers) VALUES (?, ?)`,
+          [roNo, conditionNumbersJson]
+        );
+        console.log('Inserted new conditions record');
+      } catch (insertError) {
+        console.error('Error inserting conditions record:', insertError);
+        throw insertError;
+      }
+    }
+    
+    res.status(201).json({
+      message: 'Conditions updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating conditions:', error);
+    res.status(500).json({ message: 'Error updating conditions', error: error.message });
   }
 });
 

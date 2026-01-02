@@ -8,7 +8,7 @@ import Footer from "../../components/Footer";
 export default function ConditionsPage() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { ownerData, formData } = route.params || {};
+  const { ownerData, formData, refreshOwners } = route.params || {};
   
   const [conditions, setConditions] = useState({
     condition1: false,
@@ -65,7 +65,7 @@ export default function ConditionsPage() {
         const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
         
         // Call the API to update location & amenities
-        const response = await fetch(`${API_BASE_URL}/residential/location-amenities`, {
+        const locationResponse = await fetch(`${API_BASE_URL}/residential/location-amenities`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -73,10 +73,10 @@ export default function ConditionsPage() {
           body: JSON.stringify(locationData)
         });
         
-        const result = await response.json();
+        const locationResult = await locationResponse.json();
         
-        if (!response.ok) {
-          Alert.alert('Error', result.message || 'Failed to update location & amenities details');
+        if (!locationResponse.ok) {
+          Alert.alert('Error', locationResult.message || 'Failed to update location & amenities details');
           return;
         }
       } catch (error) {
@@ -84,6 +84,45 @@ export default function ConditionsPage() {
         Alert.alert('Error', 'Failed to update location & amenities details. Please try again.');
         return;
       }
+    }
+
+    // Now save the selected conditions
+    try {
+      // Convert selected conditions to an array of numbers (1-6)
+      const conditionNumbers = [];
+      if (conditions.condition1) conditionNumbers.push(1);
+      if (conditions.condition2) conditionNumbers.push(2);
+      if (conditions.condition3) conditionNumbers.push(3);
+      if (conditions.condition4) conditionNumbers.push(4);
+      if (conditions.condition5) conditionNumbers.push(5);
+      if (conditions.condition6) conditionNumbers.push(6);
+
+      const conditionsData = {
+        roNo: ownerData.id,
+        conditionNumbers: conditionNumbers
+      };
+
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+      // Call the API to save conditions
+      const conditionsResponse = await fetch(`${API_BASE_URL}/residential/conditions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(conditionsData)
+      });
+
+      const conditionsResult = await conditionsResponse.json();
+
+      if (!conditionsResponse.ok) {
+        Alert.alert('Error', conditionsResult.message || 'Failed to update conditions');
+        return;
+      }
+    } catch (error) {
+      console.error('Error updating conditions:', error);
+      Alert.alert('Error', 'Failed to update conditions. Please try again.');
+      return;
     }
 
     // Show success message
@@ -94,6 +133,10 @@ export default function ConditionsPage() {
         {
           text: 'OK',
           onPress: () => {
+            // If refreshOwners callback exists, call it to refresh the data
+            if (refreshOwners && typeof refreshOwners === 'function') {
+              refreshOwners();
+            }
             // Navigate back to the previous page
             navigation.goBack();
           }

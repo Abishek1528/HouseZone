@@ -33,9 +33,21 @@ const handleFetchRequest = async (url, options) => {
 };
 
 // Get all residential properties for tenant view
-export const getAllProperties = async () => {
+export const getAllProperties = async (filters = {}) => {
   try {
-    const result = await handleFetchRequest(`${API_BASE_URL}/residential/properties`, {
+    // Build query string from filters
+    const queryParams = new URLSearchParams();
+    
+    Object.keys(filters).forEach(key => {
+      if (filters[key]) {
+        queryParams.append(key, filters[key]);
+      }
+    });
+    
+    const queryString = queryParams.toString();
+    const url = `${API_BASE_URL}/residential/properties${queryString ? '?' + queryString : ''}`;
+    
+    const result = await handleFetchRequest(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

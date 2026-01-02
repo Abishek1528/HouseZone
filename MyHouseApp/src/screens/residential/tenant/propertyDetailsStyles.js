@@ -76,6 +76,17 @@ const propertyDetailsStyles = StyleSheet.create({
     textAlign: 'right',
     fontWeight: '500',
     paddingLeft: 10
+  },
+  conditionRow: {
+    marginBottom: 8,
+    paddingVertical: 6,
+  },
+  conditionText: {
+    fontSize: 16,
+    color: '#2c3e50',
+    fontWeight: '500',
+    textAlign: 'left',
+    lineHeight: 22,
   }
 });
 

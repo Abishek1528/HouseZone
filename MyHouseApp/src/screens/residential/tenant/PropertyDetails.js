@@ -95,6 +95,61 @@ export default function PropertyDetails() {
     }
     return 'N/A';
   };
+  
+  // Helper function to render conditions based on selected condition numbers
+  const renderConditions = (conditionNumbers) => {
+    if (!conditionNumbers) {
+      return (
+        <Text style={propertyDetailsStyles.value}>No conditions specified</Text>
+      );
+    }
+    
+    // Parse condition numbers if it's a JSON string
+    let parsedConditionNumbers = conditionNumbers;
+    if (typeof conditionNumbers === 'string') {
+      try {
+        parsedConditionNumbers = JSON.parse(conditionNumbers);
+      } catch (error) {
+        console.error('Error parsing condition numbers:', error);
+        return (
+          <Text style={propertyDetailsStyles.value}>Error loading conditions</Text>
+        );
+      }
+    }
+    
+    // Array of predefined conditions corresponding to numbers 1-6
+    const predefinedConditions = [
+      'No structural changes without owner’s permission.',
+      'Water and electricity bills must be paid by the tenant.',
+      'Advance/deposit amount is non-refundable.',
+      'No damage to property, repair costs will be deducted from the deposit.',
+      'Pets are not allowed on the premises.',
+      'Only Vegetarian.'
+    ];
+    
+    // If no condition numbers are selected, show a message
+    if (!Array.isArray(parsedConditionNumbers) || parsedConditionNumbers.length === 0) {
+      return (
+        <Text style={propertyDetailsStyles.value}>No conditions specified</Text>
+      );
+    }
+    
+    // Render each selected condition
+    return parsedConditionNumbers.map((conditionNum, index) => {
+      // Condition numbers are 1-indexed, so subtract 1 for array index
+      const conditionText = predefinedConditions[conditionNum - 1];
+      
+      if (!conditionText) {
+        return null; // Skip invalid condition numbers
+      }
+      
+      return (
+        <View key={index} style={propertyDetailsStyles.conditionRow}>
+          <Text style={propertyDetailsStyles.conditionText}>{conditionText}</Text>
+        </View>
+      );
+    });
+  };
 
   return (
     <View style={categoryContentStyles.container}>
@@ -243,29 +298,35 @@ export default function PropertyDetails() {
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
-              <Text style={propertyDetailsStyles.label}>Nearby Bus Stop:</Text>
+              <Text style={propertyDetailsStyles.label}>Bus Stop:</Text>
               <Text style={propertyDetailsStyles.value}>
                 {property?.nearbyBusStop ? `${property.nearbyBusStop}${property?.nearbyBusStopDistance ? ` - ${property.nearbyBusStopDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
-              <Text style={propertyDetailsStyles.label}>Nearby School:</Text>
+              <Text style={propertyDetailsStyles.label}>School:</Text>
               <Text style={propertyDetailsStyles.value}>
                 {property?.nearbySchool ? `${property.nearbySchool}${property?.nearbySchoolDistance ? ` - ${property.nearbySchoolDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
-              <Text style={propertyDetailsStyles.label}>Nearby Shopping Mall:</Text>
+              <Text style={propertyDetailsStyles.label}>Shopping Mall:</Text>
               <Text style={propertyDetailsStyles.value}>
                 {property?.nearbyShoppingMall ? `${property.nearbyShoppingMall}${property?.nearbyShoppingMallDistance ? ` - ${property.nearbyShoppingMallDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
             <View style={propertyDetailsStyles.detailRow}>
-              <Text style={propertyDetailsStyles.label}>Nearby Bank:</Text>
+              <Text style={propertyDetailsStyles.label}>Bank:</Text>
               <Text style={propertyDetailsStyles.value}>
                 {property?.nearbyBank ? `${property.nearbyBank}${property?.nearbyBankDistance ? ` - ${property.nearbyBankDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
+          </View>
+          
+          {/* Conditions Section */}
+          <View style={propertyDetailsStyles.section}>
+            <Text style={propertyDetailsStyles.sectionTitle}>Property Conditions</Text>
+            {renderConditions(property?.conditionNumbers)}
           </View>
 
         </ScrollView>
