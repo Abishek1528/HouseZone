@@ -6,10 +6,5 @@ export const initialFormData = {
   ...baseInitialFormData,
   
   // Step 2: Machinery Details (specific to machinery)
-  machineryType: "",
-  machineryName: "",
-  modelNumber: "",
-  yearOfManufacture: "",
-  condition: "",
-  usageHours: "",
+  machinery: [{ id: 1, type: "", name: "", model: "" }],
 };

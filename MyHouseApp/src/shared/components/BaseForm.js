@@ -168,11 +168,13 @@ const BaseForm = ({
     setIsSubmitting(true);
     
     try {
-      // For vehicles category, we only have 2 steps (step3 is integrated into step2)
+      // For vehicles and machinery categories, we only have 2 steps (step3 is integrated into step2)
       const isVehiclesCategory = title === "Add Vehicle";
+      const isMachineryCategory = title === "Add Machinery";
+      const isTwoStepCategory = isVehiclesCategory || isMachineryCategory;
       
-      if (isVehiclesCategory) {
-        // For vehicles, validate step 1 and step 2 (which includes payment and images)
+      if (isTwoStepCategory) {
+        // For vehicles and machinery, validate step 1 and step 2 (which includes payment and images)
         if (!validateStep1()) {
           setStep(1);
           setIsSubmitting(false);
@@ -189,7 +191,7 @@ const BaseForm = ({
           }
         }
         
-        // For vehicles, show success message directly since all data is in step2
+        // For vehicles and machinery, show success message directly since all data is in step2
         Alert.alert(
           "Success",
           successMessage,
@@ -403,9 +405,11 @@ const BaseForm = ({
     }
   };
 
-  // For vehicles category, we only show 2 steps
+  // For vehicles and machinery categories, we only show 2 steps
   const isVehiclesCategory = title === "Add Vehicle";
-  const maxSteps = isVehiclesCategory ? 2 : 3;
+  const isMachineryCategory = title === "Add Machinery";
+  const isTwoStepCategory = isVehiclesCategory || isMachineryCategory;
+  const maxSteps = isTwoStepCategory ? 2 : 3;
 
   return (
     <View style={categoryContentStyles.container}>
@@ -422,7 +426,7 @@ const BaseForm = ({
         {step === 2 && (
           <Step2Component formData={formData} handleInputChange={handleInputChange} />
         )}
-        {!isVehiclesCategory && step === 3 && (
+        {!isTwoStepCategory && step === 3 && (
           <Step3PaymentImages
             formData={formData}
             handleInputChange={handleInputChange}
