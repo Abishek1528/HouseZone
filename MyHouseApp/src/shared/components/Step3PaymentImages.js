@@ -57,42 +57,84 @@ const Step3PaymentImages = ({ formData, handleInputChange, handleImageSelect, ha
 
   const images = formData.images || [];
 
+  // Helper functions to check if amounts are filled
+  const hasLeaseAmount = formData.leaseAmount && !isNaN(parseFloat(formData.leaseAmount)) && parseFloat(formData.leaseAmount) > 0;
+  const hasAdvanceAmount = formData.advanceAmount && !isNaN(parseFloat(formData.advanceAmount)) && parseFloat(formData.advanceAmount) > 0;
+  const hasRentAmount = formData.rentAmount && !isNaN(parseFloat(formData.rentAmount)) && parseFloat(formData.rentAmount) > 0;
+
+  // Determine which fields should be disabled
+  const bothAdvanceAndRentFilled = hasAdvanceAmount && hasRentAmount;
+  const advanceAndRentDisabled = hasLeaseAmount;
+  const leaseDisabled = bothAdvanceAndRentFilled;
+
   return (
     <ScrollView style={{ width: "100%" }}>
       <View style={categoryContentStyles.formContainer}>
         <Text style={categoryContentStyles.formTitle}>Payment Details</Text>
 
+        {/* Payment Options Info */}
+        <View style={{ backgroundColor: '#E8F4F8', padding: 12, borderRadius: 8, marginBottom: 15 }}>
+          <Text style={{ fontSize: 12, color: '#0066CC', marginBottom: 5 }}>Choose Payment Option:</Text>
+          <Text style={{ fontSize: 12, color: '#333', lineHeight: 18 }}>
+            <Text style={{ fontWeight: 'bold' }}>Option 1:</Text> Fill Lease Amount (you won't be able to fill Advance & Rent)
+          </Text>
+          <Text style={{ fontSize: 12, color: '#333', lineHeight: 18, marginTop: 5 }}>
+            <Text style={{ fontWeight: 'bold' }}>Option 2:</Text> Fill Advance Amount & Monthly Rent (you won't be able to fill Lease Amount)
+          </Text>
+        </View>
+
         {/* Advance Amount */}
-        <Text style={categoryContentStyles.label}>Advance Amount (₹) *</Text>
+        <Text style={[categoryContentStyles.label, advanceAndRentDisabled && { color: '#CCCCCC' }]}>
+          Advance Amount (₹) {advanceAndRentDisabled ? '(Disabled - Lease Amount selected)' : '*'}
+        </Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, advanceAndRentDisabled && { backgroundColor: '#F5F5F5', color: '#CCCCCC' }]}
           placeholder="Advance Amount"
-          placeholderTextColor="#999999"
+          placeholderTextColor={advanceAndRentDisabled ? '#E0E0E0' : '#999999'}
           value={formData.advanceAmount}
-          onChangeText={(value) => handleInputChange('advanceAmount', value)}
+          onChangeText={(value) => {
+            if (!advanceAndRentDisabled) {
+              handleInputChange('advanceAmount', value);
+            }
+          }}
           keyboardType="numeric"
+          editable={!advanceAndRentDisabled}
         />
 
         {/* Monthly Rent */}
-        <Text style={categoryContentStyles.label}>Monthly Rent (₹) *</Text>
+        <Text style={[categoryContentStyles.label, advanceAndRentDisabled && { color: '#CCCCCC' }]}>
+          Monthly Rent (₹) {advanceAndRentDisabled ? '(Disabled - Lease Amount selected)' : '*'}
+        </Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, advanceAndRentDisabled && { backgroundColor: '#F5F5F5', color: '#CCCCCC' }]}
           placeholder="Monthly Rent"
-          placeholderTextColor="#999999"
+          placeholderTextColor={advanceAndRentDisabled ? '#E0E0E0' : '#999999'}
           value={formData.rentAmount}
-          onChangeText={(value) => handleInputChange('rentAmount', value)}
+          onChangeText={(value) => {
+            if (!advanceAndRentDisabled) {
+              handleInputChange('rentAmount', value);
+            }
+          }}
           keyboardType="numeric"
+          editable={!advanceAndRentDisabled}
         />
 
         {/* Lease Amount */}
-        <Text style={categoryContentStyles.label}>Lease Amount (₹)</Text>
+        <Text style={[categoryContentStyles.label, leaseDisabled && { color: '#CCCCCC' }]}>
+          Lease Amount (₹) {leaseDisabled && '(Disabled - Advance & Rent selected)'}
+        </Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, leaseDisabled && { backgroundColor: '#F5F5F5', color: '#CCCCCC' }]}
           placeholder="Lease Amount"
-          placeholderTextColor="#999999"
+          placeholderTextColor={leaseDisabled ? '#E0E0E0' : '#999999'}
           value={formData.leaseAmount}
-          onChangeText={(value) => handleInputChange('leaseAmount', value)}
+          onChangeText={(value) => {
+            if (!leaseDisabled) {
+              handleInputChange('leaseAmount', value);
+            }
+          }}
           keyboardType="numeric"
+          editable={!leaseDisabled}
         />
 
         {/* Image Upload Section */}

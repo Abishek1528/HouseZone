@@ -67,6 +67,12 @@ const BaseForm = ({
       const hasAdvanceAmount = formData.advanceAmount && !isNaN(parseFloat(formData.advanceAmount)) && parseFloat(formData.advanceAmount) > 0;
       const hasRentAmount = formData.rentAmount && !isNaN(parseFloat(formData.rentAmount)) && parseFloat(formData.rentAmount) > 0;
       
+      // Check for conflicting payment options
+      if (hasLeaseAmount && (hasAdvanceAmount || hasRentAmount)) {
+        Alert.alert("Validation Error", "Cannot fill both Lease Amount and Advance/Monthly Rent. Please choose ONE payment option:\n\nOption 1: Only Lease Amount\nOption 2: Advance Amount + Monthly Rent");
+        return false;
+      }
+      
       // If lease amount is provided, advance and rent are optional
       // If lease amount is not provided, both advance and rent are required
       if (!hasLeaseAmount && (!hasAdvanceAmount || !hasRentAmount)) {
