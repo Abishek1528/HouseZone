@@ -38,6 +38,7 @@ export default function AddBusiness() {
       validationFunction={validateBusinessForm}
       successMessage="Business details added successfully!"
       navigationTarget="Business"
+      category="business"
     />
   );
 }

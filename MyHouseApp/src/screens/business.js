@@ -32,6 +32,15 @@ export default function Business() {
             <Text style={categoryContentStyles.buttonText}>Add Details</Text>
           </TouchableOpacity>
         )}
+
+        {role === "Tenant" && (
+          <TouchableOpacity
+            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+            onPress={() => navigation.navigate('BusinessTenantPage')}
+          >
+            <Text style={categoryContentStyles.buttonText}>View Properties</Text>
+          </TouchableOpacity>
+        )}
       </View>
       
       <Footer />
