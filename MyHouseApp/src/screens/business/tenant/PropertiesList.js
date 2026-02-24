@@ -15,14 +15,14 @@ const PropertyCard = ({ property, onViewDetails }) => {
         <Text style={propertyListStyles.imageText}>Image</Text>
       </View>
       <View style={propertyListStyles.detailsContainer}>
-        <Text style={propertyListStyles.location}>{property.area || property.city || 'Unknown'}</Text>
+        <Text style={propertyListStyles.location}>{property?.area || property?.city || 'Unknown'}</Text>
         <View style={propertyListStyles.propertyInfo}>
-          <Text style={propertyListStyles.bedroomsText}>{property.propertyType || 'N/A'}</Text>
-          <Text style={propertyListStyles.rentText}>₹{property.leaseAmount ? property.leaseAmount : (property.monthlyRent || 'N/A')}{property.leaseAmount ? '' : '/month'}</Text>
+          <Text style={propertyListStyles.bedroomsText}>{property?.propertyType || 'N/A'}</Text>
+          <Text style={propertyListStyles.rentText}>₹{property?.leaseAmount ? property.leaseAmount : (property?.monthlyRent || 'N/A')}{property?.leaseAmount ? '' : '/month'}</Text>
         </View>
         <TouchableOpacity
           style={propertyListStyles.viewMoreButton}
-          onPress={() => onViewDetails(property.id)}
+          onPress={() => onViewDetails(property?.id)}
         >
           <Text style={propertyListStyles.viewMoreText}>View Details</Text>
         </TouchableOpacity>
@@ -81,7 +81,7 @@ export default function PropertiesList() {
         ) : (
           <FlatList
             data={properties}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => (item.id || Math.random().toString()).toString()}
             renderItem={({ item }) => <PropertyCard property={item} onViewDetails={handleViewDetails} />}
             style={propertyListStyles.list}
           />
