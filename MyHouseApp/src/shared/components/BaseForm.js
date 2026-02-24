@@ -385,21 +385,87 @@ const BaseForm = ({
           }
         } else {
           // For non-residential forms, show success message directly
-          Alert.alert(
-            "Success",
-            successMessage,
-            [
-              {
-                text: "OK",
-                onPress: () => {
-                  // Reset form and go back to previous screen instead of navigating forward
-                  setFormData(initialFormData);
-                  setStep(1);
-                  navigation.goBack();
-                }
+          if (category === 'business') {
+            try {
+              // Save business step1
+              const step1Data = {
+                name: formData.name,
+                doorNo: formData.doorNo,
+                street: formData.street,
+                pincode: formData.pincode,
+                area: formData.area,
+                city: formData.city,
+                contactNo: formData.contactNo
+              };
+
+              const { saveBusinessStep1, saveBusinessStep2, saveBusinessStep3 } = await import('../../screens/business/logic/api');
+              const step1Response = await saveBusinessStep1(step1Data);
+              const boNo = step1Response.boNo || step1Response.id || step1Response.insertId;
+
+              if (!boNo) {
+                throw new Error('Failed to obtain business owner id from step1 response');
               }
-            ]
-          );        }
+
+              // Prepare and save step2
+              const step2Data = {
+                boNo,
+                doorFacing: formData.doorFacing,
+                propertyType: formData.propertyType,
+                areaLength: formData.areaLength,
+                areaBreadth: formData.areaBreadth,
+                restroomAvailable: formData.restroomAvailable,
+                floorNumber: formData.floorNumber
+              };
+
+              await saveBusinessStep2(step2Data);
+
+              // Prepare and save step3
+              const step3Data = {
+                boNo,
+                advanceAmount: formData.advanceAmount,
+                monthlyRent: formData.rentAmount
+              };
+
+              await saveBusinessStep3(step3Data);
+
+              Alert.alert(
+                'Success',
+                successMessage,
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      setFormData(initialFormData);
+                      setStep(1);
+                      navigation.goBack();
+                    }
+                  }
+                ]
+              );
+            } catch (businessError) {
+              console.error('Error saving business data:', businessError);
+              Alert.alert('Error', 'Failed to save business data: ' + (businessError.message || 'Unknown error'));
+              setIsSubmitting(false);
+              return;
+            }
+          } else {
+            Alert.alert(
+              "Success",
+              successMessage,
+              [
+                {
+                  text: "OK",
+                  onPress: () => {
+                    // Reset form and go back to previous screen instead of navigating forward
+                    setFormData(initialFormData);
+                    setStep(1);
+                    navigation.goBack();
+                  }
+                }
+              ]
+            );
+          }
+        }
       }
     } catch (error) {
       console.error("Unexpected error in form submission:", error);
