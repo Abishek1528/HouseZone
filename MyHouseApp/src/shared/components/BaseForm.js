@@ -63,53 +63,42 @@ const BaseForm = ({
   const validateStep3 = () => {
     // For residential category, implement special validation for lease amount
     if (category === "residential") {
+      // For residential: accept any ONE payment field as sufficient
       const hasLeaseAmount = formData.leaseAmount && !isNaN(parseFloat(formData.leaseAmount)) && parseFloat(formData.leaseAmount) > 0;
       const hasAdvanceAmount = formData.advanceAmount && !isNaN(parseFloat(formData.advanceAmount)) && parseFloat(formData.advanceAmount) > 0;
       const hasRentAmount = formData.rentAmount && !isNaN(parseFloat(formData.rentAmount)) && parseFloat(formData.rentAmount) > 0;
-      
-      // Check for conflicting payment options
-      if (hasLeaseAmount && (hasAdvanceAmount || hasRentAmount)) {
-        Alert.alert("Validation Error", "Cannot fill both Lease Amount and Advance/Monthly Rent. Please choose ONE payment option:\n\nOption 1: Only Lease Amount\nOption 2: Advance Amount + Monthly Rent");
+
+      // Require at least one valid payment value
+      if (!(hasLeaseAmount || hasAdvanceAmount || hasRentAmount)) {
+        Alert.alert("Validation Error", "Please provide at least one payment option: Lease Amount OR Advance Amount OR Monthly Rent");
         return false;
       }
-      
-      // If lease amount is provided, advance and rent are optional
-      // If lease amount is not provided, both advance and rent are required
-      if (!hasLeaseAmount && (!hasAdvanceAmount || !hasRentAmount)) {
-        Alert.alert("Validation Error", "Please fill in both Advance Amount and Monthly Rent when Lease Amount is not provided, or provide a Lease Amount");
-        return false;
-      }
-      
-      // Additional validation: ensure all amounts are valid numbers and within reasonable ranges
+
+      // Validate each provided amount's numeric range
       if (hasAdvanceAmount && (parseFloat(formData.advanceAmount) <= 0 || parseFloat(formData.advanceAmount) > 999999999)) {
         Alert.alert("Validation Error", "Advance Amount must be a positive number and not exceed 999,999,999");
         return false;
       }
-      
+
       if (hasRentAmount && (parseFloat(formData.rentAmount) <= 0 || parseFloat(formData.rentAmount) > 999999999)) {
         Alert.alert("Validation Error", "Monthly Rent must be a positive number and not exceed 999,999,999");
         return false;
       }
-      
+
       if (hasLeaseAmount && (parseFloat(formData.leaseAmount) <= 0 || parseFloat(formData.leaseAmount) > 999999999)) {
         Alert.alert("Validation Error", "Lease Amount must be a positive number and not exceed 999,999,999");
         return false;
       }
     } else {
-      // For non-residential categories, use the original validation
-      if (!formData.advanceAmount || !formData.rentAmount) {
-        Alert.alert("Validation Error", "Please fill in all required fields in Step 3");
-        return false;
-      }
-      
-      // Validate that amounts are valid numbers
-      if (formData.advanceAmount && (isNaN(parseFloat(formData.advanceAmount)) || parseFloat(formData.advanceAmount) <= 0)) {
-        Alert.alert("Validation Error", "Advance Amount must be a positive number");
-        return false;
-      }
-      
-      if (formData.rentAmount && (isNaN(parseFloat(formData.rentAmount)) || parseFloat(formData.rentAmount) <= 0)) {
-        Alert.alert("Validation Error", "Monthly Rent must be a positive number");
+      // For non-residential categories, accept either `rentAmount` or `monthlyRent` (frontend uses `rentAmount`)
+      const advanceVal = formData.advanceAmount;
+      const rentVal = formData.rentAmount ?? formData.monthlyRent;
+
+      const isAdvanceValid = advanceVal !== undefined && advanceVal !== null && advanceVal !== '' && !isNaN(parseFloat(advanceVal)) && parseFloat(advanceVal) > 0;
+      const isRentValid = rentVal !== undefined && rentVal !== null && rentVal !== '' && !isNaN(parseFloat(rentVal)) && parseFloat(rentVal) > 0;
+
+      if (!isAdvanceValid || !isRentValid) {
+        Alert.alert("Validation Error", "Please fill in valid Advance Amount and Monthly Rent in Step 3");
         return false;
       }
     }
@@ -144,7 +133,8 @@ const BaseForm = ({
         setFormData({
           ...formData,
           residentialId: response.roNo
-        });      } catch (error) {
+        });
+      } catch (error) {
         console.error("Error saving step 1:", error);
         Alert.alert("Error", "Failed to save step 1 data: " + (error.message || "Unknown error"));
       }
@@ -154,7 +144,7 @@ const BaseForm = ({
   // Handle next step WITHOUT saving data
   const handleNextStep = () => {
     // Just move to the next step without validation or saving
-    handleNext(step, setStep, () => {});
+    handleNext(step, setStep, () => { });
   };
 
   const handlePrevStep = () => handlePrevious(step, setStep);
@@ -170,15 +160,15 @@ const BaseForm = ({
     if (isSubmitting) {
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // For vehicles and machinery categories, we only have 2 steps (step3 is integrated into step2)
       const isVehiclesCategory = title === "Add Vehicle";
       const isMachineryCategory = title === "Add Machinery";
       const isTwoStepCategory = isVehiclesCategory || isMachineryCategory;
-      
+
       if (isTwoStepCategory) {
         // For vehicles and machinery, validate step 1 and step 2 (which includes payment and images)
         if (!validateStep1()) {
@@ -186,7 +176,7 @@ const BaseForm = ({
           setIsSubmitting(false);
           return;
         }
-        
+
         // Validate step 2 using the provided validation function
         if (validationFunction) {
           const isValid = validationFunction(formData);
@@ -196,18 +186,73 @@ const BaseForm = ({
             return;
           }
         }
-        
-        // For vehicles and machinery, show success message directly since all data is in step2
-        Alert.alert(
-          "Success",
-          successMessage,
-          [
-            {
-              text: "OK",
-              onPress: () => navigation.navigate(navigationTarget, { role: "Owner" })
+
+        // For vehicles category, save data to database
+        if (category === "vehicles") {
+          try {
+            // Save step 1 data to the database
+            const step1Data = {
+              name: formData.name,
+              doorNo: formData.doorNo,
+              street: formData.street,
+              pincode: formData.pincode,
+              area: formData.area,
+              city: formData.city,
+              contactNo: formData.contactNo
+            };
+
+            const { saveVehiclesStep1, saveVehiclesStep2 } = await import("../../screens/vehicles/logic/api");
+            const step1Response = await saveVehiclesStep1(step1Data);
+            const voNo = step1Response.voNo || step1Response.id || step1Response.insertId;
+
+            if (!voNo) {
+              throw new Error("Failed to obtain vehicle owner id from step1 response");
             }
-          ]
-        );
+
+            // Prepare and save step2 data (vehicles array and images)
+            const step2Data = {
+              voNo: voNo,
+              vehicles: formData.vehicles,
+              images: formData.images
+            };
+
+            console.log('Prepared step2 data:', step2Data);
+
+            await saveVehiclesStep2(step2Data);
+
+            Alert.alert(
+              "Success",
+              successMessage,
+              [
+                {
+                  text: "OK",
+                  onPress: () => {
+                    setFormData(initialFormData);
+                    setStep(1);
+                    navigation.goBack();
+                  }
+                }
+              ]
+            );
+          } catch (vehiclesError) {
+            console.error("Error saving vehicles data:", vehiclesError);
+            Alert.alert("Error", "Failed to save vehicles data: " + (vehiclesError.message || "Unknown error"));
+            setIsSubmitting(false);
+            return;
+          }
+        } else {
+          // For machinery and other two-step categories, show success message
+          Alert.alert(
+            "Success",
+            successMessage,
+            [
+              {
+                text: "OK",
+                onPress: () => navigation.navigate(navigationTarget, { role: "Owner" })
+              }
+            ]
+          );
+        }
       } else {
         // Standard 3-step process for other categories
         // Validate step 1
@@ -216,7 +261,7 @@ const BaseForm = ({
           setIsSubmitting(false);
           return;
         }
-        
+
         // Validate step 2 using the provided validation function
         if (validationFunction) {
           const isValid = validationFunction(formData);
@@ -226,14 +271,14 @@ const BaseForm = ({
             return;
           }
         }
-        
+
         // Validate step 3
         if (!validateStep3()) {
           setStep(3);
           setIsSubmitting(false);
           return;
         }
-        
+
         // For residential forms, save all data to the database
         if (category === "residential") {
           try {
@@ -247,7 +292,7 @@ const BaseForm = ({
               city: formData.city,
               contactNo: formData.contactNo
             };
-            
+
             let roNo;
             try {
               const { saveResidentialStep1 } = await import("../../screens/residential/logic/api");
@@ -255,7 +300,7 @@ const BaseForm = ({
               const step1Response = await saveResidentialStep1(step1Data);
               console.log("Step 1 response:", step1Response);
               roNo = step1Response.roNo || step1Response.id; // Handle both possible return values
-              
+
               if (!roNo) {
                 throw new Error("Failed to get ID from step 1 response");
               }
@@ -265,13 +310,13 @@ const BaseForm = ({
               setIsSubmitting(false);
               return;
             }
-            
+
             // Save step 2 data to the database with correct structure
             try {
               // Prepare bedrooms array
               const bedrooms = [];
               const numBedrooms = parseInt(formData.noOfBedrooms);
-              
+
               if (numBedrooms >= 1) {
                 bedrooms.push({
                   number: 1,
@@ -279,7 +324,7 @@ const BaseForm = ({
                   breadth: formData.bedroom1Breadth
                 });
               }
-              
+
               if (numBedrooms >= 2) {
                 bedrooms.push({
                   number: 2,
@@ -287,7 +332,7 @@ const BaseForm = ({
                   breadth: formData.bedroom2Breadth
                 });
               }
-              
+
               if (numBedrooms >= 3) {
                 bedrooms.push({
                   number: 3,
@@ -295,7 +340,7 @@ const BaseForm = ({
                   breadth: formData.bedroom3Breadth
                 });
               }
-              
+
               const step2Data = {
                 roNo: roNo,
                 facingDirection: formData.facingDirection,
@@ -322,7 +367,7 @@ const BaseForm = ({
                 const { saveResidentialStep2 } = await import("../../screens/residential/logic/api");
                 await saveResidentialStep2(step2Data);
                 console.log("Step 2 saved successfully");
-                
+
                 // Save step 3 data to the database
                 try {
                   const step3Data = {
@@ -353,7 +398,8 @@ const BaseForm = ({
                           }
                         }
                       ]
-                    );                  } catch (step3Error) {
+                    );
+                  } catch (step3Error) {
                     console.error("Step 3 error:", step3Error);
                     Alert.alert("Error", "Failed to save step 3 data: " + (step3Error.message || "Unknown error"));
                     setIsSubmitting(false);

@@ -114,24 +114,30 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
 
     let result;
 
-    if (source === "camera") {
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-      });
-    } else {
-      result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        allowsMultipleSelection: true,
-      });
-    }
+    try {
+      if (source === "camera") {
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+          allowsMultipleSelection: true,
+        });
+      }
 
-    if (!result.canceled) {
-      // Add new images to existing images
-      const newImages = result.assets.map(asset => asset.uri);
-      const updatedImages = [...images, ...newImages].slice(0, 7); // Limit to 7 images
-      handleInputChange('images', updatedImages);
+      const isCanceled = result?.canceled ?? result?.cancelled ?? true;
+      if (!isCanceled) {
+        const assets = Array.isArray(result.assets) ? result.assets : (result.uri ? [{ uri: result.uri }] : []);
+        const newImages = assets.map(asset => asset?.uri ?? asset).filter(Boolean);
+        const updatedImages = [...images, ...newImages].slice(0, 7); // Limit to 7 images
+        handleInputChange('images', updatedImages);
+      }
+    } catch (err) {
+      console.error('Image picker error:', err);
+      Alert.alert('Error', 'Failed to pick image: ' + (err.message || 'Unknown'));
     }
   };
   

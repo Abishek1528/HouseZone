@@ -11,6 +11,10 @@ import businessStep2Routes from './businessStep2Routes.js';
 import businessStep3Routes from './businessStep3Routes.js';
 import businessDebugRoutes from './businessDebugRoutes.js';
 import businessTenantRoutes from './businessTenantRoutes.js';
+import vehiclesDebugRoutes from './vehiclesDebugRoutes.js';
+import vehicleTenantRoutes from './vehicleTenantRoutes.js';
+import vehiclesStep1Routes from './vehiclesStep1Routes.js';
+import vehiclesStep2Routes from './vehiclesStep2Routes.js';
 
 const router = Router();
 
@@ -27,5 +31,9 @@ router.use('/', businessStep2Routes);
 router.use('/', businessStep3Routes);
 router.use('/', businessDebugRoutes);
 router.use('/', businessTenantRoutes);
+router.use('/', vehiclesStep1Routes);
+router.use('/', vehiclesStep2Routes);
+router.use('/', vehiclesDebugRoutes);
+router.use('/vehicles', vehicleTenantRoutes);
 
 export default router;
