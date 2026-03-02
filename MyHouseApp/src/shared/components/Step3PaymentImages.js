@@ -37,21 +37,31 @@ const Step3PaymentImages = ({ formData, handleInputChange, handleImageSelect, ha
 
     let result;
 
-    if (source === "camera") {
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-      });
-    } else {
-      result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        allowsMultipleSelection: true,
-      });
-    }
+    try {
+      if (source === "camera") {
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+          allowsMultipleSelection: true,
+        });
+      }
 
-    if (!result.canceled) {
-      result.assets.forEach((img) => handleImageSelect(img.uri));
+      const isCanceled = result?.canceled ?? result?.cancelled ?? true;
+      if (!isCanceled) {
+        const assets = Array.isArray(result.assets) ? result.assets : (result.uri ? [{ uri: result.uri }] : []);
+        assets.forEach((img) => {
+          const uri = img?.uri ?? img;
+          if (uri) handleImageSelect(uri);
+        });
+      }
+    } catch (err) {
+      console.error('Image picker error:', err);
+      Alert.alert('Error', 'Failed to pick image: ' + (err.message || 'Unknown'));
     }
   };
 

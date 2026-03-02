@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TextInput, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  ScrollView,
+  TextInput,
+  StyleSheet,
   TouchableOpacity,
   Image,
   Alert
@@ -15,32 +15,56 @@ import categoryContentStyles from '../../styles/categoryContentStyles';
 
 
 
-const PricingForm = () => {
-  const [fixed, setFixed] = React.useState('yes');
+const PricingForm = ({ pricingData, onUpdate, prefix }) => {
+  const fixed = pricingData[`${prefix}_fixed`] ? 'yes' : 'no';
+
+  const handleChange = (field, value) => {
+    onUpdate(`${prefix}_${field}`, value);
+  };
 
   return (
     <View>
       <Text style={styles.label}>Charge per day</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={pricingData[`${prefix}_charge_per_day`] || ""}
+        onChangeText={(text) => handleChange('charge_per_day', text)}
+      />
 
       <Text style={styles.label}>Charge per km</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={pricingData[`${prefix}_charge_per_km`] || ""}
+        onChangeText={(text) => handleChange('charge_per_km', text)}
+      />
 
       <Text style={styles.label}>Waiting charge per hour</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={pricingData[`${prefix}_waiting_charge_per_hour`] || ""}
+        onChangeText={(text) => handleChange('waiting_charge_per_hour', text)}
+      />
 
       <Text style={styles.label}>Waiting charge per night</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={pricingData[`${prefix}_waiting_charge_per_night`] || ""}
+        onChangeText={(text) => handleChange('waiting_charge_per_night', text)}
+      />
 
       <Text style={styles.label}>Fixed</Text>
       <View style={styles.radioContainer}>
-        <TouchableOpacity onPress={() => setFixed('yes')}>
+        <TouchableOpacity onPress={() => onUpdate(`${prefix}_fixed`, true)}>
           <Text style={fixed === 'yes' ? styles.activeRadio : styles.radio}>
             Yes
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setFixed('no')}>
+        <TouchableOpacity onPress={() => onUpdate(`${prefix}_fixed`, false)}>
           <Text style={fixed === 'no' ? styles.activeRadio : styles.radio}>
             No
           </Text>
@@ -53,11 +77,15 @@ const PricingForm = () => {
 
 const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
   // Initialize vehicles array if not present
-  const vehicles = formData.vehicles || [{ id: 1, type: "", name: "", model: "", seatCapacity: "", fuelType: "" }];
-  
+  const vehicles = formData.vehicles || [{
+    id: 1, type: "", name: "", model: "", seatCapacity: "", fuelType: "",
+    ac_charge_per_day: "", ac_charge_per_km: "", ac_waiting_charge_per_hour: "", ac_waiting_charge_per_night: "", ac_fixed: false,
+    nonac_charge_per_day: "", nonac_charge_per_km: "", nonac_waiting_charge_per_hour: "", nonac_waiting_charge_per_night: "", nonac_fixed: false
+  }];
+
   // Get images from formData
   const images = formData.images || [];
-  
+
   // Function to add a new vehicle
   const addVehicle = () => {
     const newVehicle = {
@@ -66,12 +94,21 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
       name: "",
       model: "",
       seatCapacity: "",
-      fuelType: ""
+      fuelType: "",
+      ac_charge_per_day: "",
+      ac_charge_per_km: "",
+      ac_waiting_charge_per_hour: "",
+      ac_waiting_charge_per_night: "",
+      ac_fixed: false,
+      nonac_charge_per_day: "",
+      nonac_charge_per_km: "",
+      nonac_waiting_charge_per_hour: "",
+      nonac_waiting_charge_per_night: "",
+      nonac_fixed: false
     };
     const updatedVehicles = [...vehicles, newVehicle];
     handleInputChange("vehicles", updatedVehicles);
   };
-
   // Function to update a specific vehicle
   const updateVehicle = (id, field, value) => {
     const updatedVehicles = vehicles.map(vehicle => {
@@ -83,14 +120,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
     handleInputChange("vehicles", updatedVehicles);
   };
 
-  // Function to remove a vehicle
-  const removeVehicle = (id) => {
-    if (vehicles.length > 1) {
-      const updatedVehicles = vehicles.filter(vehicle => vehicle.id !== id);
-      handleInputChange("vehicles", updatedVehicles);
-    }
-  };
-  
+  // Existing image picker logic...
   // Ask permission for image picker
   const requestPermission = async (type) => {
     let result =
@@ -115,27 +145,33 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
 
     let result;
 
-    if (source === "camera") {
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-      });
-    } else {
-      result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        allowsMultipleSelection: true,
-      });
-    }
+    try {
+      if (source === "camera") {
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+          allowsMultipleSelection: true,
+        });
+      }
 
-    if (!result.canceled) {
-      // Add new images to existing images
-      const newImages = result.assets.map(asset => asset.uri);
-      const updatedImages = [...images, ...newImages].slice(0, 7); // Limit to 7 images
-      handleInputChange('images', updatedImages);
+      const isCanceled = result?.canceled ?? result?.cancelled ?? true;
+      if (!isCanceled) {
+        const assets = Array.isArray(result.assets) ? result.assets : (result.uri ? [{ uri: result.uri }] : []);
+        const newImages = assets.map(asset => asset?.uri ?? asset).filter(Boolean);
+        const updatedImages = [...images, ...newImages].slice(0, 7); // Limit to 7 images
+        handleInputChange('images', updatedImages);
+      }
+    } catch (err) {
+      console.error('Image picker error:', err);
+      Alert.alert('Error', 'Failed to pick image: ' + (err.message || 'Unknown'));
     }
   };
-  
+
   // Remove image at specific index
   const removeImage = (index) => {
     const updatedImages = images.filter((_, i) => i !== index);
@@ -170,11 +206,11 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
     <ScrollView style={{ width: '100%' }}>
       <View style={categoryContentStyles.formContainer}>
         <Text style={categoryContentStyles.formTitle}>Vehicle Details</Text>
-        
+
         {vehicles.map((vehicle, index) => (
           <View key={vehicle.id} style={styles.vehicleContainer}>
             <Text style={styles.vehicleTitle}>Vehicle {index + 1}</Text>
-            
+
             {/* Vehicle Type Dropdown */}
             <View style={categoryContentStyles.inputContainer}>
               <Text style={categoryContentStyles.label}>Vehicle Type *</Text>
@@ -184,12 +220,12 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                   style={categoryContentStyles.picker}
                   onValueChange={(value) => updateVehicle(vehicle.id, "type", value)}
                 >
-                  {vehicleTypeOptions.map((option, index) => (
-                    <Picker.Item 
-                      key={option.value} 
-                      label={option.label} 
-                      value={option.value} 
-                      color={index === 0 ? '#999999' : '#000000'}
+                  {vehicleTypeOptions.map((option, idx) => (
+                    <Picker.Item
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                      color={idx === 0 ? '#999999' : '#000000'}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -230,12 +266,12 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                   style={categoryContentStyles.picker}
                   onValueChange={(value) => updateVehicle(vehicle.id, "seatCapacity", value)}
                 >
-                  {seatCapacityOptions.map((option, index) => (
-                    <Picker.Item 
-                      key={option.value} 
-                      label={option.label} 
-                      value={option.value} 
-                      color={index === 0 ? '#999999' : '#000000'}
+                  {seatCapacityOptions.map((option, idx) => (
+                    <Picker.Item
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                      color={idx === 0 ? '#999999' : '#000000'}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -252,12 +288,12 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                   style={categoryContentStyles.picker}
                   onValueChange={(value) => updateVehicle(vehicle.id, "fuelType", value)}
                 >
-                  {fuelTypeOptions.map((option, index) => (
-                    <Picker.Item 
-                      key={option.value} 
-                      label={option.label} 
-                      value={option.value} 
-                      color={index === 0 ? '#999999' : '#000000'}
+                  {fuelTypeOptions.map((option, idx) => (
+                    <Picker.Item
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                      color={idx === 0 ? '#999999' : '#000000'}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -268,25 +304,33 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             {/* Horizontal Line Below Fuel Type */}
             <View style={styles.mainContainer}>
 
-  <View style={styles.column}>
-    <Text style={styles.heading}>AC</Text>
-    <PricingForm />
-  </View>
+              <View style={styles.column}>
+                <Text style={styles.heading}>AC</Text>
+                <PricingForm
+                  pricingData={vehicle}
+                  onUpdate={(field, value) => updateVehicle(vehicle.id, field, value)}
+                  prefix="ac"
+                />
+              </View>
 
-  <View style={styles.verticalLine} />
+              <View style={styles.verticalLine} />
 
-  <View style={styles.column}>
-    <Text style={styles.heading}>Non AC</Text>
-    <PricingForm />
-  </View>
+              <View style={styles.column}>
+                <Text style={styles.heading}>Non AC</Text>
+                <PricingForm
+                  pricingData={vehicle}
+                  onUpdate={(field, value) => updateVehicle(vehicle.id, field, value)}
+                  prefix="nonac"
+                />
+              </View>
 
-</View>
+            </View>
 
 
             {/* Remove Vehicle Button */}
             {vehicles.length > 1 && (
               <View style={styles.removeButtonContainer}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => removeVehicle(vehicle.id)}
                 >
@@ -296,7 +340,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             )}
           </View>
         ))}
-        
+
         {/* Image Upload Section */}
         <View style={{ marginTop: 20 }}>
           <Text style={categoryContentStyles.formTitle}>Upload Vehicle Images</Text>
@@ -377,9 +421,9 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             {images.length} / 7 images uploaded
           </Text>
         </View>
-        
+
         {/* Add More Vehicle Button - Moved to the end */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.addButton}
           onPress={addVehicle}
         >
@@ -407,69 +451,69 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
   },
-mainContainer: {
-  flexDirection: 'row',
-  width: '100%',
-},
+  mainContainer: {
+    flexDirection: 'row',
+    width: '100%',
+  },
 
-column: {
-  flex: 1,
-  padding: 10,
-},
+  column: {
+    flex: 1,
+    padding: 10,
+  },
 
-heading: {
-  textAlign: 'center',
-  fontSize: 16,
-  fontWeight: '700',
-  marginBottom: 10,
-},
+  heading: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 10,
+  },
 
-verticalLine: {
-  width: 1,
-  backgroundColor: '#4A90E2',
-},
+  verticalLine: {
+    width: 1,
+    backgroundColor: '#4A90E2',
+  },
 
-label: {
-  marginTop: 10,
-  fontSize: 13,
-  fontWeight: 'bold',   // ✅ bold
-  color: '#000',
-},
-
-
-input: {
-  borderWidth: 1,
-  borderColor: '#4A90E2',
-  borderRadius: 6,
-  padding: 8,
-  marginTop: 4,
-  fontSize: 16,
-  color:'#000'          // ✅ consistent readable size
-},
+  label: {
+    marginTop: 10,
+    fontSize: 13,
+    fontWeight: 'bold',   // ✅ bold
+    color: '#000',
+  },
 
 
-radioContainer: {
-  flexDirection: 'row',
-  gap: 20,
-  marginTop: 8,
-},
+  input: {
+    borderWidth: 1,
+    borderColor: '#4A90E2',
+    borderRadius: 6,
+    padding: 8,
+    marginTop: 4,
+    fontSize: 16,
+    color: '#000'          // ✅ consistent readable size
+  },
 
-radio: {
-  paddingHorizontal: 10,
-  paddingVertical: 4,
-  borderWidth: 1,
-  borderColor: '#aaa',
-  borderRadius: 4,
-},
 
-activeRadio: {
-  paddingHorizontal: 10,
-  paddingVertical: 4,
-  borderWidth: 1,
-  borderColor: '#4A90E2',
-  backgroundColor: '#EAF2FF',
-  borderRadius: 4,
-},
+  radioContainer: {
+    flexDirection: 'row',
+    gap: 20,
+    marginTop: 8,
+  },
+
+  radio: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#aaa',
+    borderRadius: 4,
+  },
+
+  activeRadio: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#4A90E2',
+    backgroundColor: '#EAF2FF',
+    borderRadius: 4,
+  },
 
   removeButtonContainer: {
     alignItems: 'center',

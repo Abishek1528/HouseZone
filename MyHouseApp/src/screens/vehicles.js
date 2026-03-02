@@ -14,26 +14,39 @@ export default function Vehicles() {
     navigation.navigate("AddVehicles", { role });
   };
 
+  const handleViewAvailableVehicles = () => {
+    navigation.navigate("VehiclesList");
+  };
+
   return (
     <View style={categoryContentStyles.container}>
       <Header />
-      
+
       {/* CONTENT */}
       <View style={categoryContentStyles.content}>
         <Text style={categoryContentStyles.pageTitle}>Vehicles</Text>
         <Text style={categoryContentStyles.pageText}>This is the Vehicles category page.</Text>
         <Text style={categoryContentStyles.roleInfo}>Role: {role}</Text>
-        
+
         {role === "Owner" && (
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
+          <TouchableOpacity
+            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
             onPress={handleAddVehicles}
           >
             <Text style={categoryContentStyles.buttonText}>Add Details</Text>
           </TouchableOpacity>
         )}
+
+        {role === "Tenant" && (
+          <TouchableOpacity
+            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+            onPress={handleViewAvailableVehicles}
+          >
+            <Text style={categoryContentStyles.buttonText}>View Available Vehicles</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      
+
       <Footer />
     </View>
   );

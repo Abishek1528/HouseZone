@@ -90,3 +90,56 @@ USE cdmrental;
 --     FOREIGN KEY (roNo) REFERENCES resowndet(roNo)
 -- );
 
+
+-- CREATE TABLE vehiclesowndet (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+
+--     name_of_person VARCHAR(255) NOT NULL,
+--     door_no VARCHAR(50) NOT NULL,
+--     street VARCHAR(255) NOT NULL,
+--     pincode VARCHAR(10) NOT NULL,
+--     area VARCHAR(255) NOT NULL,
+--     city VARCHAR(100) NOT NULL,
+--     contact_no VARCHAR(20) NOT NULL,
+
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+
+-- CREATE TABLE vehiclesdet (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+
+--     vehiclesowndet_id INT NOT NULL,
+
+--     -- Vehicle basic details
+--     vehicle_type VARCHAR(50) NOT NULL,
+--     vehicle_name VARCHAR(100) NOT NULL,
+--     vehicle_model VARCHAR(100) NOT NULL,
+--     seat_capacity INT NOT NULL,
+--     fuel_type VARCHAR(50) NOT NULL,
+
+--     -- AC pricing
+--     ac_charge_per_day DECIMAL(10,2),
+--     ac_charge_per_km DECIMAL(10,2),
+--     ac_waiting_charge_per_hour DECIMAL(10,2),
+--     ac_waiting_charge_per_night DECIMAL(10,2),
+--     ac_fixed BOOLEAN DEFAULT FALSE,
+
+--     -- Non-AC pricing
+--     nonac_charge_per_day DECIMAL(10,2),
+--     nonac_charge_per_km DECIMAL(10,2),
+--     nonac_waiting_charge_per_hour DECIMAL(10,2),
+--     nonac_waiting_charge_per_night DECIMAL(10,2),
+--     nonac_fixed BOOLEAN DEFAULT FALSE,
+
+--     -- Vehicle images (4–7 images)
+--     vehicle_images JSON NOT NULL,
+
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+--     CONSTRAINT fk_vehicles_owner
+--         FOREIGN KEY (vehiclesowndet_id)
+--         REFERENCES vehiclesowndet(id)
+--         ON DELETE CASCADE
+--         ON UPDATE CASCADE
+-- );
