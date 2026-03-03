@@ -8,6 +8,12 @@ import propertyListStyles from '../../residential/tenant/propertyListStyles';
 import { getPropertyDetails } from './api';
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    padding: 15,
+    alignItems: 'flex-start',
+    paddingBottom: 110,
+    width: '100%',
+  },
   summaryBox: {
     backgroundColor: '#ffffff',
     borderRadius: 8,
@@ -103,7 +109,11 @@ export default function PropertyDetails({ route }) {
   return (
     <View style={categoryContentStyles.container}>
       <Header />
-      <ScrollView style={{flex:1}} contentContainerStyle={[categoryContentStyles.content, {flexGrow:1}]}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={true}
+      >
         <Text style={categoryContentStyles.pageTitle}>{property?.propertyType || 'Business Property'}</Text>
 
         {/* Summary Box */}

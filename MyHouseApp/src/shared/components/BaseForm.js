@@ -240,8 +240,54 @@ const BaseForm = ({
             setIsSubmitting(false);
             return;
           }
+        } else if (category === "machinery") {
+          try {
+            // Save step 1 similar to vehicles
+            const step1Data = {
+              name: formData.name,
+              doorNo: formData.doorNo,
+              street: formData.street,
+              pincode: formData.pincode,
+              area: formData.area,
+              city: formData.city,
+              contactNo: formData.contactNo
+            };
+
+            const { saveMachineryStep1, saveMachineryStep2 } = await import("../../screens/machinery/logic/api");
+            const step1Response = await saveMachineryStep1(step1Data);
+            const moNo = step1Response.moNo || step1Response.id || step1Response.insertId;
+
+            if (!moNo) {
+              throw new Error("Failed to obtain machinery owner id from step1 response");
+            }
+
+            // attach owner id and send entire formData for step2 (route will pick matching columns)
+            const step2Data = { ...formData, moNo };
+            console.log('Prepared machinery step2 data:', step2Data);
+            await saveMachineryStep2(step2Data);
+
+            Alert.alert(
+              "Success",
+              successMessage,
+              [
+                {
+                  text: "OK",
+                  onPress: () => {
+                    setFormData(initialFormData);
+                    setStep(1);
+                    navigation.navigate(navigationTarget, { role: "Owner" });
+                  }
+                }
+              ]
+            );
+          } catch (machError) {
+            console.error("Error saving machinery data:", machError);
+            Alert.alert("Error", "Failed to save machinery data: " + (machError.message || "Unknown error"));
+            setIsSubmitting(false);
+            return;
+          }
         } else {
-          // For machinery and other two-step categories, show success message
+          // For other two-step categories, show success message
           Alert.alert(
             "Success",
             successMessage,

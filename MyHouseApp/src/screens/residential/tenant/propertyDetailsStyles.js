@@ -6,6 +6,10 @@ const propertyDetailsStyles = StyleSheet.create({
     width: '100%',
     flex: 1
   },
+  scrollContentContainer: {
+    flexGrow: 1,
+    paddingBottom: 20
+  },
   loadingText: {
     textAlign: 'center',
     fontSize: 18,
