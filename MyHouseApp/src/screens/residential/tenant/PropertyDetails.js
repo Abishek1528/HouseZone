@@ -156,12 +156,16 @@ export default function PropertyDetails() {
       <Header />
       
       <View style={categoryContentStyles.content}>
-        <ScrollView style={propertyDetailsStyles.scrollContainer}>
+        <ScrollView 
+          style={propertyDetailsStyles.scrollContainer}
+          contentContainerStyle={propertyDetailsStyles.scrollContentContainer}
+          nestedScrollEnabled={true}
+        >
           <Text style={categoryContentStyles.pageTitle}>Property Details</Text>
           
           {/* Payment Details */}
           <View style={propertyDetailsStyles.section}>
-            <Text style={propertyDetailsStyles.sectionTitle}>Payment Information</Text>
+            <Text style={propertyDetailsStyles.sectionTitle}>💰 Payment Information</Text>
             
             {/* Display lease amount if available, otherwise show advance and monthly rent */}
             {property.paymentDetails?.leaseAmount ? (
@@ -191,7 +195,7 @@ export default function PropertyDetails() {
           {/* House Details */}
           {property.houseDetails && (
             <View style={propertyDetailsStyles.section}>
-              <Text style={propertyDetailsStyles.sectionTitle}>House Details</Text>
+              <Text style={propertyDetailsStyles.sectionTitle}>🏠 House Details</Text>
               <View style={propertyDetailsStyles.firstDetailRow}>
                 <Text style={propertyDetailsStyles.label}>Facing Direction:</Text>
                 <Text style={propertyDetailsStyles.value}>{property.houseDetails.facingDirection || 'N/A'}</Text>
@@ -288,9 +292,38 @@ export default function PropertyDetails() {
             </View>
           )}
           
+          {/* Property Specifications Section */}
+          {property.houseDetails && (
+            <View style={propertyDetailsStyles.section}>
+              <Text style={propertyDetailsStyles.sectionTitle}>🏢 Property Specifications</Text>
+              <View style={propertyDetailsStyles.firstDetailRow}>
+                <Text style={propertyDetailsStyles.label}>Facing Direction:</Text>
+                <Text style={propertyDetailsStyles.value}>{property.houseDetails.facingDirection || 'N/A'}</Text>
+              </View>
+              <View style={propertyDetailsStyles.detailRow}>
+                <Text style={propertyDetailsStyles.label}>Floor Number:</Text>
+                <Text style={propertyDetailsStyles.value}>{property.houseDetails.floorNumber || 'N/A'}</Text>
+              </View>
+              <View style={propertyDetailsStyles.detailRow}>
+                <Text style={propertyDetailsStyles.label}>Built-up Area:</Text>
+                <Text style={propertyDetailsStyles.value}>
+                  {property.area ? `${property.area}` : 'N/A'}
+                </Text>
+              </View>
+              <View style={propertyDetailsStyles.detailRow}>
+                <Text style={propertyDetailsStyles.label}>Total Bedrooms:</Text>
+                <Text style={propertyDetailsStyles.value}>{property.houseDetails.numberOfBedrooms || 'N/A'}</Text>
+              </View>
+              <View style={propertyDetailsStyles.detailRow}>
+                <Text style={propertyDetailsStyles.label}>Total Bathrooms:</Text>
+                <Text style={propertyDetailsStyles.value}>{property.houseDetails.numberOfBathrooms || 'N/A'}</Text>
+              </View>
+            </View>
+          )}
+          
           {/* Location & Nearby Amenities Section */}
           <View style={propertyDetailsStyles.section}>
-            <Text style={propertyDetailsStyles.sectionTitle}>Location & Nearby Amenities</Text>
+            <Text style={propertyDetailsStyles.sectionTitle}>📍 Location & Nearby Amenities</Text>
             <View style={propertyDetailsStyles.firstDetailRow}>
               <Text style={propertyDetailsStyles.label}>Street Size:</Text>
               <Text style={propertyDetailsStyles.value}>
@@ -325,7 +358,7 @@ export default function PropertyDetails() {
           
           {/* Conditions Section */}
           <View style={propertyDetailsStyles.section}>
-            <Text style={propertyDetailsStyles.sectionTitle}>Property Conditions</Text>
+            <Text style={propertyDetailsStyles.sectionTitle}>✅ Property Conditions</Text>
             {renderConditions(property?.conditionNumbers)}
           </View>
 
