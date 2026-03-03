@@ -15,32 +15,50 @@ import categoryContentStyles from '../../styles/categoryContentStyles';
 
 
 
-const PricingForm = () => {
-  const [fixed, setFixed] = React.useState('no');
-
+const PricingForm = ({ chargePerDay, chargePerKm, waitingChargePerHour, waitingChargePerNight, fixed, onChange }) => {
   return (
     <View>
       <Text style={styles.label}>Charge per day</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={chargePerDay ?? ""}
+        onChangeText={(v) => onChange("chargePerDay", v)}
+      />
 
       <Text style={styles.label}>Charge per km</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={chargePerKm ?? ""}
+        onChangeText={(v) => onChange("chargePerKm", v)}
+      />
 
       <Text style={styles.label}>Waiting charge per hour</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={waitingChargePerHour ?? ""}
+        onChangeText={(v) => onChange("waitingChargePerHour", v)}
+      />
 
       <Text style={styles.label}>Waiting charge per night</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={waitingChargePerNight ?? ""}
+        onChangeText={(v) => onChange("waitingChargePerNight", v)}
+      />
 
       <Text style={styles.label}>Fixed</Text>
       <View style={styles.radioContainer}>
-        <TouchableOpacity onPress={() => setFixed('yes')}>
+        <TouchableOpacity onPress={() => onChange("fixed", "yes")}>
           <Text style={fixed === 'yes' ? styles.activeRadio : styles.radio}>
             Yes
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setFixed('no')}>
+        <TouchableOpacity onPress={() => onChange("fixed", "no")}>
           <Text style={fixed === 'no' ? styles.activeRadio : styles.radio}>
             No
           </Text>
@@ -224,7 +242,14 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
             {/* Horizontal Line Below Model */}
             <View style={styles.pricingContainer}>
               <Text style={styles.pricingHeading}>Pricing Details</Text>
-              <PricingForm />
+              <PricingForm
+                chargePerDay={formData.chargePerDay}
+                chargePerKm={formData.chargePerKm}
+                waitingChargePerHour={formData.waitingChargePerHour}
+                waitingChargePerNight={formData.waitingChargePerNight}
+                fixed={formData.fixed || 'no'}
+                onChange={(key, value) => handleInputChange(key, value)}
+              />
             </View>
 
 
