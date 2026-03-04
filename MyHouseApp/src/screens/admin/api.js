@@ -38,3 +38,35 @@ export const getAllResidentialOwners = async () => {
     throw new Error(`Failed to fetch residential owners: ${error.message || 'Network error'}`);
   }
 };
+
+// Get all business owners for admin view
+export const getAllBusinessOwners = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/business/owners`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching business owners:', error);
+    throw new Error(`Failed to fetch business owners: ${error.message || 'Network error'}`);
+  }
+};
+
+// Get all vehicles with owners for admin view
+export const getAllVehiclesOwners = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/vehicles/owners`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching vehicles owners:', error);
+    throw new Error(`Failed to fetch vehicles owners: ${error.message || 'Network error'}`);
+  }
+};
