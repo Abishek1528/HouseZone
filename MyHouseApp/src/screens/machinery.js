@@ -14,6 +14,10 @@ export default function Machinery() {
     navigation.navigate("AddMachinery", { role });
   };
 
+  const handleViewMachinery = () => {
+    navigation.navigate("MachineryListPage");
+  };
+
   return (
     <View style={categoryContentStyles.container}>
       <Header />
@@ -22,6 +26,7 @@ export default function Machinery() {
       <View style={categoryContentStyles.content}>
         <Text style={categoryContentStyles.pageTitle}>Machinery</Text>
         <Text style={categoryContentStyles.pageText}>This is the Machinery category page.</Text>
+        <Text style={categoryContentStyles.roleInfo}>Role: {role}</Text>
         
         {role === "Owner" && (
           <TouchableOpacity 
@@ -29,6 +34,15 @@ export default function Machinery() {
             onPress={handleAddMachinery}
           >
             <Text style={categoryContentStyles.buttonText}>Add Details</Text>
+          </TouchableOpacity>
+        )}
+
+        {role === "Tenant" && (
+          <TouchableOpacity 
+            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
+            onPress={handleViewMachinery}
+          >
+            <Text style={categoryContentStyles.buttonText}>View Available Machinery</Text>
           </TouchableOpacity>
         )}
       </View>
