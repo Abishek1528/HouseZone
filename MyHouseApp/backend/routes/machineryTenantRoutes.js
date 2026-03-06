@@ -97,7 +97,7 @@ router.get('/machinery/properties', async (req, res) => {
   }
 });
 
-// GET single machinery details for tenant view
+
 router.get('/machinery/properties/:id', async (req, res) => {
   try {
     const { id } = req.params;
