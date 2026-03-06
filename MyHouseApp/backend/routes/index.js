@@ -19,6 +19,7 @@ import vehiclesStep2Routes from './vehiclesStep2Routes.js';
 import machineryStep1Routes from './machineryStep1Routes.js';
 import machineryStep2Routes from './machineryStep2Routes.js';
 import machineryTenantRoutes from './machineryTenantRoutes.js';
+import machineryOwnerAdminRoutes from './machineryOwnerAdminRoutes.js';
 import vehiclesOwnerAdminRoutes from './vehiclesOwnerAdminRoutes.js';
 
 const router = Router();
@@ -42,6 +43,7 @@ router.use('/', vehiclesStep2Routes);
 router.use('/', machineryStep1Routes);
 router.use('/', machineryStep2Routes);
 router.use('/', machineryTenantRoutes);
+router.use('/', machineryOwnerAdminRoutes);
 router.use('/', vehiclesDebugRoutes);
 router.use('/', vehiclesOwnerAdminRoutes);
 router.use('/vehicles', vehicleTenantRoutes);
