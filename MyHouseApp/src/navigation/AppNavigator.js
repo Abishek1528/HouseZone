@@ -19,6 +19,8 @@ import TenantDetails from '../screens/residential/tenant/TenantDetails';
 import BusinessPropertyDetails from '../screens/business/tenant/PropertyDetails';
 import VehiclesList from '../screens/vehicles/tenant/VehiclesList';
 import VehicleDetails from '../screens/vehicles/tenant/VehicleDetails';
+import MachineryListPage from '../screens/machinery/tenant/MachineryListPage';
+import MachineryDetailsPage from '../screens/machinery/tenant/MachineryDetailsPage';
 // Import all admin components
 import {
   AdminDashboard,
@@ -59,6 +61,8 @@ export default function AppNavigator() {
         <Stack.Screen name="BusinessPropertyDetails" component={BusinessPropertyDetails} />
         <Stack.Screen name="VehiclesList" component={VehiclesList} />
         <Stack.Screen name="VehicleDetails" component={VehicleDetails} />
+        <Stack.Screen name="MachineryListPage" component={MachineryListPage} />
+        <Stack.Screen name="MachineryDetailsPage" component={MachineryDetailsPage} />
         {/* Admin screens */}
         <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
         <Stack.Screen name="SignupPage" component={SignupPage} />
