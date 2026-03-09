@@ -100,6 +100,46 @@ export const saveResidentialStep3 = async (step3Data) => {
   }
 };
 
+// Upload residential images (multipart)
+export const uploadResidentialImages = async (roNo, imageUris = []) => {
+  try {
+    const form = new FormData();
+    form.append('roNo', String(roNo));
+    imageUris.forEach((uri, idx) => {
+      const name = `image_${idx + 1}.jpg`;
+      const type = 'image/jpeg';
+      form.append('images', { uri, name, type });
+    });
+
+    const response = await fetch(`${API_BASE_URL}/residential/images`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
+      body: form
+    });
+
+    const contentType = response.headers.get('content-type') || '';
+    let result;
+    if (contentType.includes('application/json')) {
+      result = await response.json();
+    } else {
+      const text = await response.text();
+      result = { message: 'Success', data: text };
+    }
+
+    if (!response.ok) {
+      throw new Error(result?.message || `HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error uploading residential images:', error);
+    throw new Error(`Failed to upload images: ${error.message || 'Network error'}`);
+  }
+};
+
 // Get residential step 1 details by ID
 export const getResidentialStep1 = async (id) => {
   try {

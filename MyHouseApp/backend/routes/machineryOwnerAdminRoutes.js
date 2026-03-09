@@ -1,7 +1,23 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const machineryUploadsDir = path.join(__dirname, '../uploads', 'machinery');
+
+// Helper to normalize image URLs
+const normalizeImageUrl = (url, req) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  return `${protocol}://${host}/uploads/machinery/${path.basename(url)}`;
+};
 
 // GET all machinery owners with their machinery details for admin view
 router.get('/machinery/owners', async (req, res) => {
@@ -87,9 +103,25 @@ router.get('/machinery/owners', async (req, res) => {
     const results = rows.map(row => {
       const images = [];
       for (let i = 1; i <= 7; i++) {
-        if (row[`image${i}`]) images.push(row[`image${i}`]);
+        const img = row[`image${i}`];
+        if (img) {
+          images.push(normalizeImageUrl(img, req));
+        }
         delete row[`image${i}`];
       }
+      
+      // Fallback for filesystem images
+      if (images.length === 0 && fs.existsSync(machineryUploadsDir)) {
+        try {
+          const files = fs.readdirSync(machineryUploadsDir);
+          const prefix = `machinery-${row.ownerId}-`;
+          const matching = files
+            .filter(f => f.startsWith(prefix))
+            .map(f => `${req.protocol}://${req.get('host')}/uploads/machinery/${f}`);
+          images.push(...matching);
+        } catch (_) {}
+      }
+      
       return { ...row, images };
     });
 

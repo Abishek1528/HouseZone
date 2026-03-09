@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const residentialUploadsDir = path.join(__dirname, '../uploads', 'residential');
 
 // API endpoint for getting all residential properties for tenant view
 router.get('/residential/properties', async (req, res) => {
@@ -62,8 +69,25 @@ router.get('/residential/properties', async (req, res) => {
     query += ' ORDER BY rd.roNo DESC';
     
     const [rows] = await pool.execute(query, params);
+
+    let filenames = [];
+    try {
+      filenames = fs.readdirSync(residentialUploadsDir);
+    } catch (_) {
+      filenames = [];
+    }
+
+    const origin = `${req.protocol}://${req.get('host')}`;
+    const withImages = rows.map(row => {
+      const id = row.id ?? row.roNo;
+      const prefix = `residential-${id}-`;
+      const urls = filenames
+        .filter(fn => fn.startsWith(prefix))
+        .map(fn => `${origin}/uploads/residential/${fn}`);
+      return { ...row, images: urls };
+    });
     
-    res.status(200).json(rows);
+    res.status(200).json(withImages);
   } catch (error) {
     console.error('Error fetching residential properties:', error);
     res.status(500).json({ message: 'Error fetching properties', error: error.message });
@@ -235,7 +259,19 @@ router.get('/residential/properties/:id', async (req, res) => {
     if (step3Rows.length > 0) {
       propertyDetails.paymentDetails = step3Rows[0];
     }
-    
+
+    let filenames = [];
+    try {
+      filenames = fs.readdirSync(residentialUploadsDir);
+    } catch (_) {
+      filenames = [];
+    }
+    const prefix = `residential-${id}-`;
+    const origin = `${req.protocol}://${req.get('host')}`;
+    propertyDetails.images = filenames
+      .filter(fn => fn.startsWith(prefix))
+      .map(fn => `${origin}/uploads/residential/${fn}`);
+
     res.status(200).json(propertyDetails);
   } catch (error) {
     console.error('Error fetching residential property details:', error);

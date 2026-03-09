@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const businessUploadsDir = path.join(__dirname, '../uploads', 'business');
 
 // GET all business properties for tenant view
 router.get('/business/properties', async (req, res) => {
@@ -92,7 +99,23 @@ router.get('/business/properties', async (req, res) => {
     query += ` ORDER BY bd.${detPk} DESC`;
 
     const [rows] = await pool.execute(query, params);
-    res.status(200).json(rows);
+
+    let filenames = [];
+    try {
+      filenames = fs.readdirSync(businessUploadsDir);
+    } catch (_) {
+      filenames = [];
+    }
+    const origin = `${req.protocol}://${req.get('host')}`;
+    const withImages = rows.map(row => {
+      const id = row.id;
+      const prefix = `business-${id}-`;
+      const urls = filenames
+        .filter(fn => fn.startsWith(prefix))
+        .map(fn => `${origin}/uploads/business/${fn}`);
+      return { ...row, images: urls };
+    });
+    res.status(200).json(withImages);
   } catch (error) {
     console.error('Error fetching business properties:', error);
     res.status(500).json({ message: 'Error fetching business properties', error: error.message });
@@ -188,10 +211,22 @@ router.get('/business/properties/:id', async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ message: 'Property not found' });
 
     const detail = rows[0];
+    let filenames = [];
+    try {
+      filenames = fs.readdirSync(businessUploadsDir);
+    } catch (_) {
+      filenames = [];
+    }
+    const origin = `${req.protocol}://${req.get('host')}`;
+    const prefix = `business-${id}-`;
+    detail.images = filenames
+      .filter(fn => fn.startsWith(prefix))
+      .map(fn => `${origin}/uploads/business/${fn}`);
     // Calculate total area if available
     if (detail.lengthFeet && detail.breadthFeet) {
       detail.totalArea = (parseFloat(detail.lengthFeet) * parseFloat(detail.breadthFeet)).toFixed(2);
     }
+
 
     res.status(200).json(detail);
   } catch (error) {

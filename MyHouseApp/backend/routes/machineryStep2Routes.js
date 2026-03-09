@@ -1,7 +1,28 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import upload from '../middleware/upload.js';
 
 const router = Router();
+
+// API endpoint for uploading machinery images
+router.post('/machinery/images', upload.array('images', 7), async (req, res) => {
+  try {
+    const { moNo } = req.body;
+    if (!moNo) return res.status(400).json({ message: 'moNo (machinery owner id) is required' });
+    
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const imageUrls = req.files.map(file => `${protocol}://${host}/uploads/machinery/${file.filename}`);
+    
+    res.status(200).json({
+      message: 'Images uploaded successfully',
+      images: imageUrls
+    });
+  } catch (error) {
+    console.error('Error uploading machinery images:', error);
+    res.status(500).json({ message: 'Error uploading images', error: error.message });
+  }
+});
 
 // Save machinery step 2 details into machinarydet table (robust column mapping)
 router.post('/machinery/step2', async (req, res) => {

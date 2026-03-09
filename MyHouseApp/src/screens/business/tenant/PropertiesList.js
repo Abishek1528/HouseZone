@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, Alert } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Alert, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -7,13 +7,24 @@ import categoryContentStyles from '../../../styles/categoryContentStyles';
 import propertyListStyles from '../../residential/tenant/propertyListStyles';
 import { getAllProperties } from './api';
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+
 const PropertyCard = ({ property, onViewDetails }) => {
   if (!property) return null;
+  const firstImageRaw = Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : null;
+  const firstImage = firstImageRaw
+    ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`)
+    : null;
   return (
     <View style={propertyListStyles.card}>
-      <View style={propertyListStyles.imagePlaceholder}>
-        <Text style={propertyListStyles.imageText}>Image</Text>
-      </View>
+      {firstImage ? (
+        <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
+      ) : (
+        <View style={propertyListStyles.imagePlaceholder}>
+          <Text style={propertyListStyles.imageText}>Image</Text>
+        </View>
+      )}
       <View style={propertyListStyles.detailsContainer}>
         <Text style={propertyListStyles.location}>{property?.area || property?.city || 'Unknown'}</Text>
         <View style={propertyListStyles.propertyInfo}>
