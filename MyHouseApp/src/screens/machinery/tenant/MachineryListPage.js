@@ -13,6 +13,18 @@ export default function MachineryListPage() {
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState(new Set());
 
+  // Helper to normalize image URLs
+  const normalizeImageUrl = (url) => {
+    if (!url) return null;
+    if (typeof url !== 'string') return null;
+    if (url.startsWith('http')) return url;
+    
+    // If it's just a filename, prepend the base upload URL
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const baseHost = API_BASE_URL.replace('/api', '');
+    return `${baseHost}/uploads/machinery/${url.split('/').pop()}`;
+  };
+
   const loadProperties = async () => {
     try {
       setLoading(true);
@@ -39,7 +51,7 @@ export default function MachineryListPage() {
 
   const renderProperty = ({ item }) => {
     const isExpanded = expandedIds.has(item.id);
-    const firstImage = item.images && item.images.length > 0 ? item.images[0] : null;
+    const firstImage = item.images && item.images.length > 0 ? normalizeImageUrl(item.images[0]) : null;
 
     return (
       <View style={machineryListStyles.card}>
@@ -93,13 +105,17 @@ export default function MachineryListPage() {
                 <View style={machineryListStyles.detailSection}>
                   <Text style={machineryListStyles.detailHeader}>More Images</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {item.images.slice(1).map((uri, idx) => (
-                      <Image 
-                        key={idx} 
-                        source={{ uri }} 
-                        style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
-                      />
-                    ))}
+                    {item.images.slice(1).map((uri, idx) => {
+                      const normalizedUri = normalizeImageUrl(uri);
+                      if (!normalizedUri) return null;
+                      return (
+                        <Image 
+                          key={idx} 
+                          source={{ uri: normalizedUri }} 
+                          style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
+                        />
+                      );
+                    })}
                   </ScrollView>
                 </View>
               )}

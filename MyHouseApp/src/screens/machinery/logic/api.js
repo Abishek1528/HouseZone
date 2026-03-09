@@ -39,7 +39,28 @@ export const saveMachineryStep2 = async (data) => {
   return result;
 };
 
+export const uploadMachineryImages = async (moNo, imageUris) => {
+  if (!imageUris || imageUris.length === 0) return [];
+  
+  const formData = new FormData();
+  formData.append('moNo', moNo);
+  
+  imageUris.forEach((uri, index) => {
+    const filename = uri.split('/').pop();
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : `image`;
+    formData.append('images', { uri, name: filename, type });
+  });
+
+  return handleFetchRequest(`${API_BASE_URL}/machinery/images`, {
+    method: 'POST',
+    body: formData,
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
 export default {
   saveMachineryStep1,
-  saveMachineryStep2
+  saveMachineryStep2,
+  uploadMachineryImages
 };

@@ -4,7 +4,8 @@ import {
     Text,
     ScrollView,
     ActivityIndicator,
-    StyleSheet
+    StyleSheet,
+    Image
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Header from '../../../components/Header';
@@ -47,6 +48,21 @@ const VehicleDetails = () => {
             <Header />
             <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.detailsContainer}>
+                    {/* Images Gallery */}
+                    {Array.isArray(vehicle.vehicle_images) && vehicle.vehicle_images.length > 0 && (
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
+                            {vehicle.vehicle_images.map((imgRaw, idx) => {
+                                const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+                                const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+                                const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
+                                return (
+                                    <View key={idx} style={{ marginRight: 10 }}>
+                                        <Image source={{ uri: img }} style={{ width: 220, height: 140, borderRadius: 8 }} />
+                                    </View>
+                                );
+                            })}
+                        </ScrollView>
+                    )}
                     {/* Vehicle Name and Location */}
                     <Text style={styles.vehicleName}>{vehicle.vehicle_name} {vehicle.vehicle_model}</Text>
                     <Text style={styles.location}>{vehicle.area}, {vehicle.city}</Text>

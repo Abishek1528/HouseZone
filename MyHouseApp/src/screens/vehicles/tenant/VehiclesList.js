@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     StyleSheet,
-    Alert
+    Alert,
+    Image
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../../components/Header';
@@ -58,20 +59,28 @@ const VehiclesList = () => {
         }
     };
 
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+
     const renderVehicleCard = ({ item }) => {
-        // Use card layout with DB data instead of uploaded images
+        const firstImageRaw = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null;
+        const firstImage = firstImageRaw ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`) : null;
         return (
             <View style={propertyListStyles.card}>
-                <View style={propertyListStyles.imagePlaceholder}>
-                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#4A90E2' }}>
-                            {item.type ? item.type.toUpperCase() : 'VEHICLE'}
-                        </Text>
-                        <Text style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
-                            {item.model || 'Model N/A'}
-                        </Text>
+                {firstImage ? (
+                    <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
+                ) : (
+                    <View style={propertyListStyles.imagePlaceholder}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#4A90E2' }}>
+                                {item.type ? item.type.toUpperCase() : 'VEHICLE'}
+                            </Text>
+                            <Text style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
+                                {item.model || 'Model N/A'}
+                            </Text>
+                        </View>
                     </View>
-                </View>
+                )}
 
                 <View style={propertyListStyles.detailsContainer}>
                     <Text style={propertyListStyles.location}>{item.area || item.city || 'Unknown'}</Text>

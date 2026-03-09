@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -115,6 +115,29 @@ export default function PropertyDetails({ route }) {
         showsVerticalScrollIndicator={true}
       >
         <Text style={categoryContentStyles.pageTitle}>{property?.propertyType || 'Business Property'}</Text>
+        
+        {/* Images Gallery */}
+        {Array.isArray(property.images) && property.images.length > 0 && (
+          <View style={{ marginVertical: 10 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {property.images.map((imgRaw, idx) => {
+                const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+                const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+                const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
+                return (
+                  <View key={idx} style={{ marginRight: 10 }}>
+                    <View style={{ width: 200, height: 140, backgroundColor: '#eee', borderRadius: 8, overflow: 'hidden' }}>
+                      <Text style={{ position: 'absolute', zIndex: 1, backgroundColor: 'rgba(0,0,0,0.4)', color: '#fff', paddingHorizontal: 6, paddingVertical: 2, borderBottomRightRadius: 8 }}>
+                        {idx + 1}/{property.images.length}
+                      </Text>
+                      <Image source={{ uri: img }} style={{ width: 200, height: 140 }} />
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
 
         {/* Summary Box */}
         <View style={styles.summaryBox}>

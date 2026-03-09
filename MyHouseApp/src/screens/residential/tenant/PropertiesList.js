@@ -8,15 +8,25 @@ import Footer from '../../../components/Footer';
 import { getAllProperties } from './api';
 import propertyListStyles from './propertyListStyles';
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+
 const PropertyCard = ({ property, onViewDetails }) => {
   if (!property) return null;
+  const firstImageRaw = Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : null;
+  const firstImage = firstImageRaw
+    ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`)
+    : null;
   
   return (
     <View style={propertyListStyles.card}>
-      {/* Left side - Placeholder for image */}
-      <View style={propertyListStyles.imagePlaceholder}>
-        <Text style={propertyListStyles.imageText}>Property Image</Text>
-      </View>
+      {firstImage ? (
+        <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
+      ) : (
+        <View style={propertyListStyles.imagePlaceholder}>
+          <Text style={propertyListStyles.imageText}>Property Image</Text>
+        </View>
+      )}
       
       {/* Right side - Property details */}
       <View style={propertyListStyles.detailsContainer}>

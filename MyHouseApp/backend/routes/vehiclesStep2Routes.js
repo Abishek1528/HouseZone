@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import upload from '../middleware/upload.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import fs from 'fs';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Save vehicles step 2 details into vehiclesdet table
 router.post('/vehicles/step2', async (req, res) => {
@@ -80,6 +87,28 @@ router.post('/vehicles/step2', async (req, res) => {
     });
   } finally {
     connection.release();
+  }
+});
+
+// Upload vehicle images
+router.post('/vehicles/images', upload.array('images', 12), async (req, res) => {
+  try {
+    const voNo = req.body?.voNo;
+    if (!voNo) {
+      return res.status(400).json({ message: 'voNo is required to associate images' });
+    }
+    const files = req.files || [];
+    if (files.length === 0) {
+      return res.status(400).json({ message: 'No images uploaded' });
+    }
+    const baseDir = path.join(__dirname, '../uploads', 'vehicles');
+    try { fs.mkdirSync(baseDir, { recursive: true }); } catch (_) {}
+    const origin = `${req.protocol}://${req.get('host')}`;
+    const urls = files.map(f => `${origin}/uploads/vehicles/${path.basename(f.filename || f.originalname)}`);
+    res.status(201).json({ message: 'Images uploaded successfully', voNo, images: urls });
+  } catch (error) {
+    console.error('Error uploading vehicle images:', error);
+    res.status(500).json({ message: 'Failed to upload images', error: error.message });
   }
 });
 

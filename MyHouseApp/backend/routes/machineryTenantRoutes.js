@@ -1,7 +1,23 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const machineryUploadsDir = path.join(__dirname, '../uploads', 'machinery');
+
+// Helper to normalize image URLs
+const normalizeImageUrl = (url, req) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  return `${protocol}://${host}/uploads/machinery/${path.basename(url)}`;
+};
 
 // GET all machinery for tenant view
 router.get('/machinery/properties', async (req, res) => {
@@ -69,7 +85,8 @@ router.get('/machinery/properties', async (req, res) => {
         md.${waitingHourCol} as waitingChargePerHour,
         md.${waitingNightCol} as waitingChargePerNight,
         md.${fixedCol} as isFixed,
-        md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7
+        md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7,
+        mo.${ownerIdCol} as moNo
       FROM machinarydet md
       JOIN machinaryowndet mo ON md.${ownerFkCol} = mo.${ownerIdCol}
       ORDER BY md.${detailIdCol} DESC
@@ -80,12 +97,28 @@ router.get('/machinery/properties', async (req, res) => {
     // Process rows to group images
     const machineryList = rows.map(row => {
       const images = [];
+      
+      // Add explicit columns images
       for (let i = 1; i <= 7; i++) {
-        if (row[`image${i}`]) {
-          images.push(row[`image${i}`]);
+        const img = row[`image${i}`];
+        if (img) {
+          images.push(normalizeImageUrl(img, req));
         }
         delete row[`image${i}`];
       }
+      
+      // Also look for files matching machinery-<moNo>- prefix if no images found in columns
+      if (images.length === 0 && fs.existsSync(machineryUploadsDir)) {
+        try {
+          const files = fs.readdirSync(machineryUploadsDir);
+          const prefix = `machinery-${row.moNo}-`;
+          const matching = files
+            .filter(f => f.startsWith(prefix))
+            .map(f => `${req.protocol}://${req.get('host')}/uploads/machinery/${f}`);
+          images.push(...matching);
+        } catch (_) {}
+      }
+
       return { ...row, images };
     });
 
@@ -155,7 +188,8 @@ router.get('/machinery/properties/:id', async (req, res) => {
         md.${waitingHourCol} as waitingChargePerHour,
         md.${waitingNightCol} as waitingChargePerNight,
         md.${fixedCol} as isFixed,
-        md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7
+        md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7,
+        mo.${ownerIdCol} as moNo
       FROM machinarydet md
       JOIN machinaryowndet mo ON md.${ownerFkCol} = mo.${ownerIdCol}
       WHERE md.${detailIdCol} = ?
@@ -170,11 +204,25 @@ router.get('/machinery/properties/:id', async (req, res) => {
     const detail = rows[0];
     const images = [];
     for (let i = 1; i <= 7; i++) {
-      if (detail[`image${i}`]) {
-        images.push(detail[`image${i}`]);
+      const img = detail[`image${i}`];
+      if (img) {
+        images.push(normalizeImageUrl(img, req));
       }
       delete detail[`image${i}`];
     }
+    
+    // Fallback for filesystem images
+    if (images.length === 0 && fs.existsSync(machineryUploadsDir)) {
+      try {
+        const files = fs.readdirSync(machineryUploadsDir);
+        const prefix = `machinery-${detail.moNo}-`;
+        const matching = files
+          .filter(f => f.startsWith(prefix))
+          .map(f => `${req.protocol}://${req.get('host')}/uploads/machinery/${f}`);
+        images.push(...matching);
+      } catch (_) {}
+    }
+    
     detail.images = images;
 
     res.status(200).json(detail);

@@ -209,7 +209,7 @@ const BaseForm = ({
               throw new Error("Failed to obtain vehicle owner id from step1 response");
             }
 
-            // Prepare and save step2 data (vehicles array and images)
+            // Upload images, then prepare and save step2 data (vehicles array and images)
             const step2Data = {
               voNo: voNo,
               vehicles: formData.vehicles,
@@ -217,6 +217,17 @@ const BaseForm = ({
             };
 
             console.log('Prepared step2 data:', step2Data);
+
+            const imagesToUpload = (formData.images || []).slice(0, 12);
+            if (imagesToUpload.length > 0) {
+              try {
+                const { uploadVehiclesImages } = await import("../../screens/vehicles/logic/api");
+                const uploadResult = await uploadVehiclesImages(voNo, imagesToUpload);
+                step2Data.images = uploadResult.images || imagesToUpload;
+              } catch (imgErr) {
+                console.error("Vehicle image upload error:", imgErr);
+              }
+            }
 
             await saveVehiclesStep2(step2Data);
 
@@ -253,7 +264,7 @@ const BaseForm = ({
               contactNo: formData.contactNo
             };
 
-            const { saveMachineryStep1, saveMachineryStep2 } = await import("../../screens/machinery/logic/api");
+            const { saveMachineryStep1, saveMachineryStep2, uploadMachineryImages } = await import("../../screens/machinery/logic/api");
             const step1Response = await saveMachineryStep1(step1Data);
             const moNo = step1Response.moNo || step1Response.id || step1Response.insertId;
 
@@ -261,8 +272,25 @@ const BaseForm = ({
               throw new Error("Failed to obtain machinery owner id from step1 response");
             }
 
+            // Upload images first if present
+            let uploadedImageUrls = [];
+            if (formData.images && formData.images.length > 0) {
+              try {
+                const uploadResult = await uploadMachineryImages(moNo, formData.images);
+                uploadedImageUrls = uploadResult.images || [];
+                console.log('Machinery images uploaded:', uploadedImageUrls);
+              } catch (uploadError) {
+                console.error('Error uploading machinery images:', uploadError);
+                // Continue anyway, but use local URIs as fallback (backend might not like it though)
+              }
+            }
+
             // attach owner id and send entire formData for step2 (route will pick matching columns)
-            const step2Data = { ...formData, moNo };
+            const step2Data = { 
+              ...formData, 
+              moNo,
+              images: uploadedImageUrls.length > 0 ? uploadedImageUrls : formData.images 
+            };
             console.log('Prepared machinery step2 data:', step2Data);
             await saveMachineryStep2(step2Data);
 
@@ -414,8 +442,20 @@ const BaseForm = ({
                 await saveResidentialStep2(step2Data);
                 console.log("Step 2 saved successfully");
 
-                // Save step 3 data to the database
+                // Upload images to backend and then save step 3 data
                 try {
+                  const imagesToUpload = (formData.images || []).slice(0, 7);
+                  if (imagesToUpload.length > 0) {
+                    try {
+                      const { uploadResidentialImages } = await import("../../screens/residential/logic/api");
+                      await uploadResidentialImages(roNo, imagesToUpload);
+                    } catch (imgErr) {
+                      console.error("Image upload error:", imgErr);
+                      // Continue even if image upload fails to avoid blocking payment details saving
+                    }
+                  }
+
+                  // Save step 3 data to the database
                   const step3Data = {
                     roNo: roNo,
                     advanceAmount: formData.advanceAmount,
@@ -477,7 +517,7 @@ const BaseForm = ({
           }
         } else {
           // For non-residential forms, show success message directly
-          if (category === 'business') {
+        if (category === 'business') {
             try {
               // Save business step1
               const step1Data = {
@@ -512,6 +552,15 @@ const BaseForm = ({
               await saveBusinessStep2(step2Data);
 
               // Prepare and save step3
+              const imagesToUpload = (formData.images || []).slice(0, 7);
+              if (imagesToUpload.length > 0) {
+                try {
+                  const { uploadBusinessImages } = await import('../../screens/business/logic/api');
+                  await uploadBusinessImages(boNo, imagesToUpload);
+                } catch (imgErr) {
+                  console.error('Business image upload error:', imgErr);
+                }
+              }
               const step3Data = {
                 boNo,
                 advanceAmount: formData.advanceAmount,

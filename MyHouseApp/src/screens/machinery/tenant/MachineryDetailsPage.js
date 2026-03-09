@@ -11,6 +11,18 @@ export default function MachineryDetailsPage() {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper to normalize image URLs
+  const normalizeImageUrl = (url) => {
+    if (!url) return null;
+    if (typeof url !== 'string') return null;
+    if (url.startsWith('http')) return url;
+    
+    // If it's just a filename, prepend the base upload URL
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const baseHost = API_BASE_URL.replace('/api', '');
+    return `${baseHost}/uploads/machinery/${url.split('/').pop()}`;
+  };
+
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -46,9 +58,13 @@ export default function MachineryDetailsPage() {
 
         {details.images && details.images.length > 0 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
-            {details.images.map((uri, index) => (
-              <Image key={index} source={{ uri }} style={styles.image} />
-            ))}
+            {details.images.map((uri, index) => {
+              const normalizedUri = normalizeImageUrl(uri);
+              if (!normalizedUri) return null;
+              return (
+                <Image key={index} source={{ uri: normalizedUri }} style={styles.image} />
+              );
+            })}
           </ScrollView>
         )}
 

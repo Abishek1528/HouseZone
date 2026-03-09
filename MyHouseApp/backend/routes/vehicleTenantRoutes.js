@@ -26,10 +26,12 @@ router.get('/available', async (req, res) => {
         const [rows] = await pool.execute(query);
 
         // Parse images JSON for each vehicle
-        const vehicles = rows.map(row => ({
-            ...row,
-            images: typeof row.images === 'string' ? JSON.parse(row.images) : row.images
-        }));
+        const origin = `${req.protocol}://${req.get('host')}`;
+        const vehicles = rows.map(row => {
+            const imgs = typeof row.images === 'string' ? JSON.parse(row.images) : (row.images || []);
+            const normalized = Array.isArray(imgs) ? imgs.map(u => (typeof u === 'string' && u.startsWith('http')) ? u : `${origin}${u}`) : [];
+            return { ...row, images: normalized };
+        });
 
         res.status(200).json(vehicles);
     } catch (error) {
@@ -64,7 +66,9 @@ router.get('/:id', async (req, res) => {
         }
 
         const vehicle = rows[0];
-        vehicle.vehicle_images = typeof vehicle.vehicle_images === 'string' ? JSON.parse(vehicle.vehicle_images) : vehicle.vehicle_images;
+        const origin = `${req.protocol}://${req.get('host')}`;
+        const imgs = typeof vehicle.vehicle_images === 'string' ? JSON.parse(vehicle.vehicle_images) : (vehicle.vehicle_images || []);
+        vehicle.vehicle_images = Array.isArray(imgs) ? imgs.map(u => (typeof u === 'string' && u.startsWith('http')) ? u : `${origin}${u}`) : [];
 
         res.status(200).json(vehicle);
     } catch (error) {
