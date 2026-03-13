@@ -32,6 +32,22 @@ router.post('/residential/step2', async (req, res) => {
     } = req.body;
 
     // Insert residential step 2 details into existing resownho table
+    const safeParseFloat = (val) => {
+      const parsed = parseFloat(val);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    const safeParseInt = (val) => {
+      const parsed = parseInt(val);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    console.log('Inserting into resownho with values:', {
+      roNo, facingDirection, hallLength, hallBreadth, noOfBedrooms, kitchenLength, kitchenBreadth, 
+      noOfBathrooms, bathroom1Type, bathroom2Type, bathroom3Type, bathroom1Access, 
+      bathroom2Access, bathroom3Access, floorNo, parking2Wheeler, parking4Wheeler
+    });
+
     await connection.execute(
       `INSERT INTO resownho (
         roNo, facing_direction, hall_length, hall_breadth, number_of_bedrooms, 
@@ -41,38 +57,40 @@ router.post('/residential/step2', async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         roNo,
-        facingDirection,
-        parseFloat(hallLength),
-        parseFloat(hallBreadth),
-        parseInt(noOfBedrooms),
-        parseFloat(kitchenLength),
-        parseFloat(kitchenBreadth),
-        parseInt(noOfBathrooms),
-        bathroom1Type,
+        facingDirection || 'North',
+        safeParseFloat(hallLength),
+        safeParseFloat(hallBreadth),
+        safeParseInt(noOfBedrooms),
+        safeParseFloat(kitchenLength),
+        safeParseFloat(kitchenBreadth),
+        safeParseInt(noOfBathrooms),
+        bathroom1Type || 'Indian',
         bathroom2Type || null,
         bathroom3Type || null,
         bathroom1Access || null,
         bathroom2Access || null,
         bathroom3Access || null,
-        floorNo,
-        parking2Wheeler || null,
+        floorNo || 'Ground',
+        parking2Wheeler || 'No',
         parking4Wheeler || 'No'
       ]
     );
 
     // Insert bedroom details into existing bedroom_sizes table
-    if (bedrooms && bedrooms.length > 0) {
+    if (bedrooms && Array.isArray(bedrooms) && bedrooms.length > 0) {
       for (let i = 0; i < bedrooms.length; i++) {
         const bedroom = bedrooms[i];
-        await connection.execute(
-          `INSERT INTO bedroom_sizes (roNo, bedroom_number, length, breadth) VALUES (?, ?, ?, ?)`,
-          [
-            roNo,
-            parseInt(bedroom.number),
-            parseFloat(bedroom.length),
-            parseFloat(bedroom.breadth)
-          ]
-        );
+        if (bedroom.length || bedroom.breadth) {
+          await connection.execute(
+            `INSERT INTO bedroom_sizes (roNo, bedroom_number, length, breadth) VALUES (?, ?, ?, ?)`,
+            [
+              roNo,
+              parseInt(bedroom.number) || (i + 1),
+              safeParseFloat(bedroom.length),
+              safeParseFloat(bedroom.breadth)
+            ]
+          );
+        }
       }
     }
 
@@ -82,11 +100,16 @@ router.post('/residential/step2', async (req, res) => {
       message: 'Step 2 saved successfully'
     });
   } catch (error) {
-    await connection.rollback();
-    console.error('Error saving residential step 2 details:', error);
-    res.status(500).json({ message: 'Error saving step 2 details', error: error.message });
+    if (connection) await connection.rollback();
+    console.error('CRITICAL: Error saving residential step 2 details:', error);
+    res.status(500).json({ 
+      message: 'Error saving step 2 details', 
+      error: error.message,
+      sqlMessage: error.sqlMessage,
+      code: error.code
+    });
   } finally {
-    connection.release();
+    if (connection) connection.release();
   }
 });
 

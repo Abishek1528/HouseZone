@@ -67,6 +67,7 @@ export const saveResidentialStep1 = async (step1Data) => {
 // Save residential step 2 details
 export const saveResidentialStep2 = async (step2Data) => {
   try {
+    console.log('DEBUG: Sending residential step 2 payload:', JSON.stringify(step2Data, null, 2));
     const result = await handleFetchRequest(`${API_BASE_URL}/residential/step2`, {
       method: 'POST',
       headers: {

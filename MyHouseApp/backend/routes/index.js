@@ -40,7 +40,7 @@ router.use('/', businessTenantRoutes);
 router.use('/', businessOwnerAdminRoutes);
 router.use('/', vehiclesStep1Routes);
 router.use('/', vehiclesStep2Routes);
-router.use('/', vehicleTenantRoutes);
+router.use('/vehicles', vehicleTenantRoutes);
 router.use('/', vehiclesDebugRoutes);
 router.use('/', vehiclesOwnerAdminRoutes);
 router.use('/', machineryStep1Routes);

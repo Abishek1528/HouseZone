@@ -4,74 +4,16 @@ import { useNavigation } from '@react-navigation/native';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import categoryContentStyles from '../../../styles/categoryContentStyles';
-import propertyListStyles from '../../residential/tenant/propertyListStyles';
+import propertyDetailsStyles from '../../residential/tenant/propertyDetailsStyles';
 import { getPropertyDetails } from './api';
-
-const styles = StyleSheet.create({
-  scrollContent: {
-    padding: 15,
-    alignItems: 'flex-start',
-    paddingBottom: 110,
-    width: '100%',
-  },
-  summaryBox: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#4A90E2',
-    width: '100%',
-  },
-  detailBox: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#4A90E2',
-    width: '100%',
-  },
-  boxTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-    paddingBottom: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#4A90E2',
-    textAlign: 'center',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    alignItems: 'center',
-  },
-  detailLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#34495e',
-    flex: 1.2,
-  },
-  detailValue: {
-    fontSize: 16,
-    color: '#2c3e50',
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'right',
-    paddingLeft: 10,
-  },
-});
 
 export default function PropertyDetails({ route }) {
   const navigation = useNavigation();
   const { propertyId } = route.params || {};
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const API_HOST = API_BASE_URL.replace(/\/api$/, '');
 
   useEffect(() => {
     if (propertyId) fetchDetails();
@@ -81,7 +23,7 @@ export default function PropertyDetails({ route }) {
     try {
       setLoading(true);
       const data = await getPropertyDetails(propertyId);
-      setProperty(data || {});
+      setProperty(data || null);
     } catch (error) {
       console.error('Error fetching business property details:', error);
       Alert.alert('Error', 'Failed to load property details');
@@ -90,10 +32,14 @@ export default function PropertyDetails({ route }) {
     }
   };
 
+  const handleProceed = () => {
+    navigation.navigate('TenantDetails');
+  };
+
   if (loading) return (
     <View style={categoryContentStyles.container}>
       <Header />
-      <View style={categoryContentStyles.content}><Text style={propertyListStyles.loadingText}>Loading property details...</Text></View>
+      <View style={categoryContentStyles.content}><Text>Loading...</Text></View>
       <Footer />
     </View>
   );
@@ -101,7 +47,7 @@ export default function PropertyDetails({ route }) {
   if (!property) return (
     <View style={categoryContentStyles.container}>
       <Header />
-      <View style={categoryContentStyles.content}><Text style={propertyListStyles.noPropertiesText}>Property not found</Text></View>
+      <View style={categoryContentStyles.content}><Text>Property not found</Text></View>
       <Footer />
     </View>
   );
@@ -109,20 +55,17 @@ export default function PropertyDetails({ route }) {
   return (
     <View style={categoryContentStyles.container}>
       <Header />
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={true}
+      <ScrollView 
+        style={propertyDetailsStyles.scrollContainer}
+        contentContainerStyle={propertyDetailsStyles.scrollContentContainer}
       >
-        <Text style={categoryContentStyles.pageTitle}>{property?.propertyType || 'Business Property'}</Text>
+        <Text style={categoryContentStyles.pageTitle}>{property.propertySpecs?.property_type || 'Business Property'}</Text>
         
         {/* Images Gallery */}
         {Array.isArray(property.images) && property.images.length > 0 && (
           <View style={{ marginVertical: 10 }}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {property.images.map((imgRaw, idx) => {
-                const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-                const API_HOST = API_BASE_URL.replace(/\/api$/, '');
                 const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
                 return (
                   <View key={idx} style={{ marginRight: 10 }}>
@@ -139,103 +82,114 @@ export default function PropertyDetails({ route }) {
           </View>
         )}
 
-        {/* Summary Box */}
-        <View style={styles.summaryBox}>
-          <Text style={styles.boxTitle}>Property Overview</Text>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Location</Text>
-            <Text style={styles.detailValue}>{property.area || property.city || 'Unknown'}</Text>
+        {/* Property Overview */}
+        <View style={propertyDetailsStyles.section}>
+          <Text style={propertyDetailsStyles.sectionTitle}>Property Overview</Text>
+          <View style={propertyDetailsStyles.firstDetailRow}>
+            <Text style={propertyDetailsStyles.label}>Location</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.area || property.addressDetails?.city || 'Unknown'}</Text>
           </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Owner</Text>
-            <Text style={styles.detailValue}>{property?.ownerName || property?.name_of_person || 'N/A'}</Text>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Owner</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.name_of_person || 'N/A'}</Text>
           </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Monthly Rent</Text>
-            <Text style={styles.detailValue}>₹{property?.monthlyRent || property?.monthly_rent || 'N/A'}</Text>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Monthly Rent</Text>
+            <Text style={propertyDetailsStyles.value}>₹{property.paymentInfo?.monthly_rent || 'N/A'}</Text>
           </View>
         </View>
 
-        {/* All details displayed directly */}
+        {/* Address & Location */}
+        <View style={propertyDetailsStyles.section}>
+          <Text style={propertyDetailsStyles.sectionTitle}>📍 Address & Location</Text>
+          <View style={propertyDetailsStyles.firstDetailRow}>
+            <Text style={propertyDetailsStyles.label}>Door Number</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.door_no || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Street</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.street || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Area</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.area || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>City</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.city || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Pincode</Text>
+            <Text style={propertyDetailsStyles.value}>{property.addressDetails?.pincode || 'N/A'}</Text>
+          </View>
+        </View>
 
-        {/* Box 1: Address & Location Details */}
-        <View style={styles.detailBox}>
-              <Text style={styles.boxTitle}>📍 Address & Location</Text>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Door Number</Text>
-                <Text style={styles.detailValue}>{property?.doorNo || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Street</Text>
-                <Text style={styles.detailValue}>{property?.street || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Area</Text>
-                <Text style={styles.detailValue}>{property?.area || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>City</Text>
-                <Text style={styles.detailValue}>{property?.city || 'N/A'}</Text>
-              </View>
-              <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
-                <Text style={styles.detailLabel}>Pincode</Text>
-                <Text style={styles.detailValue}>{property?.pincode || 'N/A'}</Text>
-              </View>
-            </View>
+        {/* Property Specifications */}
+        <View style={propertyDetailsStyles.section}>
+          <Text style={propertyDetailsStyles.sectionTitle}>🏢 Property Specifications</Text>
+          <View style={propertyDetailsStyles.firstDetailRow}>
+            <Text style={propertyDetailsStyles.label}>Door Facing</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.door_facing || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Property Type</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.property_type || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Total Area (sq ft)</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.totalArea || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Length (ft)</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.length_feet || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Breadth (ft)</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.breadth_feet || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Restroom Available</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.restroom_available ? 'Yes' : 'No'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Floor Number</Text>
+            <Text style={propertyDetailsStyles.value}>{property.propertySpecs?.floor_number || 'N/A'}</Text>
+          </View>
+        </View>
 
-            {/* Box 2: Property Specifications */}
-            <View style={styles.detailBox}>
-              <Text style={styles.boxTitle}>🏢 Property Specifications</Text>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Door Facing</Text>
-                <Text style={styles.detailValue}>{property?.doorFacing || property?.door_facing || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Property Type</Text>
-                <Text style={styles.detailValue}>{property?.propertyType || property?.property_type || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Total Area (sq ft)</Text>
-                <Text style={styles.detailValue}>{property?.totalArea || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Length (ft)</Text>
-                <Text style={styles.detailValue}>{property?.lengthFeet || property?.length_feet || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Breadth (ft)</Text>
-                <Text style={styles.detailValue}>{property?.breadthFeet || property?.breadth_feet || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Restroom Available</Text>
-                <Text style={styles.detailValue}>{property?.restroomAvailable ? 'Yes' : (property?.restroom_available === 0 ? 'No' : 'N/A')}</Text>
-              </View>
-              <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
-                <Text style={styles.detailLabel}>Floor Number</Text>
-                <Text style={styles.detailValue}>{property?.floorNumber || property?.floor_number || 'N/A'}</Text>
-              </View>
-            </View>
+        {/* Payment Information */}
+        <View style={propertyDetailsStyles.section}>
+          <Text style={propertyDetailsStyles.sectionTitle}>💰 Payment Information</Text>
+          <View style={propertyDetailsStyles.firstDetailRow}>
+            <Text style={propertyDetailsStyles.label}>Advance Amount</Text>
+            <Text style={propertyDetailsStyles.value}>₹{property.paymentInfo?.advance_amount || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Monthly Rent</Text>
+            <Text style={propertyDetailsStyles.value}>₹{property.paymentInfo?.monthly_rent || 'N/A'}</Text>
+          </View>
+          <View style={propertyDetailsStyles.detailRow}>
+            <Text style={propertyDetailsStyles.label}>Lease Amount</Text>
+            <Text style={propertyDetailsStyles.value}>₹{property.paymentInfo?.lease_amount || 'N/A'}</Text>
+          </View>
+        </View>
 
-            {/* Box 3: Payment Information */}
-            <View style={styles.detailBox}>
-              <Text style={styles.boxTitle}>💰 Payment Information</Text>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Advance Amount</Text>
-                <Text style={styles.detailValue}>₹{property?.advanceAmount || property?.advance_amount || 'N/A'}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Monthly Rent</Text>
-                <Text style={styles.detailValue}>₹{property?.monthlyRent || property?.monthly_rent || 'N/A'}</Text>
-              </View>
-              <View style={[styles.detailRow, { borderBottomWidth: 0 }]}> 
-                <Text style={styles.detailLabel}>Lease Amount</Text>
-                <Text style={styles.detailValue}>₹{property?.leaseAmount || property?.lease_amount || 'N/A'}</Text>
-              </View>
-            </View>
-
-        <TouchableOpacity style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} onPress={() => navigation.goBack()}>
-          <Text style={categoryContentStyles.buttonText}>Back</Text>
-        </TouchableOpacity>
+        {/* Button Row */}
+        <View style={categoryContentStyles.buttonRow}>
+          <TouchableOpacity 
+            style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={categoryContentStyles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+            onPress={handleProceed}
+          >
+            <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
       <Footer />
     </View>

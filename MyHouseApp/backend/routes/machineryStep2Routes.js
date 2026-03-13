@@ -60,7 +60,6 @@ router.post('/machinery/step2', async (req, res) => {
     }
 
     console.log(`${tableName} columns:`, columnNames);
-    // send columns back for debugging if needed
     res.setHeader('X-Machinery-Columns', columnNames.join(','));
 
     // util: normalize camelCase -> snake_case

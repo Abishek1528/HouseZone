@@ -143,3 +143,8 @@ USE cdmrental;
 --         ON DELETE CASCADE
 --         ON UPDATE CASCADE
 -- );
+
+
+-- CREATE TABLE machinarydet (
+--     id INT AUTO_INCREMENT PRIMARY KEY
+-- );

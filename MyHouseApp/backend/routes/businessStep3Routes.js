@@ -51,6 +51,11 @@ router.post('/business/step3', async (req, res) => {
       }
     }
 
+    console.log('Inserting into businessownerrent:', {
+      sql: `INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${insertCols.map(() => '?').join(', ')})`,
+      values: insertVals
+    });
+
     if (insertCols.length === 0) {
       return res.status(400).json({ message: 'No valid fields found for insertion into businessownerrent' });
     }
