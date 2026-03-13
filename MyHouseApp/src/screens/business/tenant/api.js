@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = 'http://10.37.214.103:3000/api';
 
 const handleFetchRequest = async (url, options) => {
   try {

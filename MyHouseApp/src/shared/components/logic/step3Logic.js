@@ -4,6 +4,7 @@ import { Alert } from "react-native";
 export const step3InitialData = {
   advanceAmount: "",
   rentAmount: "",
+  leaseAmount: "",
   images: [], // Array to store image URIs (max 7)
 };
 

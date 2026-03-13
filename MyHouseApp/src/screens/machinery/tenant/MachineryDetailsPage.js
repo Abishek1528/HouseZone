@@ -54,7 +54,7 @@ export default function MachineryDetailsPage() {
     <View style={styles.container}>
       <Header />
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.title}>{details.name || "Machinery Details"}</Text>
+        <Text style={styles.title}>{details.machinery_name || "Machinery Details"}</Text>
 
         {details.images && details.images.length > 0 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
@@ -76,17 +76,17 @@ export default function MachineryDetailsPage() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Specifications</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Type:</Text> {details.type || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Model:</Text> {details.model || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Type:</Text> {details.machinery_type || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Model:</Text> {details.machinery_model || 'N/A'}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Pricing</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details.chargePerDay || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details.chargePerKm || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details.waitingChargePerHour || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details.waitingChargePerNight || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Fixed Rate:</Text> {details.isFixed ? 'Yes' : 'No'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details.charge_per_day || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details.charge_per_km || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details.waiting_charge_per_hour || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details.waiting_charge_per_night || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Fixed Rate:</Text> {details.is_fixed ? 'Yes' : 'No'}</Text>
         </View>
 
       </ScrollView>

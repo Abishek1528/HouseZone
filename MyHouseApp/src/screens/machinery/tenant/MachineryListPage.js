@@ -49,6 +49,18 @@ export default function MachineryListPage() {
     navigation.navigate('MachineryDetailsPage', { machineryId });
   };
 
+  const toggleExpand = (id) => {
+    setExpandedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
   const renderProperty = ({ item }) => {
     const isExpanded = expandedIds.has(item.id);
     const firstImage = item.images && item.images.length > 0 ? normalizeImageUrl(item.images[0]) : null;
@@ -56,7 +68,10 @@ export default function MachineryListPage() {
     return (
       <View style={machineryListStyles.card}>
         {/* Left Side - Image Container */}
-        <View style={machineryListStyles.imageContainer}>
+        <TouchableOpacity 
+          style={machineryListStyles.imageContainer}
+          onPress={() => toggleExpand(item.id)}
+        >
           {firstImage ? (
             <Image source={{ uri: firstImage }} style={machineryListStyles.propertyImage} />
           ) : (
@@ -64,41 +79,51 @@ export default function MachineryListPage() {
               <Text style={machineryListStyles.imageText}>No Image</Text>
             </View>
           )}
-        </View>
+        </TouchableOpacity>
 
         {/* Right Side - Details Container */}
         <View style={machineryListStyles.detailsContainer}>
-          <Text style={machineryListStyles.areaText}>{item.area || "Unknown Area"}</Text>
-          
-          <View style={machineryListStyles.machineryInfo}>
-            <Text style={machineryListStyles.typeText}>{item.type || "Machinery"}</Text>
-            <Text style={machineryListStyles.modelText}>Model: {item.model || "N/A"}</Text>
-            <Text style={machineryListStyles.rentText}>₹{item.chargePerDay || "N/A"}/day</Text>
-          </View>
-          
-          <TouchableOpacity 
-            style={machineryListStyles.viewMoreButton} 
-            onPress={() => handleViewDetails(item.id)}
-          >
-            <Text style={machineryListStyles.viewMoreText}>
-              View More
-            </Text>
+          <TouchableOpacity onPress={() => toggleExpand(item.id)}>
+            <Text style={machineryListStyles.areaText}>{item.area || "Unknown Area"}</Text>
+            
+            <View style={machineryListStyles.machineryInfo}>
+              <Text style={machineryListStyles.typeText}>{item.machinery_type || "Machinery"}</Text>
+              <Text style={machineryListStyles.modelText}>Model: {item.machinery_model || "N/A"}</Text>
+              <Text style={machineryListStyles.rentText}>₹{item.charge_per_day || "N/A"}/day</Text>
+            </View>
           </TouchableOpacity>
+          
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <TouchableOpacity 
+              style={machineryListStyles.viewMoreButton} 
+              onPress={() => handleViewDetails(item.id)}
+            >
+              <Text style={machineryListStyles.viewMoreText}>
+                View More
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => toggleExpand(item.id)}>
+              <Text style={[machineryListStyles.viewMoreText, { color: '#666' }]}>
+                {isExpanded ? 'Show Less' : 'Details'}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {isExpanded && (
             <View style={machineryListStyles.expandedDetails}>
               <View style={machineryListStyles.detailSection}>
                 <Text style={machineryListStyles.detailHeader}>Specifications</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Name:</Text> {item.name || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Model:</Text> {item.model || 'N/A'}</Text>
+                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Name:</Text> {item.machinery_name || 'N/A'}</Text>
+                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Model:</Text> {item.machinery_model || 'N/A'}</Text>
               </View>
               
               <View style={machineryListStyles.detailSection}>
                 <Text style={machineryListStyles.detailHeader}>Pricing Details</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Per Km:</Text> ₹{item.chargePerKm || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Wait/Hour:</Text> ₹{item.waitingChargePerHour || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Wait/Night:</Text> ₹{item.waitingChargePerNight || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Fixed Rate:</Text> {item.isFixed ? 'Yes' : 'No'}</Text>
+                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Per Km:</Text> ₹{item.charge_per_km || 'N/A'}</Text>
+                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Wait/Hour:</Text> ₹{item.waiting_charge_per_hour || 'N/A'}</Text>
+                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Wait/Night:</Text> ₹{item.waiting_charge_per_night || 'N/A'}</Text>
+                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Fixed Rate:</Text> {item.is_fixed ? 'Yes' : 'No'}</Text>
               </View>
 
               {item.images && item.images.length > 1 && (

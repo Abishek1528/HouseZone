@@ -16,57 +16,15 @@ router.get('/business/properties', async (req, res) => {
     const dbName = process.env.DB_NAME || 'cdmrental';
     const { rent, area, propertyType } = req.query;
 
-    // Get column names for the tables to build dynamic query
-    const [detCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'businessownerdet'`,
-      [dbName]
-    );
-    
-    const [proCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'businessownerpro'`,
-      [dbName]
-    );
-    
-    const [rentCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'businessownerrent'`,
-      [dbName]
-    );
-
-    const detColumnNames = detCols.map(c => c.COLUMN_NAME.toLowerCase());
-    const proColumnNames = proCols.map(c => c.COLUMN_NAME.toLowerCase());
-    const rentColumnNames = rentCols.map(c => c.COLUMN_NAME.toLowerCase());
-
-    // Helper to find a column by possible name fragments
-    const findCol = (columnNames, candidates) => {
-      for (const cand of candidates) {
-        const found = columnNames.find(col => col.includes(cand.toLowerCase()));
-        if (found) return found;
-      }
-      return null;
-    };
-
-    // Find the primary key in businessownerdet table
-    const detPk = findCol(detColumnNames, ['id', 'bo_no', 'bono']) || 'id';
-    
-    // Find the foreign key columns in other tables
-    const proFk = findCol(proColumnNames, ['bo', 'bono', 'owner_id', 'ownerno', 'id']) || detPk;
-    const rentFk = findCol(rentColumnNames, ['bo', 'bono', 'owner_id', 'ownerno', 'id']) || detPk;
-
-    // Find other columns
-    const areaCol = findCol(detColumnNames, ['area', 'location']);
-    const propertyTypeCol = findCol(proColumnNames, ['property', 'type']);
-    const monthlyRentCol = findCol(rentColumnNames, ['rent', 'monthly_rent']);
-    const leaseAmountCol = findCol(rentColumnNames, ['lease', 'lease_amount']);
-
     let query = `SELECT
-      bd.${detPk} as id,
-      bd.${areaCol} as area,
-      bp.${propertyTypeCol} as propertyType,
-      br.${monthlyRentCol} as monthlyRent,
-      br.${leaseAmountCol} as leaseAmount
+      bd.id,
+      bd.area,
+      bp.property_type,
+      br.monthly_rent,
+      br.lease_amount
     FROM businessownerdet bd
-    LEFT JOIN businessownerpro bp ON bd.${detPk} = bp.${proFk}
-    LEFT JOIN businessownerrent br ON bd.${detPk} = br.${rentFk}`;
+    LEFT JOIN businessownerpro bp ON bd.id = bp.businessownerdet_id
+    LEFT JOIN businessownerrent br ON bd.id = br.businessownerdet_id`;
 
     const conditions = [];
     const params = [];
@@ -74,21 +32,21 @@ router.get('/business/properties', async (req, res) => {
     if (rent) {
       if (rent.includes('-')) {
         const [minRent, maxRent] = rent.split('-').map(Number);
-        conditions.push(`(br.${monthlyRentCol} BETWEEN ? AND ? OR br.${leaseAmountCol} BETWEEN ? AND ?)`);
+        conditions.push(`(br.monthly_rent BETWEEN ? AND ? OR br.lease_amount BETWEEN ? AND ?)`);
         params.push(minRent, maxRent, minRent, maxRent);
       } else {
-        conditions.push(`(br.${monthlyRentCol} = ? OR br.${leaseAmountCol} = ?)`);
+        conditions.push(`(br.monthly_rent = ? OR br.lease_amount = ?)`);
         params.push(Number(rent), Number(rent));
       }
     }
 
     if (area && area !== '') {
-      conditions.push(`bd.${areaCol} LIKE ?`);
+      conditions.push(`bd.area LIKE ?`);
       params.push(`%${area}%`);
     }
 
     if (propertyType && propertyType !== '') {
-      conditions.push(`bp.${propertyTypeCol} = ?`);
+      conditions.push(`bp.property_type = ?`);
       params.push(propertyType);
     }
 
@@ -96,7 +54,7 @@ router.get('/business/properties', async (req, res) => {
       query += ' WHERE ' + conditions.join(' AND ');
     }
 
-    query += ` ORDER BY bd.${detPk} DESC`;
+    query += ` ORDER BY bd.id DESC`;
 
     const [rows] = await pool.execute(query, params);
 
@@ -128,89 +86,65 @@ router.get('/business/properties/:id', async (req, res) => {
     const dbName = process.env.DB_NAME || 'cdmrental';
     const { id } = req.params;
 
-    // Get column names for the tables to build dynamic query
-    const [detCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'businessownerdet'`,
-      [dbName]
-    );
-    
-    const [proCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'businessownerpro'`,
-      [dbName]
-    );
-    
-    const [rentCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'businessownerrent'`,
-      [dbName]
-    );
-
-    const detColumnNames = detCols.map(c => c.COLUMN_NAME.toLowerCase());
-    const proColumnNames = proCols.map(c => c.COLUMN_NAME.toLowerCase());
-    const rentColumnNames = rentCols.map(c => c.COLUMN_NAME.toLowerCase());
-
-    // Helper to find a column by possible name fragments
-    const findCol = (columnNames, candidates) => {
-      for (const cand of candidates) {
-        const found = columnNames.find(col => col.includes(cand.toLowerCase()));
-        if (found) return found;
-      }
-      return null;
-    };
-
-    // Find the primary key in businessownerdet table
-    const detPk = findCol(detColumnNames, ['id', 'bo_no', 'bono']) || 'id';
-    
-    // Find the foreign key columns in other tables
-    const proFk = findCol(proColumnNames, ['bo', 'bono', 'owner_id', 'ownerno', 'id']) || detPk;
-    const rentFk = findCol(rentColumnNames, ['bo', 'bono', 'owner_id', 'ownerno', 'id']) || detPk;
-
-    // Find all the columns we need
-    const nameCol = findCol(detColumnNames, ['name', 'person', 'owner']);
-    const doorNoCol = findCol(detColumnNames, ['door', 'no']);
-    const streetCol = findCol(detColumnNames, ['street', 'address']);
-    const areaCol = findCol(detColumnNames, ['area', 'location']);
-    const pincodeCol = findCol(detColumnNames, ['pin', 'pincode', 'postal']);
-    const cityCol = findCol(detColumnNames, ['city']);
-    const contactCol = findCol(detColumnNames, ['contact', 'phone', 'phno']);
-    const doorFacingCol = findCol(proColumnNames, ['facing', 'door_facing']);
-    const propertyTypeCol = findCol(proColumnNames, ['property', 'type']);
-    const lengthCol = findCol(proColumnNames, ['length', 'length_feet']);
-    const breadthCol = findCol(proColumnNames, ['breadth', 'breadth_feet']);
-    const restroomCol = findCol(proColumnNames, ['restroom', 'toilet', 'available']);
-    const floorCol = findCol(proColumnNames, ['floor', 'number']);
-    const advanceCol = findCol(rentColumnNames, ['advance', 'advance_amount']);
-    const monthlyRentCol = findCol(rentColumnNames, ['rent', 'monthly_rent']);
-    const leaseCol = findCol(rentColumnNames, ['lease', 'lease_amount']);
-
     const [rows] = await pool.execute(
       `SELECT
-        bd.${detPk} as id,
-        bd.${nameCol} as ownerName,
-        bd.${doorNoCol} as doorNo,
-        bd.${streetCol} as street,
-        bd.${areaCol} as area,
-        bd.${pincodeCol} as pincode,
-        bd.${cityCol} as city,
-        bd.${contactCol} as contactNo,
-        bp.${doorFacingCol} as doorFacing,
-        bp.${propertyTypeCol} as propertyType,
-        bp.${lengthCol} as lengthFeet,
-        bp.${breadthCol} as breadthFeet,
-        bp.${restroomCol} as restroomAvailable,
-        bp.${floorCol} as floorNumber,
-        br.${advanceCol} as advanceAmount,
-        br.${monthlyRentCol} as monthlyRent,
-        br.${leaseCol} as leaseAmount
+        bd.id,
+        bd.name_of_person,
+        bd.door_no,
+        bd.street,
+        bd.area,
+        bd.pincode,
+        bd.city,
+        bd.contact_no,
+        bp.door_facing,
+        bp.property_type,
+        bp.length_feet,
+        bp.breadth_feet,
+        bp.restroom_available,
+        bp.floor_number,
+        br.advance_amount,
+        br.monthly_rent,
+        br.lease_amount
       FROM businessownerdet bd
-      LEFT JOIN businessownerpro bp ON bd.${detPk} = bp.${proFk}
-      LEFT JOIN businessownerrent br ON bd.${detPk} = br.${rentFk}
-      WHERE bd.${detPk} = ?`,
+      LEFT JOIN businessownerpro bp ON bd.id = bp.businessownerdet_id
+      LEFT JOIN businessownerrent br ON bd.id = br.businessownerdet_id
+      WHERE bd.id = ?`,
       [id]
     );
 
     if (rows.length === 0) return res.status(404).json({ message: 'Property not found' });
 
-    const detail = rows[0];
+    const property = rows[0];
+
+    // Restructure the data to match the residential format
+    const structuredData = {
+      id: property.id,
+      images: [], // This will be populated next
+      addressDetails: {
+        name_of_person: property.name_of_person,
+        door_no: property.door_no,
+        street: property.street,
+        area: property.area,
+        pincode: property.pincode,
+        city: property.city,
+        contact_no: property.contact_no,
+      },
+      propertySpecs: {
+        door_facing: property.door_facing,
+        property_type: property.property_type,
+        totalArea: (parseFloat(property.length_feet) * parseFloat(property.breadth_feet)).toFixed(0),
+        length_feet: property.length_feet,
+        breadth_feet: property.breadth_feet,
+        restroom_available: property.restroom_available,
+        floor_number: property.floor_number,
+      },
+      paymentInfo: {
+        advance_amount: property.advance_amount,
+        monthly_rent: property.monthly_rent,
+        lease_amount: property.lease_amount,
+      },
+    };
+
     let filenames = [];
     try {
       filenames = fs.readdirSync(businessUploadsDir);
@@ -219,16 +153,11 @@ router.get('/business/properties/:id', async (req, res) => {
     }
     const origin = `${req.protocol}://${req.get('host')}`;
     const prefix = `business-${id}-`;
-    detail.images = filenames
+    structuredData.images = filenames
       .filter(fn => fn.startsWith(prefix))
       .map(fn => `${origin}/uploads/business/${fn}`);
-    // Calculate total area if available
-    if (detail.lengthFeet && detail.breadthFeet) {
-      detail.totalArea = (parseFloat(detail.lengthFeet) * parseFloat(detail.breadthFeet)).toFixed(2);
-    }
 
-
-    res.status(200).json(detail);
+    res.status(200).json(structuredData);
   } catch (error) {
     console.error('Error fetching business property details:', error);
     res.status(500).json({ message: 'Error fetching business property details', error: error.message });

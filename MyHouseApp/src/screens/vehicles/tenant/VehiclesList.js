@@ -33,6 +33,7 @@ const VehiclesList = () => {
 
             // Map API fields directly to UI (API already returns normalized field names)
             const vehicles = (data || []).map(item => ({
+                ...item,
                 id: item.id,
                 name: item.name || '',
                 model: item.model || '',

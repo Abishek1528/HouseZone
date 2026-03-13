@@ -9,13 +9,13 @@ router.get('/available', async (req, res) => {
         const query = `
       SELECT 
         vd.id,
-        vd.vehicle_type as type,
-        vd.vehicle_name as name,
-        vd.vehicle_model as model,
-        vd.fuel_type as fuelType,
-        vd.ac_charge_per_day as acPrice,
-        vd.nonac_charge_per_day as nonAcPrice,
-        vd.vehicle_images as images,
+        vd.vehicle_type,
+        vd.vehicle_name,
+        vd.vehicle_model,
+        vd.fuel_type,
+        vd.ac_charge_per_day,
+        vd.nonac_charge_per_day,
+        vd.vehicle_images,
         vo.area,
         vo.city
       FROM vehiclesdet vd
@@ -47,12 +47,12 @@ router.get('/:id', async (req, res) => {
         const query = `
       SELECT 
         vd.*,
-        vo.name_of_person as ownerName,
-        vo.contact_no as contactNo,
+        vo.name_of_person,
+        vo.contact_no,
         vo.area,
         vo.city,
         vo.street,
-        vo.door_no as doorNo,
+        vo.door_no,
         vo.pincode
       FROM vehiclesdet vd
       INNER JOIN vehiclesowndet vo ON vd.vehiclesowndet_id = vo.id

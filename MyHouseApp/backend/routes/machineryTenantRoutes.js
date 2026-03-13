@@ -24,72 +24,24 @@ router.get('/machinery/properties', async (req, res) => {
   try {
     const dbName = process.env.DB_NAME || 'cdmrental';
 
-    // Dynamically get column names to build a robust query
-    const [ownerCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'machinaryowndet'`,
-      [dbName]
-    );
-    const [detailCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'machinarydet'`,
-      [dbName]
-    );
-
-    if (ownerCols.length === 0 || detailCols.length === 0) {
-      console.log('One or both machinery tables not found, returning empty array.');
-      return res.status(200).json([]);
-    }
-
-    const ownerColumnNames = ownerCols.map(c => c.COLUMN_NAME.toLowerCase());
-    const detailColumnNames = detailCols.map(c => c.COLUMN_NAME.toLowerCase());
-
-    const findCol = (columns, candidates) => {
-      for (const cand of candidates) {
-        const found = columns.find(col => col.includes(cand.toLowerCase()));
-        if (found) return found;
-      }
-      return null;
-    };
-
-    // --- Column Mappings ---
-    // Owner details (excluding sensitive info)
-    const ownerIdCol = findCol(ownerColumnNames, ['id', 'mo_no']) || 'id';
-    const areaCol = findCol(ownerColumnNames, ['area', 'location']);
-    const cityCol = findCol(ownerColumnNames, ['city']);
-
-    // Machinery details
-    const detailIdCol = findCol(detailColumnNames, ['id', 'machinery_id']) || 'id';
-    const ownerFkCol = findCol(detailColumnNames, ['owner_id', 'machinaryowndet_id', 'mo_no']) || 'owner_id';
-    const typeCol = findCol(detailColumnNames, ['machinery_type', 'type']);
-    const nameCol = findCol(detailColumnNames, ['machinery_name', 'name']);
-    const modelCol = findCol(detailColumnNames, ['machinery_model', 'model']);
-    const imagesCol = findCol(detailColumnNames, ['image1', 'images', 'image_urls']); // Prioritize image1 if it exists
-
-    // Pricing columns
-    const chargeDayCol = findCol(detailColumnNames, ['charge_per_day']);
-    const chargeKmCol = findCol(detailColumnNames, ['charge_per_km']);
-    const waitingHourCol = findCol(detailColumnNames, ['waiting_charge_per_hour']);
-    const waitingNightCol = findCol(detailColumnNames, ['waiting_charge_per_night']);
-    const fixedCol = findCol(detailColumnNames, ['is_fixed', 'fixed']);
-
-    // Construct the query dynamically
     const query = `
       SELECT
-        md.${detailIdCol} as id,
-        mo.${areaCol} as area,
-        mo.${cityCol} as city,
-        md.${typeCol} as type,
-        md.${nameCol} as name,
-        md.${modelCol} as model,
-        md.${chargeDayCol} as chargePerDay,
-        md.${chargeKmCol} as chargePerKm,
-        md.${waitingHourCol} as waitingChargePerHour,
-        md.${waitingNightCol} as waitingChargePerNight,
-        md.${fixedCol} as isFixed,
+        md.owner_id as id,
+        mo.area,
+        mo.city,
+        md.machinery_type,
+        md.machinery_name,
+        md.machinery_model,
+        md.charge_per_day,
+        md.charge_per_km,
+        md.waiting_charge_per_hour,
+        md.waiting_charge_per_night,
+        md.is_fixed,
         md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7,
-        mo.${ownerIdCol} as moNo
+        mo.id as moNo
       FROM machinarydet md
-      JOIN machinaryowndet mo ON md.${ownerFkCol} = mo.${ownerIdCol}
-      ORDER BY md.${detailIdCol} DESC
+      JOIN machinaryowndet mo ON md.owner_id = mo.id
+      ORDER BY md.owner_id DESC
     `;
 
     const [rows] = await pool.execute(query);
@@ -136,63 +88,24 @@ router.get('/machinery/properties/:id', async (req, res) => {
     const { id } = req.params;
     const dbName = process.env.DB_NAME || 'cdmrental';
 
-    const [ownerCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'machinaryowndet'`,
-      [dbName]
-    );
-    const [detailCols] = await pool.execute(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'machinarydet'`,
-      [dbName]
-    );
-
-    if (ownerCols.length === 0 || detailCols.length === 0) {
-      return res.status(404).json({ message: "Machinery tables not found." });
-    }
-
-    const ownerColumnNames = ownerCols.map(c => c.COLUMN_NAME.toLowerCase());
-    const detailColumnNames = detailCols.map(c => c.COLUMN_NAME.toLowerCase());
-
-    const findCol = (columns, candidates) => {
-      for (const cand of candidates) {
-        const found = columns.find(col => col.includes(cand.toLowerCase()));
-        if (found) return found;
-      }
-      return null;
-    };
-
-    const ownerIdCol = findCol(ownerColumnNames, ['id', 'mo_no']) || 'id';
-    const areaCol = findCol(ownerColumnNames, ['area', 'location']);
-    const cityCol = findCol(ownerColumnNames, ['city']);
-
-    const detailIdCol = findCol(detailColumnNames, ['id', 'machinery_id']) || 'id';
-    const ownerFkCol = findCol(detailColumnNames, ['owner_id', 'machinaryowndet_id', 'mo_no']) || 'owner_id';
-    const typeCol = findCol(detailColumnNames, ['machinery_type', 'type']);
-    const nameCol = findCol(detailColumnNames, ['machinery_name', 'name']);
-    const modelCol = findCol(detailColumnNames, ['machinery_model', 'model']);
-    const chargeDayCol = findCol(detailColumnNames, ['charge_per_day']);
-    const chargeKmCol = findCol(detailColumnNames, ['charge_per_km']);
-    const waitingHourCol = findCol(detailColumnNames, ['waiting_charge_per_hour']);
-    const waitingNightCol = findCol(detailColumnNames, ['waiting_charge_per_night']);
-    const fixedCol = findCol(detailColumnNames, ['is_fixed', 'fixed']);
-
     const query = `
       SELECT
-        md.${detailIdCol} as id,
-        mo.${areaCol} as area,
-        mo.${cityCol} as city,
-        md.${typeCol} as type,
-        md.${nameCol} as name,
-        md.${modelCol} as model,
-        md.${chargeDayCol} as chargePerDay,
-        md.${chargeKmCol} as chargePerKm,
-        md.${waitingHourCol} as waitingChargePerHour,
-        md.${waitingNightCol} as waitingChargePerNight,
-        md.${fixedCol} as isFixed,
+        md.owner_id as id,
+        mo.area,
+        mo.city,
+        md.machinery_type,
+        md.machinery_name,
+        md.machinery_model,
+        md.charge_per_day,
+        md.charge_per_km,
+        md.waiting_charge_per_hour,
+        md.waiting_charge_per_night,
+        md.is_fixed,
         md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7,
-        mo.${ownerIdCol} as moNo
+        mo.id as moNo
       FROM machinarydet md
-      JOIN machinaryowndet mo ON md.${ownerFkCol} = mo.${ownerIdCol}
-      WHERE md.${detailIdCol} = ?
+      JOIN machinaryowndet mo ON md.owner_id = mo.id
+      WHERE md.owner_id = ?
     `;
 
     const [rows] = await pool.execute(query, [id]);

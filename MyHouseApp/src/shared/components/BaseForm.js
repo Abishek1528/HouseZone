@@ -61,46 +61,44 @@ const BaseForm = ({
   const validateStep2 = () => true;
 
   const validateStep3 = () => {
-    // For residential category, implement special validation for lease amount
-    if (category === "residential") {
-      // For residential: accept any ONE payment field as sufficient
-      const hasLeaseAmount = formData.leaseAmount && !isNaN(parseFloat(formData.leaseAmount)) && parseFloat(formData.leaseAmount) > 0;
-      const hasAdvanceAmount = formData.advanceAmount && !isNaN(parseFloat(formData.advanceAmount)) && parseFloat(formData.advanceAmount) > 0;
-      const hasRentAmount = formData.rentAmount && !isNaN(parseFloat(formData.rentAmount)) && parseFloat(formData.rentAmount) > 0;
+    // Shared validation for Step 3 (Payment and Images)
+    const leaseVal = formData.leaseAmount;
+    const advanceVal = formData.advanceAmount;
+    const rentVal = formData.rentAmount || formData.monthlyRent;
 
-      // Require at least one valid payment value
-      if (!(hasLeaseAmount || hasAdvanceAmount || hasRentAmount)) {
-        Alert.alert("Validation Error", "Please provide at least one payment option: Lease Amount OR Advance Amount OR Monthly Rent");
-        return false;
-      }
+    // Helper to check if a value is a valid positive number
+    const isValidAmount = (val) => {
+      if (val === undefined || val === null || val === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num > 0;
+    };
 
-      // Validate each provided amount's numeric range
-      if (hasAdvanceAmount && (parseFloat(formData.advanceAmount) <= 0 || parseFloat(formData.advanceAmount) > 999999999)) {
-        Alert.alert("Validation Error", "Advance Amount must be a positive number and not exceed 999,999,999");
-        return false;
-      }
+    const hasLease = isValidAmount(leaseVal);
+    const hasAdvance = isValidAmount(advanceVal);
+    const hasRent = isValidAmount(rentVal);
 
-      if (hasRentAmount && (parseFloat(formData.rentAmount) <= 0 || parseFloat(formData.rentAmount) > 999999999)) {
-        Alert.alert("Validation Error", "Monthly Rent must be a positive number and not exceed 999,999,999");
-        return false;
-      }
+    // Logic: Either (Lease Amount) OR (Advance Amount AND Monthly Rent) must be provided
+    if (!hasLease && !(hasAdvance && hasRent)) {
+      Alert.alert(
+        "Validation Error", 
+        "Please provide either a valid Lease Amount OR both Advance Amount and Monthly Rent in Step 3."
+      );
+      return false;
+    }
 
-      if (hasLeaseAmount && (parseFloat(formData.leaseAmount) <= 0 || parseFloat(formData.leaseAmount) > 999999999)) {
-        Alert.alert("Validation Error", "Lease Amount must be a positive number and not exceed 999,999,999");
-        return false;
-      }
-    } else {
-      // For non-residential categories, accept either `rentAmount` or `monthlyRent` (frontend uses `rentAmount`)
-      const advanceVal = formData.advanceAmount;
-      const rentVal = formData.rentAmount ?? formData.monthlyRent;
-
-      const isAdvanceValid = advanceVal !== undefined && advanceVal !== null && advanceVal !== '' && !isNaN(parseFloat(advanceVal)) && parseFloat(advanceVal) > 0;
-      const isRentValid = rentVal !== undefined && rentVal !== null && rentVal !== '' && !isNaN(parseFloat(rentVal)) && parseFloat(rentVal) > 0;
-
-      if (!isAdvanceValid || !isRentValid) {
-        Alert.alert("Validation Error", "Please fill in valid Advance Amount and Monthly Rent in Step 3");
-        return false;
-      }
+    // Common range validation
+    const MAX_AMOUNT = 999999999;
+    if (hasLease && parseFloat(leaseVal) > MAX_AMOUNT) {
+      Alert.alert("Validation Error", "Lease Amount exceeds the maximum allowed limit.");
+      return false;
+    }
+    if (hasAdvance && parseFloat(advanceVal) > MAX_AMOUNT) {
+      Alert.alert("Validation Error", "Advance Amount exceeds the maximum allowed limit.");
+      return false;
+    }
+    if (hasRent && parseFloat(rentVal) > MAX_AMOUNT) {
+      Alert.alert("Validation Error", "Monthly Rent exceeds the maximum allowed limit.");
+      return false;
     }
 
     const images = formData.images || [];
@@ -564,7 +562,8 @@ const BaseForm = ({
               const step3Data = {
                 boNo,
                 advanceAmount: formData.advanceAmount,
-                monthlyRent: formData.rentAmount
+                monthlyRent: formData.rentAmount,
+                leaseAmount: formData.leaseAmount
               };
 
               await saveBusinessStep3(step3Data);
