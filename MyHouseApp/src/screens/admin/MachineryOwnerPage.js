@@ -44,8 +44,7 @@ export default function MachineryOwnerPage() {
 
   const renderOwner = ({ item }) => {
     const isExpanded = expandedOwners[item.machineryId];
-    const firstImage = item.images && item.images.length > 0 ? item.images[0] : null;
-    
+
     return (
       <View style={residentialOwnerStyles.ownerCard}>
         {/* Summary view */}
@@ -68,6 +67,22 @@ export default function MachineryOwnerPage() {
         {/* Detailed view (shown when expanded) */}
         {isExpanded && (
           <View style={residentialOwnerStyles.detailedContainer}>
+            {/* Images Gallery */}
+            {item.images && item.images.length > 0 && (
+              <View style={residentialOwnerStyles.detailSection}>
+                <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {item.images.map((img, idx) => (
+                    <Image 
+                      key={idx} 
+                      source={{ uri: img }} 
+                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
             <View style={residentialOwnerStyles.detailSection}>
               <Text style={residentialOwnerStyles.sectionTitle}>Owner Information</Text>
               <Text style={residentialOwnerStyles.detailText}>
@@ -119,27 +134,7 @@ export default function MachineryOwnerPage() {
               </Text>
             </View>
 
-            {firstImage && (
-              <View style={residentialOwnerStyles.detailSection}>
-                <Text style={residentialOwnerStyles.sectionTitle}>Machinery Image</Text>
-                <Image source={{ uri: firstImage }} style={{ width: "100%", height: 200, borderRadius: 10 }} resizeMode="cover" />
-              </View>
-            )}
 
-            {item.images && item.images.length > 1 && (
-              <View style={residentialOwnerStyles.detailSection}>
-                <Text style={residentialOwnerStyles.sectionTitle}>Additional Images</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {item.images.slice(1).map((uri, idx) => (
-                    <Image 
-                      key={idx} 
-                      source={{ uri }} 
-                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
-                    />
-                  ))}
-                </ScrollView>
-              </View>
-            )}
           </View>
         )}
       </View>

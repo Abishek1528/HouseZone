@@ -36,6 +36,7 @@ router.get('/vehicles/owners', async (req, res) => {
 
     const detPk = findCol(detColumnNames, ['id', 'vo_no', 'vono']) || 'id';
     const vehFk = findCol(vehColumnNames, ['vehiclesowndet_id', 'vo_no', 'vono', 'owner_id', 'id']) || 'vehiclesowndet_id';
+    console.log(`[Admin Vehicle Route] Joining keys - Owner PK: ${detPk}, Vehicle FK: ${vehFk}`);
     
     const nameCol = findCol(detColumnNames, ['name', 'person', 'owner']);
     const contactCol = findCol(detColumnNames, ['contact', 'phone', 'phno']);
@@ -96,6 +97,11 @@ router.get('/vehicles/owners', async (req, res) => {
     `;
 
     const [rows] = await pool.execute(query);
+
+    if (rows.length === 0) {
+      return res.status(200).json([]);
+    }
+
     const vehicles = rows.map(row => ({
       ...row,
       images: typeof row.images === 'string' ? JSON.parse(row.images) : (row.images || [])

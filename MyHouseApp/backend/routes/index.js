@@ -40,9 +40,10 @@ router.use('/', businessTenantRoutes);
 router.use('/', businessOwnerAdminRoutes);
 router.use('/', vehiclesStep1Routes);
 router.use('/', vehiclesStep2Routes);
+router.use('/', vehiclesOwnerAdminRoutes);
 router.use('/vehicles', vehicleTenantRoutes);
 router.use('/', vehiclesDebugRoutes);
-router.use('/', vehiclesOwnerAdminRoutes);
+// router.use('/', vehiclesOwnerAdminRoutes); // Moved up to avoid conflict with vehicleTenantRoutes
 router.use('/', machineryStep1Routes);
 router.use('/', machineryStep2Routes);
 router.use('/', machineryTenantRoutes);
