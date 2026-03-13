@@ -44,7 +44,6 @@ export default function VehiclesOwnerPage() {
 
   const renderItem = ({ item }) => {
     const isExpanded = expandedVehicles[item.vehicleId];
-    const firstImage = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null;
     
     return (
       <View style={residentialOwnerStyles.ownerCard}>
@@ -68,6 +67,22 @@ export default function VehiclesOwnerPage() {
         {/* Detailed view (shown when expanded) */}
         {isExpanded && (
           <View style={residentialOwnerStyles.detailedContainer}>
+            {/* Images Gallery */}
+            {item.images && item.images.length > 0 && (
+              <View style={residentialOwnerStyles.detailSection}>
+                <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
+                  {item.images.map((img, idx) => (
+                    <Image 
+                      key={idx} 
+                      source={{ uri: img }} 
+                      style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
+                      resizeMode="cover" 
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+            )}
             <View style={residentialOwnerStyles.detailSection}>
               <Text style={residentialOwnerStyles.sectionTitle}>Owner Information</Text>
               <Text style={residentialOwnerStyles.detailText}>
@@ -144,12 +159,7 @@ export default function VehiclesOwnerPage() {
               </Text>
             </View>
 
-            {firstImage && (
-              <View style={residentialOwnerStyles.detailSection}>
-                <Text style={residentialOwnerStyles.sectionTitle}>Vehicle Image</Text>
-                <Image source={{ uri: firstImage }} style={{ width: "100%", height: 200, borderRadius: 10 }} resizeMode="cover" />
-              </View>
-            )}
+
           </View>
         )}
       </View>

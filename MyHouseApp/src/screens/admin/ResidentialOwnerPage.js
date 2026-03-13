@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, Alert, TouchableOpacity, Modal, TextInput, ScrollView } from "react-native";
+import { View, Text, FlatList, Alert, TouchableOpacity, Modal, TextInput, ScrollView, Image } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import adminStyles from "../../styles/admin/adminStyles";
@@ -215,9 +215,25 @@ export default function ResidentialOwnerPage() {
         
         {/* Detailed view (shown when expanded) */}
         {isExpanded && (
-          <View style={residentialOwnerStyles.detailedContainer}>
-            <View style={residentialOwnerStyles.detailSection}>
-              <Text style={residentialOwnerStyles.sectionTitle}>Personal Information</Text>
+            <View style={residentialOwnerStyles.detailedContainer}>
+              {/* Images Gallery */}
+              {item.images && item.images.length > 0 && (
+                <View style={residentialOwnerStyles.detailSection}>
+                  <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
+                    {item.images.map((img, idx) => (
+                      <Image 
+                        key={idx} 
+                        source={{ uri: img }} 
+                        style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
+                        resizeMode="cover" 
+                      />
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+              <View style={residentialOwnerStyles.detailSection}>
+                <Text style={residentialOwnerStyles.sectionTitle}>Owner Information</Text>
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>ID:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.id}</Text>
               </Text>

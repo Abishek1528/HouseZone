@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const residentialUploadsDir = path.join(__dirname, '../uploads', 'residential');
 
 // API endpoint for getting all residential owners for admin view
 router.get('/residential/owners', async (req, res) => {
@@ -55,8 +62,23 @@ router.get('/residential/owners', async (req, res) => {
     `;
     
     const [rows] = await pool.execute(query);
+
+    const results = rows.map(row => {
+      const images = [];
+      if (fs.existsSync(residentialUploadsDir)) {
+        try {
+          const files = fs.readdirSync(residentialUploadsDir);
+          const prefix = `residential-${row.id}-`;
+          const matching = files
+            .filter(f => f.startsWith(prefix))
+            .map(f => `${req.protocol}://${req.get('host')}/uploads/residential/${f}`);
+          images.push(...matching);
+        } catch (_) {}
+      }
+      return { ...row, images };
+    });
     
-    res.status(200).json(rows);
+    res.status(200).json(results);
   } catch (error) {
     console.error('Error fetching residential owners:', error);
     res.status(500).json({ message: 'Error fetching owners', error: error.message });
