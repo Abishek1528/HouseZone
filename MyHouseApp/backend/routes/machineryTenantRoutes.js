@@ -22,9 +22,10 @@ const normalizeImageUrl = (url, req) => {
 // GET all machinery for tenant view
 router.get('/machinery/properties', async (req, res) => {
   try {
+    const { type, rent, area } = req.query;
     const dbName = process.env.DB_NAME || 'cdmrental';
 
-    const query = `
+    let query = `
       SELECT
         md.owner_id as id,
         mo.area,
@@ -41,10 +42,39 @@ router.get('/machinery/properties', async (req, res) => {
         mo.id as moNo
       FROM machinarydet md
       JOIN machinaryowndet mo ON md.owner_id = mo.id
-      ORDER BY md.owner_id DESC
     `;
 
-    const [rows] = await pool.execute(query);
+    const conditions = [];
+    const params = [];
+
+    if (type && type !== '') {
+      conditions.push('md.machinery_type = ?');
+      params.push(type);
+    }
+
+    if (rent && rent !== '') {
+      if (rent.includes('-')) {
+        const [minRent, maxRent] = rent.split('-').map(Number);
+        conditions.push('md.charge_per_day BETWEEN ? AND ?');
+        params.push(minRent, maxRent);
+      } else {
+        conditions.push('md.charge_per_day = ?');
+        params.push(Number(rent));
+      }
+    }
+
+    if (area && area !== '') {
+      conditions.push('mo.area LIKE ?');
+      params.push(`%${area}%`);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    query += ' ORDER BY md.owner_id DESC';
+
+    const [rows] = await pool.execute(query, params);
 
     // Process rows to group images
     const machineryList = rows.map(row => {

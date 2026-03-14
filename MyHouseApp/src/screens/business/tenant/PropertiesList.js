@@ -67,6 +67,7 @@ export default function PropertiesList() {
   const [rentFilter, setRentFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   useEffect(() => { loadProperties(); }, []);
 
@@ -112,58 +113,73 @@ export default function PropertiesList() {
     <View style={categoryContentStyles.container}>
       <Header />
       <View style={categoryContentStyles.content}>
-        <Text style={categoryContentStyles.pageTitle}>Available Business Properties</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={categoryContentStyles.pageTitle}>Available Business Properties</Text>
+          <TouchableOpacity 
+            style={[propertyListStyles.searchButton, { marginBottom: 15, flexDirection: 'row', alignItems: 'center' }]}
+            onPress={() => setIsFilterVisible(!isFilterVisible)}
+          >
+            <Text style={propertyListStyles.searchButtonText}>
+              {isFilterVisible ? 'Hide Filter' : 'Filter'}
+            </Text>
+            <Text style={[propertyListStyles.searchButtonText, { marginLeft: 5 }]}>
+              {isFilterVisible ? '▲' : '▼'}
+            </Text>
+          </TouchableOpacity>
+        </View>
         
         {/* Filter Section */}
-        <View style={propertyListStyles.filterContainer}>
-          <View style={propertyListStyles.filterBox}>
-            <Text style={propertyListStyles.filterLabel}>Rent:</Text>
-            <Picker
-              selectedValue={rentFilter}
-              style={propertyListStyles.picker}
-              onValueChange={(itemValue) => setRentFilter(itemValue)}
-              mode="dropdown"
-            >
-              <Picker.Item label="Any" value="" color="#999999" />
-              <Picker.Item label="2000-4000" value="2000-4000" />
-              <Picker.Item label="4000-6000" value="4000-6000" />
-              <Picker.Item label="6000-8000" value="6000-8000" />
-              <Picker.Item label="8000-10000" value="8000-10000" />
-              <Picker.Item label="10000-12000" value="10000-12000" />
-            </Picker>
+        {isFilterVisible && (
+          <View style={propertyListStyles.filterContainer}>
+            <View style={propertyListStyles.filterBox}>
+              <Text style={propertyListStyles.filterLabel}>Rent:</Text>
+              <Picker
+                selectedValue={rentFilter}
+                style={propertyListStyles.picker}
+                onValueChange={(itemValue) => setRentFilter(itemValue)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Any" value="" color="#999999" />
+                <Picker.Item label="2000-4000" value="2000-4000" />
+                <Picker.Item label="4000-6000" value="4000-6000" />
+                <Picker.Item label="6000-8000" value="6000-8000" />
+                <Picker.Item label="8000-10000" value="8000-10000" />
+                <Picker.Item label="10000-12000" value="10000-12000" />
+              </Picker>
+            </View>
+            
+            <View style={propertyListStyles.filterBox}>
+              <Text style={propertyListStyles.filterLabel}>Type:</Text>
+              <Picker
+                selectedValue={typeFilter}
+                style={propertyListStyles.picker}
+                onValueChange={(itemValue) => setTypeFilter(itemValue)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Any" value="" color="#999999" />
+                <Picker.Item label="Shop" value="Shop" />
+                <Picker.Item label="Office" value="Office" />
+                <Picker.Item label="Godown" value="Godown" />
+                <Picker.Item label="Industry" value="Industry" />
+              </Picker>
+            </View>
+            
+            <View style={propertyListStyles.filterBox}>
+              <Text style={propertyListStyles.filterLabel}>Area:</Text>
+              <Picker
+                selectedValue={areaFilter}
+                style={propertyListStyles.picker}
+                onValueChange={(itemValue) => setAreaFilter(itemValue)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Any" value="" color="#999999" />
+                <Picker.Item label="Area 1" value="Area 1" />
+                <Picker.Item label="Area 2" value="Area 2" />
+                <Picker.Item label="Area 3" value="Area 3" />
+              </Picker>
+            </View>
           </View>
-          
-          <View style={propertyListStyles.filterBox}>
-            <Text style={propertyListStyles.filterLabel}>Type:</Text>
-            <Picker
-              selectedValue={typeFilter}
-              style={propertyListStyles.picker}
-              onValueChange={(itemValue) => setTypeFilter(itemValue)}
-              mode="dropdown"
-            >
-              <Picker.Item label="Any" value="" color="#999999" />
-              <Picker.Item label="Shop" value="Shop" />
-              <Picker.Item label="Office" value="Office" />
-              <Picker.Item label="Godown" value="Godown" />
-              <Picker.Item label="Industry" value="Industry" />
-            </Picker>
-          </View>
-          
-          <View style={propertyListStyles.filterBox}>
-            <Text style={propertyListStyles.filterLabel}>Area:</Text>
-            <Picker
-              selectedValue={areaFilter}
-              style={propertyListStyles.picker}
-              onValueChange={(itemValue) => setAreaFilter(itemValue)}
-              mode="dropdown"
-            >
-              <Picker.Item label="Any" value="" color="#999999" />
-              <Picker.Item label="Area 1" value="Area 1" />
-              <Picker.Item label="Area 2" value="Area 2" />
-              <Picker.Item label="Area 3" value="Area 3" />
-            </Picker>
-          </View>
-        </View>
+        )}
 
         {/* Selected Filters Display */}
         <View style={propertyListStyles.selectedFiltersContainer}>

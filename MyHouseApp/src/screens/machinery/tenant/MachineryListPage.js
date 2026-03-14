@@ -1,17 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import categoryContentStyles from "../../../styles/categoryContentStyles";
+import propertyListStyles from "../../residential/tenant/propertyListStyles";
 import machineryListStyles from "./machineryListStyles";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import { getMachineryProperties } from "./api";
+
+// Component to display selected filters as horizontal boxes with remove option
+const SelectedFilterBox = ({ label, value, onRemove }) => {
+  if (!value) return null;
+  return (
+    <View style={propertyListStyles.selectedFilterBox}>
+      <View style={propertyListStyles.selectedFilterContent}>
+        <Text style={propertyListStyles.selectedFilterText}>
+          {label}: {value}
+        </Text>
+        <TouchableOpacity onPress={onRemove} style={propertyListStyles.removeFilterButton}>
+          <Text style={propertyListStyles.removeFilterText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 export default function MachineryListPage() {
   const navigation = useNavigation();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState(new Set());
+  const [rentFilter, setRentFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [areaFilter, setAreaFilter] = useState('');
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   // Helper to normalize image URLs
   const normalizeImageUrl = (url) => {
@@ -25,10 +48,10 @@ export default function MachineryListPage() {
     return `${baseHost}/uploads/machinery/${url.split('/').pop()}`;
   };
 
-  const loadProperties = async () => {
+  const loadProperties = async (filters = {}) => {
     try {
       setLoading(true);
-      const data = await getMachineryProperties();
+      const data = await getMachineryProperties(filters);
       console.log('Loaded machinery properties:', data);
       setProperties(data || []);
     } catch (error) {
@@ -44,6 +67,27 @@ export default function MachineryListPage() {
     const unsubscribe = navigation.addListener('focus', () => loadProperties());
     return unsubscribe;
   }, [navigation]);
+
+  // Apply filters when any filter changes
+  useEffect(() => {
+    const filters = {};
+    if (rentFilter) filters.rent = rentFilter;
+    if (typeFilter) filters.type = typeFilter;
+    if (areaFilter) filters.area = areaFilter;
+
+    loadProperties(filters);
+  }, [rentFilter, typeFilter, areaFilter]);
+
+  const getRentLabel = (value) => {
+    switch (value) {
+      case '2000-4000': return '₹2000-4000';
+      case '4000-6000': return '₹4000-6000';
+      case '6000-8000': return '₹6000-8000';
+      case '8000-10000': return '₹8000-10000';
+      case '10000-12000': return '₹10000-12000';
+      default: return '';
+    }
+  };
 
   const handleViewDetails = (machineryId) => {
     navigation.navigate('MachineryDetailsPage', { machineryId });
@@ -156,8 +200,93 @@ export default function MachineryListPage() {
       <Header />
       
       <View style={categoryContentStyles.content}>
-        <Text style={categoryContentStyles.pageTitle}>Available Machinery</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={categoryContentStyles.pageTitle}>Available Machinery</Text>
+          <TouchableOpacity 
+            style={[propertyListStyles.searchButton, { marginBottom: 15, flexDirection: 'row', alignItems: 'center' }]}
+            onPress={() => setIsFilterVisible(!isFilterVisible)}
+          >
+            <Text style={propertyListStyles.searchButtonText}>
+              {isFilterVisible ? 'Hide Filter' : 'Filter'}
+            </Text>
+            <Text style={[propertyListStyles.searchButtonText, { marginLeft: 5 }]}>
+              {isFilterVisible ? '▲' : '▼'}
+            </Text>
+          </TouchableOpacity>
+        </View>
         
+        {/* Filter Section with Three Rectangular Boxes */}
+        {isFilterVisible && (
+          <View style={propertyListStyles.filterContainer}>
+            <View style={propertyListStyles.filterBox}>
+              <Text style={propertyListStyles.filterLabel}>Rent:</Text>
+              <Picker
+                selectedValue={rentFilter}
+                style={propertyListStyles.picker}
+                onValueChange={(itemValue) => setRentFilter(itemValue)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Any" value="" color="#999999" style={{ fontSize: 15 }} />
+                <Picker.Item label="2000-4000" value="2000-4000" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="4000-6000" value="4000-6000" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="6000-8000" value="6000-8000" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="8000-10000" value="8000-10000" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="10000-12000" value="10000-12000" color="#000000" style={{ fontSize: 15 }} />
+              </Picker>
+            </View>
+            
+            <View style={propertyListStyles.filterBox}>
+              <Text style={propertyListStyles.filterLabel}>Type:</Text>
+              <Picker
+                selectedValue={typeFilter}
+                style={propertyListStyles.picker}
+                onValueChange={(itemValue) => setTypeFilter(itemValue)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Any" value="" color="#999999" style={{ fontSize: 15 }} />
+                <Picker.Item label="Excavator" value="Excavator" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Crane" value="Crane" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Bulldozer" value="Bulldozer" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Loader" value="Loader" color="#000000" style={{ fontSize: 15 }} />
+              </Picker>
+            </View>
+            
+            <View style={propertyListStyles.filterBox}>
+              <Text style={propertyListStyles.filterLabel}>Area:</Text>
+              <Picker
+                selectedValue={areaFilter}
+                style={propertyListStyles.picker}
+                onValueChange={(itemValue) => setAreaFilter(itemValue)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Any" value="" color="#999999" style={{ fontSize: 15 }} />
+                <Picker.Item label="Area 1" value="Area 1" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Area 2" value="Area 2" color="#000000" style={{ fontSize: 15 }} />
+                <Picker.Item label="Area 3" value="Area 3" color="#000000" style={{ fontSize: 15 }} />
+              </Picker>
+            </View>
+          </View>
+        )}
+
+        {/* Display selected filters horizontally with remove option */}
+        <View style={propertyListStyles.selectedFiltersContainer}>
+          <SelectedFilterBox 
+            label="Rent" 
+            value={getRentLabel(rentFilter)} 
+            onRemove={() => setRentFilter('')} 
+          />
+          <SelectedFilterBox 
+            label="Type" 
+            value={typeFilter} 
+            onRemove={() => setTypeFilter('')} 
+          />
+          <SelectedFilterBox 
+            label="Area" 
+            value={areaFilter} 
+            onRemove={() => setAreaFilter('')} 
+          />
+        </View>
+
         {loading ? (
           <Text style={machineryListStyles.loadingText}>Loading machinery...</Text>
         ) : properties.length === 0 ? (

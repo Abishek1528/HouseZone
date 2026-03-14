@@ -6,24 +6,55 @@ const router = Router();
 // GET all available vehicles for tenant view
 router.get('/available', async (req, res) => {
     try {
-        const query = `
+        const { type, rent, area } = req.query;
+
+        let query = `
       SELECT 
         vd.id,
-        vd.vehicle_type,
-        vd.vehicle_name,
-        vd.vehicle_model,
-        vd.fuel_type,
-        vd.ac_charge_per_day,
-        vd.nonac_charge_per_day,
-        vd.vehicle_images,
+        vd.vehicle_type as type,
+        vd.vehicle_name as name,
+        vd.vehicle_model as model,
+        vd.fuel_type as fuelType,
+        vd.ac_charge_per_day as acPrice,
+        vd.nonac_charge_per_day as nonAcPrice,
+        vd.vehicle_images as images,
         vo.area,
         vo.city
       FROM vehiclesdet vd
       INNER JOIN vehiclesowndet vo ON vd.vehiclesowndet_id = vo.id
-      ORDER BY vd.created_at DESC
     `;
 
-        const [rows] = await pool.execute(query);
+        const conditions = [];
+        const params = [];
+
+        if (type && type !== '') {
+            conditions.push('vd.vehicle_type = ?');
+            params.push(type);
+        }
+
+        if (rent && rent !== '') {
+            if (rent.includes('-')) {
+                const [minRent, maxRent] = rent.split('-').map(Number);
+                conditions.push('(vd.ac_charge_per_day BETWEEN ? AND ? OR vd.nonac_charge_per_day BETWEEN ? AND ?)');
+                params.push(minRent, maxRent, minRent, maxRent);
+            } else {
+                conditions.push('(vd.ac_charge_per_day = ? OR vd.nonac_charge_per_day = ?)');
+                params.push(Number(rent), Number(rent));
+            }
+        }
+
+        if (area && area !== '') {
+            conditions.push('vo.area LIKE ?');
+            params.push(`%${area}%`);
+        }
+
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        query += ' ORDER BY vd.created_at DESC';
+
+        const [rows] = await pool.execute(query, params);
 
         // Parse images JSON for each vehicle
         const origin = `${req.protocol}://${req.get('host')}`;
