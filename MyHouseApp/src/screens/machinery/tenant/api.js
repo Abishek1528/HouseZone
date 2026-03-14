@@ -14,8 +14,17 @@ const handleFetchRequest = async (url, options) => {
   }
 };
 
-export const getMachineryProperties = async () => {
-  return handleFetchRequest(`${API_BASE_URL}/machinery/properties`, { method: 'GET' });
+export const getMachineryProperties = async (filters = {}) => {
+  const queryParams = new URLSearchParams();
+  if (filters.type) queryParams.append('type', filters.type);
+  if (filters.rent) queryParams.append('rent', filters.rent);
+  if (filters.area) queryParams.append('area', filters.area);
+
+  const url = `${API_BASE_URL}/machinery/properties${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+  return handleFetchRequest(url, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
 };
 
 export const getMachineryDetails = async (id) => {
