@@ -20,11 +20,15 @@ router.post('/residential/step3', async (req, res) => {
       leaseAmount
     } = req.body;
 
-    // Insert residential step 3 details into existing resownpay table
-    const [result] = await pool.execute(
+    // Use INSERT ... ON DUPLICATE KEY UPDATE for resownpay
+    await pool.execute(
       `INSERT INTO resownpay (
         roNo, advance_amount, monthly_rent, lease_amount
-      ) VALUES (?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        advance_amount = VALUES(advance_amount),
+        monthly_rent = VALUES(monthly_rent),
+        lease_amount = VALUES(lease_amount)`,
       [
         roNo,
         advanceAmount ? parseFloat(advanceAmount) || 0 : null,

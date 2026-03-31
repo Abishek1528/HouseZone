@@ -10,10 +10,6 @@ const headerStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#ddd",
   },
-  menu: {
-    fontSize: 24,
-    marginTop: 20, // Move down slightly
-  },
   headerCenter: {
     flexDirection: "row",
     alignItems: "center",

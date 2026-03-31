@@ -55,7 +55,8 @@ router.post('/business/step2', async (req, res) => {
     }
 
     const placeholders = insertCols.map(() => '?').join(', ');
-    const sql = `INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${placeholders})`;
+    const updatePart = insertCols.map(col => `${col} = VALUES(${col})`).join(', ');
+    const sql = `INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${placeholders}) ON DUPLICATE KEY UPDATE ${updatePart}`;
 
     await connection.execute(sql, insertVals);
     await connection.commit();
