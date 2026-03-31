@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 import headerStyles from './styles/headerStyles';
 
 export default function Header() {
   return (
     <View style={headerStyles.header}>
       <TouchableOpacity>
-        <Text style={headerStyles.menu}>☰</Text>
+        <Ionicons name="menu-outline" size={30} color="#000" />
       </TouchableOpacity>
 
       <View style={headerStyles.headerCenter}>

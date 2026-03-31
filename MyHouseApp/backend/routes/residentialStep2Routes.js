@@ -48,13 +48,31 @@ router.post('/residential/step2', async (req, res) => {
       bathroom2Access, bathroom3Access, floorNo, parking2Wheeler, parking4Wheeler
     });
 
+    // Use INSERT ... ON DUPLICATE KEY UPDATE for resownho
     await connection.execute(
       `INSERT INTO resownho (
         roNo, facing_direction, hall_length, hall_breadth, number_of_bedrooms, 
         kitchen_length, kitchen_breadth, number_of_bathrooms, bathroom1_type, bathroom2_type, bathroom3_type,
         bathroom1_access, bathroom2_access, bathroom3_access, floor_number,
         parking_2wheeler, parking_4wheeler
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        facing_direction = VALUES(facing_direction),
+        hall_length = VALUES(hall_length),
+        hall_breadth = VALUES(hall_breadth),
+        number_of_bedrooms = VALUES(number_of_bedrooms),
+        kitchen_length = VALUES(kitchen_length),
+        kitchen_breadth = VALUES(kitchen_breadth),
+        number_of_bathrooms = VALUES(number_of_bathrooms),
+        bathroom1_type = VALUES(bathroom1_type),
+        bathroom2_type = VALUES(bathroom2_type),
+        bathroom3_type = VALUES(bathroom3_type),
+        bathroom1_access = VALUES(bathroom1_access),
+        bathroom2_access = VALUES(bathroom2_access),
+        bathroom3_access = VALUES(bathroom3_access),
+        floor_number = VALUES(floor_number),
+        parking_2wheeler = VALUES(parking_2wheeler),
+        parking_4wheeler = VALUES(parking_4wheeler)`,
       [
         roNo,
         facingDirection || 'North',
@@ -74,6 +92,12 @@ router.post('/residential/step2', async (req, res) => {
         parking2Wheeler || 'No',
         parking4Wheeler || 'No'
       ]
+    );
+
+    // Delete existing bedroom sizes for this roNo to avoid duplicate entries and handle bedroom count changes
+    await connection.execute(
+      `DELETE FROM bedroom_sizes WHERE roNo = ?`,
+      [roNo]
     );
 
     // Insert bedroom details into existing bedroom_sizes table

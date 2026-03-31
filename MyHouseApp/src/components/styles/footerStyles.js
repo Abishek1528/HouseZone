@@ -13,16 +13,6 @@ const footerStyles = StyleSheet.create({
   footerItem: {
     alignItems: "center",
   },
-  footerIcon: {
-    fontSize: 22,
-    color: "#000",
-    marginBottom: 2,
-  },
-  footerheart: {
-    fontSize: 22,
-    color: "#000",
-    marginBottom: 0.5,
-  },
   footerLabel: {
     fontSize: 11,
     color: "#000",
