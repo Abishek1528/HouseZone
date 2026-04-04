@@ -81,8 +81,8 @@ export default function PropertyDetails() {
   }
 
   const handleProceed = () => {
-    // Navigate to the TenantDetails page
-    navigation.navigate('TenantDetails');
+    // Navigate to the NewTenantForm page
+    navigation.navigate('NewTenantForm');
   };
 
   // Helper function to format dimensions - now displays whole numbers
