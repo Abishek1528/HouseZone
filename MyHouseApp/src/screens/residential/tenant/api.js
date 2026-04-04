@@ -95,3 +95,21 @@ export const saveTenantDetails = async (tenantData) => {
     throw new Error(`Failed to save tenant details: ${error.message || 'Network error'}`);
   }
 };
+
+// Save new tenant details to the database
+export const saveNewTenantDetails = async (tenantData) => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/residential/new-tenant-details`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(tenantData),
+    });
+    
+    return result;
+  } catch (error) {
+    console.error('Error saving new tenant details:', error);
+    throw new Error(`Failed to save new tenant details: ${error.message || 'Network error'}`);
+  }
+};
