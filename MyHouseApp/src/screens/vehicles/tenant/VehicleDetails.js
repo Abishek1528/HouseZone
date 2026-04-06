@@ -5,17 +5,20 @@ import {
     ScrollView,
     ActivityIndicator,
     StyleSheet,
-    Image
+    Image,
+    TouchableOpacity
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
+import categoryContentStyles from '../../../styles/categoryContentStyles';
 import { getVehicleDetails } from './api';
 
 const VehicleDetails = () => {
     const [vehicle, setVehicle] = useState(null);
     const [loading, setLoading] = useState(true);
     const route = useRoute();
+    const navigation = useNavigation();
     const { id } = route.params;
 
     useEffect(() => {
@@ -31,6 +34,10 @@ const VehicleDetails = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleProceed = () => {
+        navigation.navigate('NewTenantForm', { propertyId: id, category: 'vehicles' });
     };
 
     if (loading) {
@@ -140,6 +147,23 @@ const VehicleDetails = () => {
                     </View>
                 </View>
             </ScrollView>
+
+            {/* Button Row */}
+            <View style={categoryContentStyles.buttonRow}>
+                <TouchableOpacity 
+                    style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Text style={categoryContentStyles.buttonText}>Back</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                    style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+                    onPress={handleProceed}
+                >
+                    <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+                </TouchableOpacity>
+            </View>
             <Footer />
         </View>
     );

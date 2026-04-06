@@ -81,8 +81,8 @@ export default function PropertyDetails() {
   }
 
   const handleProceed = () => {
-    // Navigate to the NewTenantForm page
-    navigation.navigate('NewTenantForm');
+    // Navigate to the NewTenantForm page and pass propertyId and category
+    navigation.navigate('NewTenantForm', { propertyId, category: 'residential' });
   };
 
   // Helper function to format dimensions - now displays whole numbers

@@ -30,7 +30,6 @@ export default function MachineryListPage() {
   const navigation = useNavigation();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedIds, setExpandedIds] = useState(new Set());
   const [rentFilter, setRentFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
@@ -93,20 +92,7 @@ export default function MachineryListPage() {
     navigation.navigate('MachineryDetailsPage', { machineryId });
   };
 
-  const toggleExpand = (id) => {
-    setExpandedIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
   const renderProperty = ({ item }) => {
-    const isExpanded = expandedIds.has(item.id);
     const firstImage = item.images && item.images.length > 0 ? normalizeImageUrl(item.images[0]) : null;
 
     return (
@@ -114,7 +100,7 @@ export default function MachineryListPage() {
         {/* Left Side - Image Container */}
         <TouchableOpacity 
           style={machineryListStyles.imageContainer}
-          onPress={() => toggleExpand(item.id)}
+          onPress={() => handleViewDetails(item.id)}
         >
           {firstImage ? (
             <Image source={{ uri: firstImage }} style={machineryListStyles.propertyImage} />
@@ -127,7 +113,7 @@ export default function MachineryListPage() {
 
         {/* Right Side - Details Container */}
         <View style={machineryListStyles.detailsContainer}>
-          <TouchableOpacity onPress={() => toggleExpand(item.id)}>
+          <TouchableOpacity onPress={() => handleViewDetails(item.id)}>
             <Text style={machineryListStyles.areaText}>{item.area || "Unknown Area"}</Text>
             
             <View style={machineryListStyles.machineryInfo}>
@@ -137,59 +123,16 @@ export default function MachineryListPage() {
             </View>
           </TouchableOpacity>
           
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
             <TouchableOpacity 
               style={machineryListStyles.viewMoreButton} 
               onPress={() => handleViewDetails(item.id)}
             >
               <Text style={machineryListStyles.viewMoreText}>
-                View More
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => toggleExpand(item.id)}>
-              <Text style={[machineryListStyles.viewMoreText, { color: '#666' }]}>
-                {isExpanded ? 'Show Less' : 'Details'}
+                View Details
               </Text>
             </TouchableOpacity>
           </View>
-
-          {isExpanded && (
-            <View style={machineryListStyles.expandedDetails}>
-              <View style={machineryListStyles.detailSection}>
-                <Text style={machineryListStyles.detailHeader}>Specifications</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Name:</Text> {item.machinery_name || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Model:</Text> {item.machinery_model || 'N/A'}</Text>
-              </View>
-              
-              <View style={machineryListStyles.detailSection}>
-                <Text style={machineryListStyles.detailHeader}>Pricing Details</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Per Km:</Text> ₹{item.charge_per_km || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Wait/Hour:</Text> ₹{item.waiting_charge_per_hour || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Wait/Night:</Text> ₹{item.waiting_charge_per_night || 'N/A'}</Text>
-                <Text style={machineryListStyles.detailText}><Text style={machineryListStyles.detailLabel}>Fixed Rate:</Text> {item.is_fixed ? 'Yes' : 'No'}</Text>
-              </View>
-
-              {item.images && item.images.length > 1 && (
-                <View style={machineryListStyles.detailSection}>
-                  <Text style={machineryListStyles.detailHeader}>More Images</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {item.images.slice(1).map((uri, idx) => {
-                      const normalizedUri = normalizeImageUrl(uri);
-                      if (!normalizedUri) return null;
-                      return (
-                        <Image 
-                          key={idx} 
-                          source={{ uri: normalizedUri }} 
-                          style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
-                        />
-                      );
-                    })}
-                  </ScrollView>
-                </View>
-              )}
-            </View>
-          )}
         </View>
       </View>
     );

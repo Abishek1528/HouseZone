@@ -33,7 +33,7 @@ export default function PropertyDetails({ route }) {
   };
 
   const handleProceed = () => {
-    navigation.navigate('TenantDetails');
+    navigation.navigate('NewTenantForm', { propertyId, category: 'business' });
   };
 
   if (loading) return (
@@ -174,23 +174,24 @@ export default function PropertyDetails({ route }) {
           </View>
         </View>
 
-        {/* Button Row */}
-        <View style={categoryContentStyles.buttonRow}>
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={categoryContentStyles.buttonText}>Back</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
-            onPress={handleProceed}
-          >
-            <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+
+      {/* Button Row */}
+      <View style={categoryContentStyles.buttonRow}>
+        <TouchableOpacity 
+          style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={categoryContentStyles.buttonText}>Back</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+          onPress={handleProceed}
+        >
+          <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+        </TouchableOpacity>
+      </View>
       <Footer />
     </View>
   );
