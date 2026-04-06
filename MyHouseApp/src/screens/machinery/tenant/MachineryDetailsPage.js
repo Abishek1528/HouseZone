@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image, Alert } from "react-native";
-import { useRoute } from '@react-navigation/native';
+import { View, Text, StyleSheet, ScrollView, Image, Alert, TouchableOpacity } from "react-native";
+import { useRoute, useNavigation } from '@react-navigation/native';
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
+import categoryContentStyles from "../../../styles/categoryContentStyles";
 import { getMachineryDetails } from "./api"; // We will create this API function
 
 export default function MachineryDetailsPage() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { machineryId } = route.params;
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,10 @@ export default function MachineryDetailsPage() {
       fetchDetails();
     }
   }, [machineryId]);
+
+  const handleProceed = () => {
+    navigation.navigate('NewTenantForm', { propertyId: machineryId, category: 'machinery' });
+  };
 
   if (loading) {
     return <View style={styles.centered}><Text>Loading details...</Text></View>;
@@ -90,6 +96,23 @@ export default function MachineryDetailsPage() {
         </View>
 
       </ScrollView>
+
+      {/* Button Row */}
+      <View style={categoryContentStyles.buttonRow}>
+        <TouchableOpacity 
+          style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={categoryContentStyles.buttonText}>Back</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+          onPress={handleProceed}
+        >
+          <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+        </TouchableOpacity>
+      </View>
       <Footer />
     </View>
   );

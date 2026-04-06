@@ -86,3 +86,19 @@ export const getAllMachineryOwners = async () => {
     throw new Error(`Failed to fetch machinery owners: ${error.message || 'Network error'}`);
   }
 };
+
+// Get all residential tenants with their associated properties
+export const getResidentialTenantsWithProperties = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/admin/residential/tenants-with-properties`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching tenants with properties:', error);
+    throw new Error(`Failed to fetch tenants with properties: ${error.message || 'Network error'}`);
+  }
+};

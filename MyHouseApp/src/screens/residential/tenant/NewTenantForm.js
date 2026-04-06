@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -8,6 +8,9 @@ import { saveNewTenantDetails } from './api';
 
 const NewTenantForm = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { propertyId, category } = route.params || {};
+
   const [tenantData, setTenantData] = useState({
     name: '',
     job: '',
@@ -36,6 +39,8 @@ const NewTenantForm = () => {
     // Save tenant data to backend
     try {
       const tenantDetails = {
+        roNo: propertyId,
+        category: category || 'residential',
         tenant_name: tenantData.name,
         job: tenantData.job,
         salary: tenantData.salary,
