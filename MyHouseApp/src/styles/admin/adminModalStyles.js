@@ -30,6 +30,24 @@ const adminModalStyles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+  },
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    padding: 10,
+    fontSize: 16,
+  },
+  eyeIcon: {
+    paddingHorizontal: 10,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import adminStyles from "../../styles/admin/adminStyles";
 import { getResidentialTenantsWithProperties } from "./api";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+ 
 
 export default function ResidentialTenantPage() {
   const [data, setData] = useState([]);
@@ -28,7 +27,6 @@ export default function ResidentialTenantPage() {
 
   return (
     <View style={adminStyles.dashboardContainer}>
-      <Header />
       <ScrollView contentContainerStyle={adminStyles.dashboardContentContainer} style={{ width: '100%' }}>
         <Text style={adminStyles.dashboardTitle}>Residential Tenant Submissions</Text>
         
@@ -94,7 +92,6 @@ export default function ResidentialTenantPage() {
         )}
         <View style={{ height: 100 }} />
       </ScrollView>
-      <Footer />
     </View>
   );
 }

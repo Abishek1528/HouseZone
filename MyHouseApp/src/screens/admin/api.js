@@ -102,3 +102,51 @@ export const getResidentialTenantsWithProperties = async () => {
     throw new Error(`Failed to fetch tenants with properties: ${error.message || 'Network error'}`);
   }
 };
+
+// Get all business tenants with their associated properties
+export const getBusinessTenantsWithProperties = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/admin/business/tenants-with-properties`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching business tenants:', error);
+    throw new Error(`Failed to fetch business tenants: ${error.message || 'Network error'}`);
+  }
+};
+
+// Get all machinery tenants with their associated items
+export const getMachineryTenantsWithItems = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/admin/machinery/tenants-with-items`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching machinery tenants:', error);
+    throw new Error(`Failed to fetch machinery tenants: ${error.message || 'Network error'}`);
+  }
+};
+
+// Get all vehicle tenants with their associated items
+export const getVehicleTenantsWithItems = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/admin/vehicles/tenants-with-items`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching vehicle tenants:', error);
+    throw new Error(`Failed to fetch vehicle tenants: ${error.message || 'Network error'}`);
+  }
+};

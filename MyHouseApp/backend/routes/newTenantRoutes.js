@@ -99,4 +99,100 @@ router.get('/admin/residential/tenants-with-properties', async (req, res) => {
   }
 });
 
+// API endpoint for admin to get all business tenants with their associated property details
+router.get('/admin/business/tenants-with-properties', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        bt.id as tenantId,
+        bt.name as tenantName,
+        bt.job,
+        bt.salary_per_month as salary,
+        bt.native_place as nativePlace,
+        bt.current_address as currentAddress,
+        bt.mobile_number as mobileNumber,
+        bt.alternate_number as alternateNumber,
+        bd.id as propertyId,
+        bd.area,
+        bd.city,
+        bd.street,
+        bd.door_no as doorNo,
+        bp.property_type as propertyType,
+        bp.door_facing as facingDirection,
+        br.monthly_rent as rent,
+        br.advance_amount as advance
+      FROM buitenant bt
+      LEFT JOIN businessownerdet bd ON bt.boNo = bd.id
+      LEFT JOIN businessownerpro bp ON bd.id = bp.businessownerdet_id
+      LEFT JOIN businessownerrent br ON bd.id = br.businessownerdet_id
+      ORDER BY bt.id DESC
+    `);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching business tenants:', error);
+    res.status(500).json({ message: 'Error fetching business details', error: error.message });
+  }
+});
+
+// API endpoint for admin to get all machinery tenants with their associated item details
+router.get('/admin/machinery/tenants-with-items', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        mt.id as tenantId,
+        mt.name as tenantName,
+        mt.job,
+        mt.salary_per_month as salary,
+        mt.native_place as nativePlace,
+        mt.current_address as currentAddress,
+        mt.mobile_number as mobileNumber,
+        mt.alternate_number as alternateNumber,
+        md.owner_id as propertyId,
+        md.machinery_name as itemName,
+        md.machinery_type as itemType,
+        md.machinery_model as model,
+        md.charge_per_day as rent
+      FROM mactenant mt
+      LEFT JOIN machinarydet md ON mt.moNo = md.owner_id
+      ORDER BY mt.id DESC
+    `);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching machinery tenants:', error);
+    res.status(500).json({ message: 'Error fetching machinery details', error: error.message });
+  }
+});
+
+// API endpoint for admin to get all vehicle tenants with their associated item details
+router.get('/admin/vehicles/tenants-with-items', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        vt.id as tenantId,
+        vt.name as tenantName,
+        vt.job,
+        vt.salary_per_month as salary,
+        vt.native_place as nativePlace,
+        vt.current_address as currentAddress,
+        vt.mobile_number as mobileNumber,
+        vt.alternate_number as alternateNumber,
+        vd.id as propertyId,
+        vd.vehicle_name as itemName,
+        vd.vehicle_type as itemType,
+        vd.vehicle_model as model,
+        vd.ac_charge_per_day as rent
+      FROM vehtenant vt
+      LEFT JOIN vehiclesdet vd ON vt.voNo = vd.id
+      ORDER BY vt.id DESC
+    `);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching vehicle tenants:', error);
+    res.status(500).json({ message: 'Error fetching vehicle details', error: error.message });
+  }
+});
+
 export default router;
