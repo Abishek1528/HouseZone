@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import signupStyles from '../styles/signupStyles';
 import categoryContentStyles from '../styles/categoryContentStyles';
 
@@ -13,6 +14,7 @@ export default function Signup() {
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
   const handleSignup = async () => {
@@ -112,14 +114,26 @@ export default function Signup() {
             onChangeText={setEmail}
           />
           <Text style={categoryContentStyles.label}>Password</Text>
-          <TextInput
-            style={categoryContentStyles.input}
-            placeholder="Password"
-            placeholderTextColor="#999999"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={categoryContentStyles.passwordContainer}>
+            <TextInput
+              style={categoryContentStyles.passwordInput}
+              placeholder="Password"
+              placeholderTextColor="#999999"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity 
+              style={categoryContentStyles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <MaterialCommunityIcons 
+                name={showPassword ? "eye" : "eye-off"} 
+                size={24} 
+                color="#4A90E2" 
+              />
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 

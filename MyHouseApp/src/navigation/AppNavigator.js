@@ -17,6 +17,7 @@ import PropertiesList from '../screens/residential/tenant';
 import PropertyDetails from '../screens/residential/tenant/PropertyDetails';
 import TenantDetails from '../screens/residential/tenant/TenantDetails';
 import NewTenantForm from '../screens/residential/tenant/NewTenantForm';
+import BusinessPropertiesList from '../screens/business/tenant/PropertiesList';
 import BusinessPropertyDetails from '../screens/business/tenant/PropertyDetails';
 import VehiclesList from '../screens/vehicles/tenant/VehiclesList';
 import VehicleDetails from '../screens/vehicles/tenant/VehicleDetails';
@@ -56,6 +57,7 @@ export default function AppNavigator() {
         <Stack.Screen name="AddVehicles" component={AddVehicles} />
         <Stack.Screen name="Machinery" component={Machinery} />
         <Stack.Screen name="AddMachinery" component={AddMachinery} />
+        <Stack.Screen name="BusinessPropertiesList" component={BusinessPropertiesList} />
         <Stack.Screen name="PropertiesList" component={PropertiesList} />
         <Stack.Screen name="PropertyDetails" component={PropertyDetails} />
         <Stack.Screen name="TenantDetails" component={TenantDetails} />

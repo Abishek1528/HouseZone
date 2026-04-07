@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import loginStyles from '../styles/loginStyles';
 import categoryContentStyles from '../styles/categoryContentStyles';
 
@@ -11,6 +12,7 @@ export default function Login() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -88,13 +90,25 @@ export default function Login() {
             onChangeText={setPhone}
           />
           <Text style={categoryContentStyles.label}>Password</Text>  
-          <TextInput
-            style={categoryContentStyles.input}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={categoryContentStyles.passwordContainer}>
+            <TextInput
+              style={categoryContentStyles.passwordInput}
+              placeholder="Password"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity 
+              style={categoryContentStyles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <MaterialCommunityIcons 
+                name={showPassword ? "eye" : "eye-off"} 
+                size={24} 
+                color="#4A90E2" 
+              />
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 

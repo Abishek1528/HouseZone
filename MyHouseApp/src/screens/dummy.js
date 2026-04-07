@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, TextInput, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dummyStyles from '../styles/dummyStyles';
 import adminModalStyles from '../styles/admin/adminModalStyles';
 
@@ -8,6 +9,7 @@ export default function Dummy() {
   const navigation = useNavigation();
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const hardcodedPassword = "admin123"; // Hardcoded password
 
   const handleAdminLogin = () => {
@@ -50,13 +52,25 @@ export default function Dummy() {
           <View style={adminModalStyles.modalView}>
             <Text style={adminModalStyles.title}>Admin Login</Text>
             
-            <TextInput
-              style={adminModalStyles.input}
-              placeholder="Enter admin password"
-              secureTextEntry={true}
-              value={adminPassword}
-              onChangeText={setAdminPassword}
-            />
+            <View style={adminModalStyles.passwordContainer}>
+              <TextInput
+                style={adminModalStyles.passwordInput}
+                placeholder="Enter admin password"
+                secureTextEntry={!showPassword}
+                value={adminPassword}
+                onChangeText={setAdminPassword}
+              />
+              <TouchableOpacity 
+                style={adminModalStyles.eyeIcon}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <MaterialCommunityIcons 
+                  name={showPassword ? "eye" : "eye-off"} 
+                  size={24} 
+                  color="#800080" 
+                />
+              </TouchableOpacity>
+            </View>
             
             <View style={adminModalStyles.buttonContainer}>
               <TouchableOpacity

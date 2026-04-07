@@ -40,6 +40,26 @@ const categoryContentStyles = StyleSheet.create({
     backgroundColor: '#fff',
     color: '#000',
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#4A90E2',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 12,
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  passwordInput: {
+    flex: 1,
+    height: 45,
+    paddingHorizontal: 12,
+    fontSize: 15,
+    color: '#000',
+  },
+  eyeIcon: {
+    paddingHorizontal: 10,
+  },
   inputContainer: {
     marginBottom: 15,
     width: '100%',
