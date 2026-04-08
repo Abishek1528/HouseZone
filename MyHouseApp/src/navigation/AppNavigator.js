@@ -23,6 +23,7 @@ import VehiclesList from '../screens/vehicles/tenant/VehiclesList';
 import VehicleDetails from '../screens/vehicles/tenant/VehicleDetails';
 import MachineryListPage from '../screens/machinery/tenant/MachineryListPage';
 import MachineryDetailsPage from '../screens/machinery/tenant/MachineryDetailsPage';
+import Profile from '../screens/Profile';
 // Import all admin components
 import {
   AdminDashboard,
@@ -67,6 +68,7 @@ export default function AppNavigator() {
         <Stack.Screen name="VehicleDetails" component={VehicleDetails} />
         <Stack.Screen name="MachineryListPage" component={MachineryListPage} />
         <Stack.Screen name="MachineryDetailsPage" component={MachineryDetailsPage} />
+        <Stack.Screen name="Profile" component={Profile} />
         {/* Admin screens */}
         <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
         <Stack.Screen name="SignupPage" component={SignupPage} />

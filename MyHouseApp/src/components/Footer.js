@@ -22,7 +22,10 @@ export default function Footer() {
         <Text style={footerStyles.footerLabel}>Favorites</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={footerStyles.footerItem}>
+      <TouchableOpacity 
+        style={footerStyles.footerItem}
+        onPress={() => navigation.navigate("Profile")}
+      >
         <Ionicons name="person-outline" size={24} color="#000" />
         <Text style={footerStyles.footerLabel}>Profile</Text>
       </TouchableOpacity>
