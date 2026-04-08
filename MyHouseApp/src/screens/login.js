@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import loginStyles from '../styles/loginStyles';
 import categoryContentStyles from '../styles/categoryContentStyles';
 
@@ -42,6 +43,14 @@ export default function Login() {
       console.log('Response data:', result);
 
       if (response.ok) {
+        // Save user details to AsyncStorage
+        // Use result.user if available, otherwise use input data
+        const userDetails = result.user || {
+          name,
+          contact: phone
+        };
+        await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
+
         Alert.alert("Success", "Login successful!", [
           { text: "OK", onPress: () => navigation.navigate("Home") }
         ]);
@@ -54,13 +63,13 @@ export default function Login() {
       // More detailed error handling
       let errorMessage = "Failed to connect to server. ";
       
-      if (error.message && error.message.includes('network')) {
-        errorMessage += "Network error detected. Please check: \n\n" +
-                       "1. If the backend server is running on port 3000\n" +
-                       `2. If you're using the correct protocol (should be http:// not https://)\n` +
-                       `3. If the API URL is correct: ${API_BASE_URL}\n` +
-                       "4. If your firewall is blocking the connection\n\n" +
-                       `Technical error: ${error.message}`;
+      if (error.message && error.message.includes('Network request failed')) {
+        errorMessage += "Network error detected. This usually means the API URL is incorrect for your current network. \n\n" +
+                       "Please check: \n" +
+                       "1. If the backend server is running (npm start in backend folder)\n" +
+                       `2. If your machine's IP address has changed. Current configured URL: ${API_BASE_URL}\n` +
+                       "3. If your phone and computer are on the same Wi-Fi network\n\n" +
+                       "To fix this, find your computer's IP address (ipconfig) and update EXPO_PUBLIC_API_URL in your .env file.";
       } else {
         errorMessage += `Error: ${error.message || error}`;
       }
