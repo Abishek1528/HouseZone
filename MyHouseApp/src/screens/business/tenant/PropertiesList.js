@@ -207,7 +207,7 @@ export default function PropertiesList() {
         ) : (
           <FlatList
             data={properties}
-            keyExtractor={(item) => (item.id || Math.random().toString()).toString()}
+            keyExtractor={(item) => (item?.id || Math.random()).toString()}
             renderItem={({ item }) => <PropertyCard property={item} onViewDetails={handleViewDetails} />}
             style={propertyListStyles.list}
           />

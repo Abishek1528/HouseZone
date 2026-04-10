@@ -20,7 +20,7 @@ export default function Home() {
 
   const handleRoleSelection = () => {
     if (!selectedRole) {
-      alert("Please select a role");
+      Alert.alert("Selection Required", "Please select a role");
       return;
     }
     

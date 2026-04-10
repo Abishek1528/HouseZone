@@ -238,7 +238,7 @@ export default function MachineryListPage() {
           <FlatList
             data={properties}
             renderItem={renderProperty}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => (item?.id || Math.random()).toString()}
             style={machineryListStyles.list}
             showsVerticalScrollIndicator={false}
           />
