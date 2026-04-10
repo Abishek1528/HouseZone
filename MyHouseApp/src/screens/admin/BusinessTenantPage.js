@@ -32,39 +32,39 @@ export default function BusinessTenantPage() {
         
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 50 }} />
-        ) : data.length === 0 ? (
+        ) : (!Array.isArray(data) || data.length === 0) ? (
           <Text style={adminStyles.noDataText}>No business tenant submissions found</Text>
         ) : (
           data.map((item) => (
-            <View key={item.tenantId} style={adminStyles.card}>
+            <View key={item?.tenantId || Math.random()} style={adminStyles.card}>
               <View style={adminStyles.cardHeader}>
-                <Text style={adminStyles.cardTitle}>Tenant: {item.tenantName}</Text>
-                <Text style={adminStyles.cardSubtitle}>ID: {item.tenantId}</Text>
+                <Text style={adminStyles.cardTitle}>Tenant: {item?.tenantName || 'N/A'}</Text>
+                <Text style={adminStyles.cardSubtitle}>ID: {item?.tenantId || 'N/A'}</Text>
               </View>
               
               <View style={adminStyles.cardSection}>
                 <Text style={adminStyles.sectionTitle}>👤 Tenant Details</Text>
                 <View style={adminStyles.detailRow}>
                   <Text style={adminStyles.detailLabel}>Job:</Text>
-                  <Text style={adminStyles.detailValue}>{item.job || 'N/A'}</Text>
+                  <Text style={adminStyles.detailValue}>{item?.job || 'N/A'}</Text>
                 </View>
                 <View style={adminStyles.detailRow}>
                   <Text style={adminStyles.detailLabel}>Salary:</Text>
-                  <Text style={adminStyles.detailValue}>₹{item.salary || 'N/A'}</Text>
+                  <Text style={adminStyles.detailValue}>₹{item?.salary || 'N/A'}</Text>
                 </View>
                 <View style={adminStyles.detailRow}>
                   <Text style={adminStyles.detailLabel}>Native:</Text>
-                  <Text style={adminStyles.detailValue}>{item.nativePlace || 'N/A'}</Text>
+                  <Text style={adminStyles.detailValue}>{item?.nativePlace || 'N/A'}</Text>
                 </View>
                 <View style={adminStyles.detailRow}>
                   <Text style={adminStyles.detailLabel}>Contact:</Text>
-                  <Text style={adminStyles.detailValue}>{item.mobileNumber}</Text>
+                  <Text style={adminStyles.detailValue}>{item?.mobileNumber || 'N/A'}</Text>
                 </View>
               </View>
 
               <View style={adminStyles.cardSection}>
                 <Text style={adminStyles.sectionTitle}>🏢 Business Property Details</Text>
-                {item.propertyId ? (
+                {item?.propertyId ? (
                   <>
                     <View style={adminStyles.detailRow}>
                       <Text style={adminStyles.detailLabel}>Property ID:</Text>

@@ -252,7 +252,7 @@ const VehiclesList = () => {
                     <FlatList
                         data={vehicles}
                         renderItem={renderVehicleCard}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => (item?.id || Math.random()).toString()}
                         style={propertyListStyles.list}
                     />
                 )}

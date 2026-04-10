@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Image } fr
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import ImageView from "react-native-image-viewing";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -12,6 +13,7 @@ export default function Profile() {
   const navigation = useNavigation();
   const [userDetails, setUserDetails] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [isImageViewVisible, setIsImageViewVisible] = useState(false);
 
   useEffect(() => {
     loadUserDetails();
@@ -76,13 +78,38 @@ export default function Profile() {
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.profileHeader}>
-          <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
-            {profileImage ? (
-              <Image source={{ uri: profileImage }} style={styles.profileImage} />
-            ) : (
-              <Ionicons name="person-circle-outline" size={100} color="#4A90E2" />
-            )}
-          </TouchableOpacity>
+          <View style={styles.avatarWrapper}>
+            <TouchableOpacity 
+              onPress={() => {
+                if (profileImage) setIsImageViewVisible(true);
+                else pickImage();
+              }} 
+              style={styles.avatarContainer}
+            >
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} style={styles.profileImage} />
+              ) : (
+                <Ionicons name="person-circle-outline" size={100} color="#4A90E2" />
+              )}
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.editBadge}
+              onPress={pickImage}
+            >
+              <Ionicons name="camera" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          
+          {profileImage && (
+            <ImageView
+              images={[{ uri: profileImage }]}
+              imageIndex={0}
+              visible={isImageViewVisible}
+              onRequestClose={() => setIsImageViewVisible(false)}
+            />
+          )}
+          
           <Text style={styles.userName}>{userDetails?.name || 'User'}</Text>
           <Text style={styles.userEmail}>{userDetails?.email || ''}</Text>
         </View>
@@ -152,12 +179,33 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
-  avatarContainer: {
+  avatarWrapper: {
+    position: 'relative',
     marginBottom: 10,
+  },
+  avatarContainer: {
     borderRadius: 50, // Make it circular
     overflow: 'hidden', // Clip image to the circular boundary
     borderWidth: 2,
     borderColor: '#4A90E2',
+    width: 104,
+    height: 104,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#4A90E2',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
+    zIndex: 2,
   },
   profileImage: {
     width: 100,

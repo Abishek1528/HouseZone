@@ -30,15 +30,15 @@ const PropertyCard = ({ property, onViewDetails }) => {
       
       {/* Right side - Property details */}
       <View style={propertyListStyles.detailsContainer}>
-        <Text style={propertyListStyles.location}>{property.area || 'Unknown'}</Text>
+        <Text style={propertyListStyles.location}>{property?.area || 'Unknown'}</Text>
         <View style={propertyListStyles.propertyInfo}>
-          <Text style={propertyListStyles.bedroomsText}>{property.bedrooms ? `${property.bedrooms} BHK` : 'N/A'}</Text>
+          <Text style={propertyListStyles.bedroomsText}>{property?.bedrooms ? `${property.bedrooms} BHK` : 'N/A'}</Text>
           {/* Display lease amount if available, otherwise show monthly rent */}
           <Text style={propertyListStyles.rentText}>
-            ₹{property.leaseAmount ? property.leaseAmount : (property.rent || 'N/A')}{property.leaseAmount ? '' : '/month'}
+            ₹{property?.leaseAmount ? property.leaseAmount : (property?.rent || 'N/A')}{property?.leaseAmount ? '' : '/month'}
           </Text>
         </View>
-        <Text style={propertyListStyles.viewMoreText} onPress={() => onViewDetails(property.id)}>View More</Text>
+        <Text style={propertyListStyles.viewMoreText} onPress={() => onViewDetails(property?.id)}>View More</Text>
       </View>
     </View>
   );
@@ -245,7 +245,7 @@ export default function PropertiesList() {
           <FlatList
             data={properties}
             renderItem={renderProperty}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => (item?.id || Math.random()).toString()}
             style={propertyListStyles.list}
           />
         )}

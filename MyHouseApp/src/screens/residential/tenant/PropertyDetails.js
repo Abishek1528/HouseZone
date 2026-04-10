@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Alert, TouchableOpacity, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import ImageView from "react-native-image-viewing";
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -14,6 +15,8 @@ export default function PropertyDetails() {
   
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isImageViewVisible, setIsImageViewVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
   const API_HOST = API_BASE_URL.replace(/\/api$/, '');
 
@@ -137,7 +140,7 @@ export default function PropertyDetails() {
     }
     
     // Render each selected condition
-    return parsedConditionNumbers.map((conditionNum, index) => {
+    return Array.isArray(parsedConditionNumbers) ? parsedConditionNumbers.map((conditionNum, index) => {
       // Condition numbers are 1-indexed, so subtract 1 for array index
       const conditionText = predefinedConditions[conditionNum - 1];
       
@@ -150,7 +153,7 @@ export default function PropertyDetails() {
           <Text style={propertyDetailsStyles.conditionText}>{conditionText}</Text>
         </View>
       );
-    });
+    }) : null;
   };
 
   return (
@@ -170,19 +173,36 @@ export default function PropertyDetails() {
             <View style={{ marginVertical: 10 }}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {property.images.map((imgRaw, idx) => {
+                  if (!imgRaw || typeof imgRaw !== 'string') return null;
                   const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
                   return (
-                  <View key={idx} style={{ marginRight: 10 }}>
+                  <TouchableOpacity 
+                    key={idx} 
+                    style={{ marginRight: 10 }}
+                    onPress={() => {
+                      setCurrentImageIndex(idx);
+                      setIsImageViewVisible(true);
+                    }}
+                  >
                     <View style={{ width: 200, height: 140, backgroundColor: '#eee', borderRadius: 8, overflow: 'hidden' }}>
                       <Text style={{ position: 'absolute', zIndex: 1, backgroundColor: 'rgba(0,0,0,0.4)', color: '#fff', paddingHorizontal: 6, paddingVertical: 2, borderBottomRightRadius: 8 }}>
                         {idx + 1}/{property.images.length}
                       </Text>
                       <Image source={{ uri: img }} style={{ width: 200, height: 140 }} />
                     </View>
-                  </View>
+                  </TouchableOpacity>
                   );
                 })}
               </ScrollView>
+              
+              <ImageView
+                images={property.images.map(imgRaw => ({
+                  uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
+                }))}
+                imageIndex={currentImageIndex}
+                visible={isImageViewVisible}
+                onRequestClose={() => setIsImageViewVisible(false)}
+              />
             </View>
           )}
           
@@ -254,14 +274,14 @@ export default function PropertyDetails() {
                 <Text style={propertyDetailsStyles.value}>{property.houseDetails.numberOfBedrooms || 'N/A'}</Text>
               </View>
               
-              {property.houseDetails.bedrooms && property.houseDetails.bedrooms.map((bedroom, index) => (
+              {Array.isArray(property.houseDetails?.bedrooms) && property.houseDetails.bedrooms.map((bedroom, index) => (
                 <View key={index} style={propertyDetailsStyles.detailRow}>
-                  <Text style={propertyDetailsStyles.label}>Bedroom {bedroom.bedroomNumber} (L X B):</Text>
+                  <Text style={propertyDetailsStyles.label}>Bedroom {bedroom?.bedroomNumber || (index + 1)} (L X B):</Text>
                   <Text style={propertyDetailsStyles.value}>
                     {formatDimensions(
-                      bedroom.length,
-                      bedroom.breadth,
-                      bedroom.totalArea
+                      bedroom?.length,
+                      bedroom?.breadth,
+                      bedroom?.totalArea
                     )}
                   </Text>
                 </View>
@@ -274,10 +294,10 @@ export default function PropertyDetails() {
               </View>
               
               {/* Render bathrooms based on the selected number of bathrooms */}
-              {property.houseDetails.numberOfBathrooms && (
+              {property.houseDetails?.numberOfBathrooms && (
                 Array.from({ length: Math.max(0, parseInt(property.houseDetails.numberOfBathrooms) || 0) }, (_, index) => {
-                  const bathroomType = property.houseDetails[`bathroom${index + 1}Type`];
-                  const bathroomAccess = property.houseDetails[`bathroom${index + 1}Access`];
+                  const bathroomType = property.houseDetails?.[`bathroom${index + 1}Type`];
+                  const bathroomAccess = property.houseDetails?.[`bathroom${index + 1}Access`];
                   return (
                     <View key={index + 1} style={propertyDetailsStyles.detailRow}>
                       <Text style={propertyDetailsStyles.label}>Bathroom {index + 1}:</Text>

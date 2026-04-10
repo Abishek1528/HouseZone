@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, Alert, TouchableOpacity } from "react-native";
 import { useRoute, useNavigation } from '@react-navigation/native';
+import ImageView from "react-native-image-viewing";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import categoryContentStyles from "../../../styles/categoryContentStyles";
@@ -12,6 +13,8 @@ export default function MachineryDetailsPage() {
   const { machineryId } = route.params;
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isImageViewVisible, setIsImageViewVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Helper to normalize image URLs
   const normalizeImageUrl = (url) => {
@@ -60,39 +63,59 @@ export default function MachineryDetailsPage() {
     <View style={styles.container}>
       <Header />
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.title}>{details.machinery_name || "Machinery Details"}</Text>
+        <Text style={styles.title}>{details?.machinery_name || "Machinery Details"}</Text>
 
-        {details.images && details.images.length > 0 && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
-            {details.images.map((uri, index) => {
-              const normalizedUri = normalizeImageUrl(uri);
-              if (!normalizedUri) return null;
-              return (
-                <Image key={index} source={{ uri: normalizedUri }} style={styles.image} />
-              );
-            })}
-          </ScrollView>
+        {Array.isArray(details?.images) && details.images.length > 0 && (
+          <View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
+              {details.images.map((uri, index) => {
+                if (!uri || typeof uri !== 'string') return null;
+                const normalizedUri = normalizeImageUrl(uri);
+                if (!normalizedUri) return null;
+                return (
+                  <TouchableOpacity 
+                    key={index} 
+                    onPress={() => {
+                      setCurrentImageIndex(index);
+                      setIsImageViewVisible(true);
+                    }}
+                  >
+                    <Image source={{ uri: normalizedUri }} style={styles.image} />
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <ImageView
+              images={details.images.map(uri => ({
+                uri: normalizeImageUrl(uri)
+              }))}
+              imageIndex={currentImageIndex}
+              visible={isImageViewVisible}
+              onRequestClose={() => setIsImageViewVisible(false)}
+            />
+          </View>
         )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Location</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Area:</Text> {details.area || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>City:</Text> {details.city || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Area:</Text> {details?.area || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>City:</Text> {details?.city || 'N/A'}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Specifications</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Type:</Text> {details.machinery_type || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Model:</Text> {details.machinery_model || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Type:</Text> {details?.machinery_type || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Model:</Text> {details?.machinery_model || 'N/A'}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Pricing</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details.charge_per_day || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details.charge_per_km || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details.waiting_charge_per_hour || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details.waiting_charge_per_night || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Fixed Rate:</Text> {details.is_fixed ? 'Yes' : 'No'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details?.charge_per_day || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details?.charge_per_km || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details?.waiting_charge_per_hour || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details?.waiting_charge_per_night || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Fixed Rate:</Text> {details?.is_fixed ? 'Yes' : 'No'}</Text>
         </View>
 
       </ScrollView>
