@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import homeContentStyles from '../styles/homeContentStyles';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Home() {
   const navigation = useNavigation();
+  const { colors } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedRole, setSelectedRole] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,44 +34,44 @@ export default function Home() {
   const roles = ["Tenant", "Owner"];
 
   return (
-    <View style={homeContentStyles.container}>
+    <View style={[homeContentStyles.container, { backgroundColor: colors.background }]}>
       <Header />
 
       {/* BUTTONS */}
       <View style={homeContentStyles.middle}>
         <View style={homeContentStyles.row}>
-          <Text style={homeContentStyles.pageTitle}>Categories</Text>
+          <Text style={[homeContentStyles.pageTitle, { color: colors.text }]}>Categories</Text>
         </View>
         
         <View style={homeContentStyles.row}>
           <TouchableOpacity 
-            style={homeContentStyles.button}
+            style={[homeContentStyles.button, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => handleCategoryPress("Residential")}
           >
-            <Text style={homeContentStyles.btnText}>Residential</Text>
+            <Text style={[homeContentStyles.btnText, { color: colors.text }]}>Residential</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={homeContentStyles.button}
+            style={[homeContentStyles.button, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => handleCategoryPress("Business")}
           >
-            <Text style={homeContentStyles.btnText}>Business</Text>
+            <Text style={[homeContentStyles.btnText, { color: colors.text }]}>Business</Text>
           </TouchableOpacity>
         </View>
 
         <View style={homeContentStyles.row}>
           <TouchableOpacity 
-            style={homeContentStyles.button}
+            style={[homeContentStyles.button, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => handleCategoryPress("Vehicles")}
           >
-            <Text style={homeContentStyles.btnText}>Vehicles</Text>
+            <Text style={[homeContentStyles.btnText, { color: colors.text }]}>Vehicles</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={homeContentStyles.button}
+            style={[homeContentStyles.button, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => handleCategoryPress("Machinery")}
           >
-            <Text style={homeContentStyles.btnText}>Machinery</Text>
+            <Text style={[homeContentStyles.btnText, { color: colors.text }]}>Machinery</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -82,22 +84,22 @@ export default function Home() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={homeContentStyles.modalContainer}>
-          <View style={homeContentStyles.modalView}>
-            <Text style={homeContentStyles.modalTitle}>Select Your Role</Text>
-            <Text style={homeContentStyles.modalText}>Category: {selectedCategory}</Text>
+          <View style={[homeContentStyles.modalView, { backgroundColor: colors.background }]}>
+            <Text style={[homeContentStyles.modalTitle, { color: colors.text }]}>Select Your Role</Text>
+            <Text style={[homeContentStyles.modalText, { color: colors.subText }]}>Category: {selectedCategory}</Text>
             
             <TouchableOpacity 
-              style={homeContentStyles.dropdown}
+              style={[homeContentStyles.dropdown, { borderColor: colors.border }]}
               onPress={() => setDropdownVisible(!dropdownVisible)}
             >
-              <Text style={homeContentStyles.dropdownText}>
+              <Text style={[homeContentStyles.dropdownText, { color: colors.text }]}>
                 {selectedRole || "Select a role"}
               </Text>
-              <Text style={homeContentStyles.arrow}>{dropdownVisible ? "▲" : "▼"}</Text>
+              <Text style={[homeContentStyles.arrow, { color: colors.text }]}>{dropdownVisible ? "▲" : "▼"}</Text>
             </TouchableOpacity>
 
             {dropdownVisible && (
-              <View style={homeContentStyles.dropdownList}>
+              <View style={[homeContentStyles.dropdownList, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 {roles.map((role) => (
                   <TouchableOpacity
                     key={role}
@@ -107,7 +109,7 @@ export default function Home() {
                       setDropdownVisible(false);
                     }}
                   >
-                    <Text style={homeContentStyles.dropdownItemText}>{role}</Text>
+                    <Text style={[homeContentStyles.dropdownItemText, { color: colors.text }]}>{role}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -122,7 +124,7 @@ export default function Home() {
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[homeContentStyles.modalButton, homeContentStyles.submitButton]}
+                style={[homeContentStyles.modalButton, homeContentStyles.submitButton, { backgroundColor: colors.primary }]}
                 onPress={handleRoleSelection}
               >
                 <Text style={homeContentStyles.modalButtonText}>Submit</Text>

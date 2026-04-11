@@ -3,7 +3,6 @@ import { StyleSheet } from "react-native";
 const categoryContentStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   content: {
     flex: 1,
@@ -30,32 +29,26 @@ const categoryContentStyles = StyleSheet.create({
   },
   input: {
     height: 45,
-    borderColor: '#4A90E2',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 12,
     marginBottom: 12,
     width: '100%',
     fontSize: 15,
-    backgroundColor: '#fff',
-    color: '#000',
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: '#4A90E2',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 12,
     width: '100%',
-    backgroundColor: '#fff',
   },
   passwordInput: {
     flex: 1,
     height: 45,
     paddingHorizontal: 12,
     fontSize: 15,
-    color: '#000',
   },
   eyeIcon: {
     paddingHorizontal: 10,
@@ -66,13 +59,11 @@ const categoryContentStyles = StyleSheet.create({
   },
   pickerContainer: {
     height: 45,
-    borderColor: '#4A90E2',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 12,
     width: '100%',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   picker: {
     height: 65,
@@ -83,7 +74,6 @@ const categoryContentStyles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     alignSelf: 'flex-start',
-    color: '#000',
     flex: 1,
     flexWrap: 'wrap',
   },

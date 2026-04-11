@@ -15,7 +15,7 @@ import categoryContentStyles from '../../styles/categoryContentStyles';
 
 
 
-const PricingForm = ({ pricingData, onUpdate, prefix }) => {
+const PricingForm = ({ pricingData, onUpdate, prefix, colors }) => {
   const fixed = pricingData[`${prefix}_fixed`] ? 'yes' : 'no';
 
   const handleChange = (field, value) => {
@@ -24,48 +24,52 @@ const PricingForm = ({ pricingData, onUpdate, prefix }) => {
 
   return (
     <View>
-      <Text style={styles.label}>Charge per day</Text>
+      <Text style={[styles.label, { color: colors?.text || '#000' }]}>Charge per day</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
         keyboardType="numeric"
         value={pricingData[`${prefix}_charge_per_day`] || ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(text) => handleChange('charge_per_day', text)}
       />
 
-      <Text style={styles.label}>Charge per km</Text>
+      <Text style={[styles.label, { color: colors?.text || '#000' }]}>Charge per km</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
         keyboardType="numeric"
         value={pricingData[`${prefix}_charge_per_km`] || ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(text) => handleChange('charge_per_km', text)}
       />
 
-      <Text style={styles.label}>Waiting charge per hour</Text>
+      <Text style={[styles.label, { color: colors?.text || '#000' }]}>Waiting charge per hour</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
         keyboardType="numeric"
         value={pricingData[`${prefix}_waiting_charge_per_hour`] || ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(text) => handleChange('waiting_charge_per_hour', text)}
       />
 
-      <Text style={styles.label}>Waiting charge per night</Text>
+      <Text style={[styles.label, { color: colors?.text || '#000' }]}>Waiting charge per night</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
         keyboardType="numeric"
         value={pricingData[`${prefix}_waiting_charge_per_night`] || ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(text) => handleChange('waiting_charge_per_night', text)}
       />
 
-      <Text style={styles.label}>Fixed</Text>
+      <Text style={[styles.label, { color: colors?.text || '#000' }]}>Fixed</Text>
       <View style={styles.radioContainer}>
         <TouchableOpacity onPress={() => onUpdate(`${prefix}_fixed`, true)}>
-          <Text style={fixed === 'yes' ? styles.activeRadio : styles.radio}>
+          <Text style={fixed === 'yes' ? [styles.activeRadio, { backgroundColor: colors?.primary || '#4A90E2', color: '#fff' }] : [styles.radio, { color: colors?.text || '#333', borderColor: colors?.border || '#aaa' }]}>
             Yes
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => onUpdate(`${prefix}_fixed`, false)}>
-          <Text style={fixed === 'no' ? styles.activeRadio : styles.radio}>
+          <Text style={fixed === 'no' ? [styles.activeRadio, { backgroundColor: colors?.primary || '#4A90E2', color: '#fff' }] : [styles.radio, { color: colors?.text || '#333', borderColor: colors?.border || '#aaa' }]}>
             No
           </Text>
         </TouchableOpacity>
@@ -75,7 +79,7 @@ const PricingForm = ({ pricingData, onUpdate, prefix }) => {
 };
 
 
-const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
+const Step2VehiclesDetails = ({ formData, handleInputChange, colors }) => {
   // Initialize vehicles array if not present
   const vehicles = formData.vehicles || [{
     id: 1, type: "", name: "", model: "", seatCapacity: "", fuelType: "",
@@ -204,20 +208,21 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
 
   return (
     <ScrollView style={{ width: '100%' }}>
-      <View style={categoryContentStyles.formContainer}>
-        <Text style={categoryContentStyles.formTitle}>Vehicle Details</Text>
+      <View style={[categoryContentStyles.formContainer, { borderColor: colors?.primary || '#4A90E2' }]}>
+        <Text style={[categoryContentStyles.formTitle, { color: colors?.primary || '#4A90E2' }]}>Vehicle Details</Text>
 
         {vehicles.map((vehicle, index) => (
-          <View key={vehicle.id} style={styles.vehicleContainer}>
-            <Text style={styles.vehicleTitle}>Vehicle {index + 1}</Text>
+          <View key={vehicle.id} style={[styles.vehicleContainer, { backgroundColor: colors?.card || '#f9f9f9', borderColor: colors?.border || '#ddd' }]}>
+            <Text style={[styles.vehicleTitle, { color: colors?.text || '#333' }]}>Vehicle {index + 1}</Text>
 
             {/* Vehicle Type Dropdown */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Vehicle Type *</Text>
-              <View style={categoryContentStyles.pickerContainer}>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Vehicle Type *</Text>
+              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
                 <Picker
                   selectedValue={vehicle.type || ""}
-                  style={categoryContentStyles.picker}
+                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
+                  dropdownIconColor={colors?.text || '#000'}
                   onValueChange={(value) => updateVehicle(vehicle.id, "type", value)}
                 >
                   {vehicleTypeOptions.map((option, idx) => (
@@ -225,7 +230,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                       key={option.value}
                       label={option.label}
                       value={option.value}
-                      color={idx === 0 ? '#999999' : '#000000'}
+                      color={idx === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -235,35 +240,36 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
 
             {/* Vehicle Name */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Vehicle Name *</Text>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Vehicle Name *</Text>
               <TextInput
-                style={categoryContentStyles.input}
+                style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
                 value={vehicle.name || ""}
                 onChangeText={(value) => updateVehicle(vehicle.id, "name", value)}
                 placeholder="Enter vehicle name"
-                placeholderTextColor="#999999"
+                placeholderTextColor={colors?.placeholder || "#999999"}
               />
             </View>
 
             {/* Vehicle Model */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Vehicle Model *</Text>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Vehicle Model *</Text>
               <TextInput
-                style={categoryContentStyles.input}
+                style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
                 value={vehicle.model || ""}
                 onChangeText={(value) => updateVehicle(vehicle.id, "model", value)}
                 placeholder="Enter vehicle model"
-                placeholderTextColor="#999999"
+                placeholderTextColor={colors?.placeholder || "#999999"}
               />
             </View>
 
             {/* Seat Capacity Dropdown */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Seat Capacity *</Text>
-              <View style={categoryContentStyles.pickerContainer}>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Seat Capacity *</Text>
+              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
                 <Picker
                   selectedValue={vehicle.seatCapacity || ""}
-                  style={categoryContentStyles.picker}
+                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
+                  dropdownIconColor={colors?.text || '#000'}
                   onValueChange={(value) => updateVehicle(vehicle.id, "seatCapacity", value)}
                 >
                   {seatCapacityOptions.map((option, idx) => (
@@ -271,7 +277,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                       key={option.value}
                       label={option.label}
                       value={option.value}
-                      color={idx === 0 ? '#999999' : '#000000'}
+                      color={idx === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -281,11 +287,12 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
 
             {/* Fuel Type Dropdown */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Fuel Type *</Text>
-              <View style={categoryContentStyles.pickerContainer}>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Fuel Type *</Text>
+              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
                 <Picker
                   selectedValue={vehicle.fuelType || ""}
-                  style={categoryContentStyles.picker}
+                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
+                  dropdownIconColor={colors?.text || '#000'}
                   onValueChange={(value) => updateVehicle(vehicle.id, "fuelType", value)}
                 >
                   {fuelTypeOptions.map((option, idx) => (
@@ -293,7 +300,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                       key={option.value}
                       label={option.label}
                       value={option.value}
-                      color={idx === 0 ? '#999999' : '#000000'}
+                      color={idx === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -305,22 +312,24 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             <View style={styles.mainContainer}>
 
               <View style={styles.column}>
-                <Text style={styles.heading}>AC</Text>
+                <Text style={[styles.heading, { color: colors?.text || '#000' }]}>AC</Text>
                 <PricingForm
                   pricingData={vehicle}
                   onUpdate={(field, value) => updateVehicle(vehicle.id, field, value)}
                   prefix="ac"
+                  colors={colors}
                 />
               </View>
 
-              <View style={styles.verticalLine} />
+              <View style={[styles.verticalLine, { backgroundColor: colors?.primary || '#4A90E2' }]} />
 
               <View style={styles.column}>
-                <Text style={styles.heading}>Non AC</Text>
+                <Text style={[styles.heading, { color: colors?.text || '#000' }]}>Non AC</Text>
                 <PricingForm
                   pricingData={vehicle}
                   onUpdate={(field, value) => updateVehicle(vehicle.id, field, value)}
                   prefix="nonac"
+                  colors={colors}
                 />
               </View>
 
@@ -331,7 +340,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             {vehicles.length > 1 && (
               <View style={styles.removeButtonContainer}>
                 <TouchableOpacity
-                  style={styles.removeButton}
+                  style={[styles.removeButton, { backgroundColor: colors?.secondary || '#FF6B6B' }]}
                   onPress={() => removeVehicle(vehicle.id)}
                 >
                   <Text style={styles.removeButtonText}>Remove Vehicle</Text>
@@ -343,8 +352,8 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
 
         {/* Image Upload Section */}
         <View style={{ marginTop: 20 }}>
-          <Text style={categoryContentStyles.formTitle}>Upload Vehicle Images</Text>
-          <Text style={{ marginBottom: 15, fontSize: 14, color: '#666' }}>
+          <Text style={[categoryContentStyles.formTitle, { color: colors?.primary || '#4A90E2' }]}>Upload Vehicle Images</Text>
+          <Text style={{ marginBottom: 15, fontSize: 14, color: colors?.subText || '#666' }}>
             Upload minimum 4 and maximum 7 images of your vehicles.
           </Text>
 
@@ -357,7 +366,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             }}
           >
             <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              style={[categoryContentStyles.button, categoryContentStyles.primaryButton, { backgroundColor: colors?.primary || '#4A90E2' }]}
               onPress={() => pickImage("camera")}
               disabled={images.length >= 7}
             >
@@ -365,7 +374,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              style={[categoryContentStyles.button, categoryContentStyles.primaryButton, { backgroundColor: colors?.primary || '#4A90E2' }]}
               onPress={() => pickImage("gallery")}
               disabled={images.length >= 7}
             >
@@ -383,7 +392,7 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                 />
                 <TouchableOpacity
                   style={{
-                    backgroundColor: "red",
+                    backgroundColor: colors?.secondary || "red",
                     padding: 5,
                     marginTop: 5,
                     borderRadius: 4,
@@ -403,28 +412,29 @@ const Step2VehiclesDetails = ({ formData, handleInputChange }) => {
                   style={{
                     height: 100,
                     borderWidth: 1,
-                    borderColor: "#aaa",
+                    borderColor: colors?.border || "#aaa",
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 5,
+                    backgroundColor: colors?.card || '#fff'
                   }}
                   onPress={() => pickImage("gallery")}
                 >
-                  <Text style={{ fontSize: 26, color: "#4A90E2" }}>+</Text>
-                  <Text style={{ fontSize: 12, color: "#666" }}>Add Image</Text>
+                  <Text style={{ fontSize: 26, color: colors?.primary || "#4A90E2" }}>+</Text>
+                  <Text style={{ fontSize: 12, color: colors?.subText || "#666" }}>Add Image</Text>
                 </TouchableOpacity>
               </View>
             )}
           </View>
 
-          <Text style={{ textAlign: "center", marginTop: 10 }}>
+          <Text style={{ textAlign: "center", marginTop: 10, color: colors?.text || '#000' }}>
             {images.length} / 7 images uploaded
           </Text>
         </View>
 
         {/* Add More Vehicle Button - Moved to the end */}
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: colors?.primary || '#4A90E2' }]}
           onPress={addVehicle}
         >
           <Text style={styles.addButtonText}>Add Another Vehicle</Text>
