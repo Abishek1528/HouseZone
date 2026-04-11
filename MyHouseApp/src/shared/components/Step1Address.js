@@ -2,72 +2,72 @@ import React from "react";
 import { View, Text, TextInput, ScrollView } from "react-native";
 import categoryContentStyles from '../../styles/categoryContentStyles';
 
-const Step1Address = ({ formData, handleInputChange }) => {
+const Step1Address = ({ formData, handleInputChange, colors }) => {
   return (
     <ScrollView style={{ width: '100%' }}>
-      <View style={categoryContentStyles.formContainer}>
-        <Text style={categoryContentStyles.formTitle}>Address Information</Text>
+      <View style={[categoryContentStyles.formContainer, { borderColor: colors?.primary || '#4A90E2' }]}>
+        <Text style={[categoryContentStyles.formTitle, { color: colors?.primary || '#4A90E2' }]}>Address Information</Text>
         
-        <Text style={categoryContentStyles.label}>Name of the Person *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Name of the Person *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="Name of the Person"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.name}
           onChangeText={(value) => handleInputChange('name', value)}
         />
         
-        <Text style={categoryContentStyles.label}>Door No *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Door No *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="Door No"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.doorNo}
           onChangeText={(value) => handleInputChange('doorNo', value)}
         />
         
-        <Text style={categoryContentStyles.label}>Street *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Street *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="Street"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.street}
           onChangeText={(value) => handleInputChange('street', value)}
         />
         
-        <Text style={categoryContentStyles.label}>Pincode *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Pincode *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="Pincode"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.pincode}
           onChangeText={(value) => handleInputChange('pincode', value)}
           keyboardType="numeric"
         />
         
-        <Text style={categoryContentStyles.label}>Area *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Area *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="Area"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.area}
           onChangeText={(value) => handleInputChange('area', value)}
         />
         
-        <Text style={categoryContentStyles.label}>City *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>City *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="City"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.city}
           onChangeText={(value) => handleInputChange('city', value)}
         />
         
-        <Text style={categoryContentStyles.label}>Contact No *</Text>
+        <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Contact No *</Text>
         <TextInput
-          style={categoryContentStyles.input}
+          style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
           placeholder="Contact No"
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.contactNo}
           onChangeText={(value) => handleInputChange('contactNo', value)}
           keyboardType="phone-pad"

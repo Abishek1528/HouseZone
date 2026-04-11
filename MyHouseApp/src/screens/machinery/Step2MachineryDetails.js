@@ -15,51 +15,55 @@ import categoryContentStyles from '../../styles/categoryContentStyles';
 
 
 
-const PricingForm = ({ chargePerDay, chargePerKm, waitingChargePerHour, waitingChargePerNight, fixed, onChange }) => {
+const PricingForm = ({ chargePerDay, chargePerKm, waitingChargePerHour, waitingChargePerNight, fixed, onChange, colors }) => {
   return (
     <View>
-      <Text style={styles.label}>Charge per day</Text>
+      <Text style={[styles.label, { color: colors?.text || '#333' }]}>Charge per day</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#ccc' }]}
         keyboardType="numeric"
         value={chargePerDay ?? ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(v) => onChange("chargePerDay", v)}
       />
 
-      <Text style={styles.label}>Charge per km</Text>
+      <Text style={[styles.label, { color: colors?.text || '#333' }]}>Charge per km</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#ccc' }]}
         keyboardType="numeric"
         value={chargePerKm ?? ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(v) => onChange("chargePerKm", v)}
       />
 
-      <Text style={styles.label}>Waiting charge per hour</Text>
+      <Text style={[styles.label, { color: colors?.text || '#333' }]}>Waiting charge per hour</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#ccc' }]}
         keyboardType="numeric"
         value={waitingChargePerHour ?? ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(v) => onChange("waitingChargePerHour", v)}
       />
 
-      <Text style={styles.label}>Waiting charge per night</Text>
+      <Text style={[styles.label, { color: colors?.text || '#333' }]}>Waiting charge per night</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#ccc' }]}
         keyboardType="numeric"
         value={waitingChargePerNight ?? ""}
+        placeholderTextColor={colors?.placeholder || "#999999"}
         onChangeText={(v) => onChange("waitingChargePerNight", v)}
       />
 
-      <Text style={styles.label}>Fixed</Text>
+      <Text style={[styles.label, { color: colors?.text || '#333' }]}>Fixed</Text>
       <View style={styles.radioContainer}>
         <TouchableOpacity onPress={() => onChange("fixed", "yes")}>
-          <Text style={fixed === 'yes' ? styles.activeRadio : styles.radio}>
+          <Text style={fixed === 'yes' ? [styles.activeRadio, { backgroundColor: colors?.primary || '#4A90E2', color: '#fff' }] : [styles.radio, { color: colors?.text || '#333', borderColor: colors?.border || '#ccc' }]}>
             Yes
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => onChange("fixed", "no")}>
-          <Text style={fixed === 'no' ? styles.activeRadio : styles.radio}>
+          <Text style={fixed === 'no' ? [styles.activeRadio, { backgroundColor: colors?.primary || '#4A90E2', color: '#fff' }] : [styles.radio, { color: colors?.text || '#333', borderColor: colors?.border || '#ccc' }]}>
             No
           </Text>
         </TouchableOpacity>
@@ -70,7 +74,7 @@ const PricingForm = ({ chargePerDay, chargePerKm, waitingChargePerHour, waitingC
 
 
 
-const Step2MachineryDetails = ({ formData, handleInputChange }) => {
+const Step2MachineryDetails = ({ formData, handleInputChange, colors }) => {
   // Initialize machinery array if not present
   const machinery = formData.machinery || [{ id: 1, type: "", name: "", model: "" }];
   
@@ -186,20 +190,21 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
 
   return (
     <ScrollView style={{ width: '100%' }}>
-      <View style={categoryContentStyles.formContainer}>
-        <Text style={categoryContentStyles.formTitle}>Machinery Details</Text>
+      <View style={[categoryContentStyles.formContainer, { borderColor: colors?.primary || '#4A90E2' }]}>
+        <Text style={[categoryContentStyles.formTitle, { color: colors?.primary || '#4A90E2' }]}>Machinery Details</Text>
         
         {machinery.map((mach, index) => (
-          <View key={mach.id} style={styles.vehicleContainer}>
-            <Text style={styles.vehicleTitle}>Machinery {index + 1}</Text>
+          <View key={mach.id} style={[styles.vehicleContainer, { borderColor: colors?.border || '#eee' }]}>
+            <Text style={[styles.vehicleTitle, { color: colors?.text || '#333' }]}>Machinery {index + 1}</Text>
             
             {/* Machinery Type Dropdown */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Machinery Type *</Text>
-              <View style={categoryContentStyles.pickerContainer}>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Machinery Type *</Text>
+              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
                 <Picker
                   selectedValue={mach.type || ""}
-                  style={categoryContentStyles.picker}
+                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
+                  dropdownIconColor={colors?.text || '#000'}
                   onValueChange={(value) => updateMachinery(mach.id, "type", value)}
                 >
                   {machineryTypeOptions.map((option, optionIndex) => (
@@ -207,7 +212,7 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
                       key={option.value} 
                       label={option.label} 
                       value={option.value} 
-                      color={optionIndex === 0 ? '#999999' : '#000000'}
+                      color={optionIndex === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
                       style={{ fontSize: 15 }}
                     />
                   ))}
@@ -217,31 +222,31 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
 
             {/* Machinery Name */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Machinery Name *</Text>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Machinery Name *</Text>
               <TextInput
-                style={categoryContentStyles.input}
+                style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
                 value={mach.name || ""}
                 onChangeText={(value) => updateMachinery(mach.id, "name", value)}
                 placeholder="Enter machinery name"
-                placeholderTextColor="#999999"
+                placeholderTextColor={colors?.placeholder || "#999999"}
               />
             </View>
 
             {/* Machinery Model */}
             <View style={categoryContentStyles.inputContainer}>
-              <Text style={categoryContentStyles.label}>Machinery Model *</Text>
+              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Machinery Model *</Text>
               <TextInput
-                style={categoryContentStyles.input}
+                style={[categoryContentStyles.input, { backgroundColor: colors?.card || '#fff', color: colors?.text || '#000', borderColor: colors?.border || '#4A90E2' }]}
                 value={mach.model || ""}
                 onChangeText={(value) => updateMachinery(mach.id, "model", value)}
                 placeholder="Enter machinery model"
-                placeholderTextColor="#999999"
+                placeholderTextColor={colors?.placeholder || "#999999"}
               />
             </View>
 
             {/* Horizontal Line Below Model */}
             <View style={styles.pricingContainer}>
-              <Text style={styles.pricingHeading}>Pricing Details</Text>
+              <Text style={[styles.pricingHeading, { color: colors?.primary || '#4A90E2' }]}>Pricing Details</Text>
               <PricingForm
                 chargePerDay={formData.chargePerDay}
                 chargePerKm={formData.chargePerKm}
@@ -249,6 +254,7 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
                 waitingChargePerNight={formData.waitingChargePerNight}
                 fixed={formData.fixed || 'no'}
                 onChange={(key, value) => handleInputChange(key, value)}
+                colors={colors}
               />
             </View>
 
@@ -257,7 +263,7 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
             {machinery.length > 1 && (
               <View style={styles.removeButtonContainer}>
                 <TouchableOpacity 
-                  style={styles.removeButton}
+                  style={[styles.removeButton, { backgroundColor: colors?.secondary || '#FF6B6B' }]}
                   onPress={() => removeMachinery(mach.id)}
                 >
                   <Text style={styles.removeButtonText}>Remove Machinery</Text>
@@ -269,8 +275,8 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
         
         {/* Image Upload Section */}
         <View style={{ marginTop: 20 }}>
-          <Text style={categoryContentStyles.formTitle}>Upload Machinery Images</Text>
-          <Text style={{ marginBottom: 15, fontSize: 14, color: '#666' }}>
+          <Text style={[categoryContentStyles.formTitle, { color: colors?.primary || '#4A90E2' }]}>Upload Machinery Images</Text>
+          <Text style={{ marginBottom: 15, fontSize: 14, color: colors?.subText || '#666' }}>
             Upload minimum 4 and maximum 7 images of your machinery.
           </Text>
 
@@ -283,7 +289,7 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
             }}
           >
             <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              style={[categoryContentStyles.button, categoryContentStyles.primaryButton, { backgroundColor: colors?.primary || '#4A90E2' }]}
               onPress={() => pickImage("camera")}
               disabled={images.length >= 7}
             >
@@ -291,7 +297,7 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              style={[categoryContentStyles.button, categoryContentStyles.primaryButton, { backgroundColor: colors?.primary || '#4A90E2' }]}
               onPress={() => pickImage("gallery")}
               disabled={images.length >= 7}
             >
@@ -309,7 +315,7 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
                 />
                 <TouchableOpacity
                   style={{
-                    backgroundColor: "red",
+                    backgroundColor: colors?.secondary || "red",
                     padding: 5,
                     marginTop: 5,
                     borderRadius: 4,
@@ -329,28 +335,29 @@ const Step2MachineryDetails = ({ formData, handleInputChange }) => {
                   style={{
                     height: 100,
                     borderWidth: 1,
-                    borderColor: "#aaa",
+                    borderColor: colors?.border || "#aaa",
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 5,
+                    backgroundColor: colors?.card || '#fff'
                   }}
                   onPress={() => pickImage("gallery")}
                 >
-                  <Text style={{ fontSize: 26, color: "#4A90E2" }}>+</Text>
-                  <Text style={{ fontSize: 12, color: "#666" }}>Add Image</Text>
+                  <Text style={{ fontSize: 26, color: colors?.primary || "#4A90E2" }}>+</Text>
+                  <Text style={{ fontSize: 12, color: colors?.subText || "#666" }}>Add Image</Text>
                 </TouchableOpacity>
               </View>
             )}
           </View>
 
-          <Text style={{ textAlign: "center", marginTop: 10 }}>
+          <Text style={{ textAlign: "center", marginTop: 10, color: colors?.text || '#000' }}>
             {images.length} / 7 images uploaded
           </Text>
         </View>
         
         {/* Add More Machinery Button - Moved to the end */}
         <TouchableOpacity 
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: colors?.primary || '#4A90E2' }]}
           onPress={addMachinery}
         >
           <Text style={styles.addButtonText}>Add Another Machinery</Text>

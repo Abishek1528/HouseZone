@@ -9,8 +9,7 @@ import Step3PaymentImages from "./Step3PaymentImages";
 import { handleStep1InputChange } from "./logic/step1Logic";
 import { handleImageSelect, handleRemoveImage } from "./logic/step3Logic";
 import { handleNext, handlePrevious } from "./logic/navigationLogic";
-
-
+import { useTheme } from "../../context/ThemeContext";
 
 const BaseForm = ({
   title,
@@ -23,6 +22,7 @@ const BaseForm = ({
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { dark, colors } = useTheme();
   const { role } = route.params || { role: "Owner" };
 
   const [step, setStep] = useState(1);
@@ -624,19 +624,19 @@ const BaseForm = ({
   const maxSteps = isTwoStepCategory ? 2 : 3;
 
   return (
-    <View style={categoryContentStyles.container}>
+    <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
       <Header />
 
       <View style={categoryContentStyles.progressContainer}>
-        <Text style={categoryContentStyles.progressText}>Step {step} of {maxSteps}</Text>
+        <Text style={[categoryContentStyles.progressText, { color: colors.text }]}>Step {step} of {maxSteps}</Text>
       </View>
 
       <View style={[categoryContentStyles.content, { paddingHorizontal: 20, width: "100%" }]}>
         {step === 1 && (
-          <Step1Address formData={formData} handleInputChange={handleStep1Change} />
+          <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} dark={dark} />
         )}
         {step === 2 && (
-          <Step2Component formData={formData} handleInputChange={handleInputChange} />
+          <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} dark={dark} />
         )}
         {!isTwoStepCategory && step === 3 && (
           <Step3PaymentImages
@@ -644,6 +644,8 @@ const BaseForm = ({
             handleInputChange={handleInputChange}
             handleImageSelect={handleImageSelection}
             handleRemoveImage={handleImageRemoval}
+            colors={colors}
+            dark={dark}
           />
         )}
 
