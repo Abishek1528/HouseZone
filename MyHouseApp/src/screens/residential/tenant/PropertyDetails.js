@@ -73,14 +73,11 @@ export default function PropertyDetails() {
   }
 
   const handleProceed = () => {
-    // Navigate to the NewTenantForm page and pass propertyId and category
     navigation.navigate('NewTenantForm', { propertyId, category: 'residential' });
   };
 
-  // Helper function to format dimensions - now displays whole numbers
   const formatDimensions = (length, breadth, totalArea) => {
     if (length && breadth) {
-      // Convert to whole numbers if they are numeric
       const formattedLength = isNaN(length) ? length : Math.round(Number(length));
       const formattedBreadth = isNaN(breadth) ? breadth : Math.round(Number(breadth));
       const formattedArea = isNaN(totalArea) ? totalArea : Math.round(Number(totalArea));
@@ -90,7 +87,6 @@ export default function PropertyDetails() {
     return 'N/A';
   };
   
-  // Helper function to render conditions based on selected condition numbers
   const renderConditions = (conditionNumbers) => {
     if (!conditionNumbers) {
       return (
@@ -98,7 +94,6 @@ export default function PropertyDetails() {
       );
     }
     
-    // Parse condition numbers if it's a JSON string
     let parsedConditionNumbers = conditionNumbers;
     if (typeof conditionNumbers === 'string') {
       try {
@@ -111,7 +106,6 @@ export default function PropertyDetails() {
       }
     }
     
-    // Array of predefined conditions corresponding to numbers 1-6
     const predefinedConditions = [
       'No structural changes without owner’s permission.',
       'Water and electricity bills must be paid by the tenant.',
@@ -121,20 +115,17 @@ export default function PropertyDetails() {
       'Only Vegetarian.'
     ];
     
-    // If no condition numbers are selected, show a message
     if (!Array.isArray(parsedConditionNumbers) || parsedConditionNumbers.length === 0) {
       return (
         <Text style={propertyDetailsStyles.value}>No conditions specified</Text>
       );
     }
     
-    // Render each selected condition
     return Array.isArray(parsedConditionNumbers) ? parsedConditionNumbers.map((conditionNum, index) => {
-      // Condition numbers are 1-indexed, so subtract 1 for array index
       const conditionText = predefinedConditions[conditionNum - 1];
       
       if (!conditionText) {
-        return null; // Skip invalid condition numbers
+        return null;
       }
       
       return (
@@ -157,7 +148,6 @@ export default function PropertyDetails() {
         >
           <Text style={[categoryContentStyles.pageTitle, { color: colors.text }]}>Property Details</Text>
           
-          {/* Images Gallery */}
           {Array.isArray(property.images) && property.images.length > 0 && (
             <View style={{ marginVertical: 10 }}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -195,11 +185,9 @@ export default function PropertyDetails() {
             </View>
           )}
           
-          {/* Payment Details */}
           <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
             <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>💰 Payment Information</Text>
             
-            {/* Display lease amount if available, otherwise show advance and monthly rent */}
             {property.paymentDetails?.leaseAmount ? (
               <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
                 <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Lease Amount:</Text>
@@ -224,7 +212,6 @@ export default function PropertyDetails() {
             </View>
           </View>
           
-          {/* House Details */}
           {property.houseDetails && (
             <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
               <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>🏠 House Details</Text>
@@ -233,7 +220,6 @@ export default function PropertyDetails() {
                 <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.facingDirection || 'N/A'}</Text>
               </View>
               
-              {/* Hall Details */}
               <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
                 <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Hall Size (L X B):</Text>
                 <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
@@ -245,7 +231,6 @@ export default function PropertyDetails() {
                 </Text>
               </View>
               
-              {/* Kitchen Details */}
               <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
                 <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Kitchen Size (L X B):</Text>
                 <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
@@ -257,7 +242,6 @@ export default function PropertyDetails() {
                 </Text>
               </View>
               
-              {/* Bedroom Details */}
               <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
                 <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bedrooms:</Text>
                 <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.numberOfBedrooms || 'N/A'}</Text>
@@ -276,13 +260,11 @@ export default function PropertyDetails() {
                 </View>
               ))}
               
-              {/* Bathroom Details */}
               <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
                 <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bathrooms:</Text>
                 <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.numberOfBathrooms || 'N/A'}</Text>
               </View>
               
-              {/* Render bathrooms based on the selected number of bathrooms */}
               {property.houseDetails?.numberOfBathrooms && (
                 Array.from({ length: Math.max(0, parseInt(property.houseDetails.numberOfBathrooms) || 0) }, (_, index) => {
                   const bathroomType = property.houseDetails?.[`bathroom${index + 1}Type`];
@@ -300,7 +282,6 @@ export default function PropertyDetails() {
                 })
               )}
               
-              {/* Parking Details */}
               {property.houseDetails && (
                 <>
                   <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
@@ -324,7 +305,6 @@ export default function PropertyDetails() {
             </View>
           )}
           
-          {/* Property Specifications Section */}
           {property.houseDetails && (
             <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
               <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>🏢 Property Specifications</Text>
@@ -353,7 +333,6 @@ export default function PropertyDetails() {
             </View>
           )}
           
-          {/* Location & Nearby Amenities Section */}
           <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
             <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>📍 Location & Nearby Amenities</Text>
             <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
@@ -388,7 +367,6 @@ export default function PropertyDetails() {
             </View>
           </View>
           
-          {/* Conditions Section */}
           <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
             <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>✅ Property Conditions</Text>
             {renderConditions(property?.conditionNumbers)}
@@ -396,7 +374,6 @@ export default function PropertyDetails() {
 
         </ScrollView>
         
-        {/* Button Row with Back and Proceed buttons */}
         <View style={categoryContentStyles.buttonRow}>
           <TouchableOpacity 
             style={[categoryContentStyles.button, categoryContentStyles.cancelButton, { backgroundColor: dark ? '#444' : '#6c757d' }]}

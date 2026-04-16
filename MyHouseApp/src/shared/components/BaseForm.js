@@ -633,10 +633,10 @@ const BaseForm = ({
 
       <View style={[categoryContentStyles.content, { paddingHorizontal: 20, width: "100%" }]}>
         {step === 1 && (
-          <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} dark={dark} />
+          <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} />
         )}
         {step === 2 && (
-          <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} dark={dark} />
+          <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} />
         )}
         {!isTwoStepCategory && step === 3 && (
           <Step3PaymentImages
