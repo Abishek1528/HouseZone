@@ -37,14 +37,16 @@ export default function MachineryListPage() {
 
   // Helper to normalize image URLs
   const normalizeImageUrl = (url) => {
-    if (!url) return null;
-    if (typeof url !== 'string') return null;
+    if (!url || typeof url !== 'string') return null;
     if (url.startsWith('http')) return url;
     
     // If it's just a filename, prepend the base upload URL
     const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-    const baseHost = API_BASE_URL.replace('/api', '');
-    return `${baseHost}/uploads/machinery/${url.split('/').pop()}`;
+    const baseHost = API_BASE_URL.replace(/\/api$/, '');
+    
+    // Handle potential non-string values safely
+    const filename = String(url).split('/').pop();
+    return `${baseHost}/uploads/machinery/${filename}`;
   };
 
   const loadProperties = async (filters = {}) => {

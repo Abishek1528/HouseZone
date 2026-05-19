@@ -16,7 +16,7 @@ export default function BusinessTenantPage() {
     try {
       setLoading(true);
       const result = await getBusinessTenantsWithProperties();
-      setData(result);
+      setData(result || []);
     } catch (error) {
       console.error("Error fetching business tenant data:", error);
       Alert.alert("Error", "Failed to fetch business tenant and property details");

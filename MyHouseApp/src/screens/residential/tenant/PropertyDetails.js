@@ -152,7 +152,7 @@ export default function PropertyDetails() {
             <View style={{ marginVertical: 10 }}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {property.images.map((imgRaw, idx) => {
-                  if (!imgRaw || typeof imgRaw !== 'string') return null;
+                  if (typeof imgRaw !== 'string' || !imgRaw) return null;
                   const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
                   return (
                   <TouchableOpacity 
@@ -175,9 +175,12 @@ export default function PropertyDetails() {
               </ScrollView>
               
               <ImageView
-                images={property.images.map(imgRaw => ({
-                  uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
-                }))}
+                images={property.images
+                  .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
+                  .map(imgRaw => ({
+                    uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
+                  }))
+                }
                 imageIndex={currentImageIndex}
                 visible={isImageViewVisible}
                 onRequestClose={() => setIsImageViewVisible(false)}

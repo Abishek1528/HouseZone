@@ -15,7 +15,7 @@ const API_HOST = API_BASE_URL.replace(/\/api$/, '');
 const PropertyCard = ({ property, onViewDetails, colors, dark }) => {
   if (!property) return null;
   const firstImageRaw = Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : null;
-  const firstImage = firstImageRaw
+  const firstImage = (typeof firstImageRaw === 'string' && firstImageRaw)
     ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`)
     : null;
   

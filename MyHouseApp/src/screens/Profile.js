@@ -14,7 +14,12 @@ export default function Profile() {
   const navigation = useNavigation();
   const route = useRoute();
   const { colors } = useTheme();
-  const [userDetails, setUserDetails] = useState(null);
+  const [userDetails, setUserDetails] = useState({
+    name: 'User',
+    age: '',
+    contact: '',
+    email: ''
+  });
   const [profileImage, setProfileImage] = useState(null);
   const [isImageViewVisible, setIsImageViewVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(route.params?.isEditing || false);
@@ -40,18 +45,23 @@ export default function Profile() {
     try {
       const storedDetails = await AsyncStorage.getItem('userDetails');
       if (storedDetails) {
-        const details = JSON.parse(storedDetails);
-        setUserDetails(details);
-        setEditedDetails({
-          name: details.name || '',
-          age: details.age?.toString() || '',
-          contact: details.contact || details.contact_number || '',
-          email: details.email || ''
-        });
-      } else {
-        Alert.alert("Error", "User details not found. Please log in.", [
-          { text: "OK", onPress: () => navigation.navigate("Login") }
-        ]);
+        try {
+          const details = JSON.parse(storedDetails);
+          setUserDetails(details);
+          setEditedDetails({
+            name: details.name || '',
+            age: details.age?.toString() || '',
+            contact: details.contact || details.contact_number || '',
+            email: details.email || ''
+          });
+        } catch (parseError) {
+          console.error('Error parsing user details:', parseError);
+          // If data is corrupted, clear it and redirect to login
+          await AsyncStorage.removeItem('userDetails');
+          Alert.alert("Error", "Session data corrupted. Please log in again.", [
+            { text: "OK", onPress: () => navigation.navigate("Login") }
+          ]);
+        }
       }
     } catch (error) {
       console.error('Error loading user details:', error);
@@ -87,6 +97,13 @@ export default function Profile() {
   };
 
   const pickImage = async () => {
+    // Ask for permissions first
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -94,7 +111,7 @@ export default function Profile() {
       quality: 1,
     });
 
-    if (!result.canceled) {
+    if (!result.canceled && result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setProfileImage(uri);
       await AsyncStorage.setItem('profileImage', uri);

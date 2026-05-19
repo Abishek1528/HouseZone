@@ -16,7 +16,7 @@ export default function MachineryTenantPage() {
     try {
       setLoading(true);
       const result = await getMachineryTenantsWithItems();
-      setData(result);
+      setData(result || []);
     } catch (error) {
       console.error("Error fetching machinery tenant data:", error);
       Alert.alert("Error", "Failed to fetch machinery tenant and item details");

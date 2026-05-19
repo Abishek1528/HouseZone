@@ -9,7 +9,15 @@ const handleFetchRequest = async (url, options) => {
     const response = await fetch(url, options);
     console.log(`Response status: ${response.status}`);
     
-    const result = await response.json();
+    const contentType = response.headers.get('content-type');
+    let result;
+    
+    if (contentType && contentType.includes('application/json')) {
+      result = await response.json();
+    } else {
+      const text = await response.text();
+      result = { message: text };
+    }
     
     if (!response.ok) {
       throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);

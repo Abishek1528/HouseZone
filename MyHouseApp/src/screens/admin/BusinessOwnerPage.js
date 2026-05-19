@@ -16,10 +16,16 @@ export default function BusinessOwnerPage() {
       setLoading(true);
       const data = await getAllBusinessOwners();
       console.log('Loaded business owners data:', data);
-      setOwners(data);
+      if (Array.isArray(data)) {
+        setOwners(data);
+      } else {
+        console.warn('API returned non-array data:', data);
+        setOwners([]);
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to load business owners. Please try again.");
       console.error("Error loading business owners:", error);
+      setOwners([]);
     } finally {
       setLoading(false);
     }
@@ -69,18 +75,21 @@ export default function BusinessOwnerPage() {
         {isExpanded && (
             <View style={residentialOwnerStyles.detailedContainer}>
               {/* Images Gallery */}
-              {item.images && item.images.length > 0 && (
+              {Array.isArray(item.images) && item.images.filter(img => typeof img === 'string' && img.trim() !== '').length > 0 && (
                 <View style={residentialOwnerStyles.detailSection}>
                   <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
-                    {item.images.map((img, idx) => (
-                      <Image 
-                        key={idx} 
-                        source={{ uri: img }} 
-                        style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
-                        resizeMode="cover" 
-                      />
-                    ))}
+                    {item.images
+                      .filter(img => typeof img === 'string' && img.trim() !== '')
+                      .map((img, idx) => (
+                        <Image 
+                          key={idx} 
+                          source={{ uri: img }} 
+                          style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
+                          resizeMode="cover" 
+                        />
+                      ))
+                    }
                   </ScrollView>
                 </View>
               )}
@@ -166,7 +175,7 @@ export default function BusinessOwnerPage() {
           <FlatList
             data={owners}
             renderItem={renderOwner}
-            keyExtractor={(item) => (item.id ?? Math.random()).toString()}
+            keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
             showsVerticalScrollIndicator={false}
           />
         )}
