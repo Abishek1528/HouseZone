@@ -16,10 +16,8 @@ export default function Login() {
 
   const fadeAnim1 = useRef(new Animated.Value(0)).current;
   const fadeAnim2 = useRef(new Animated.Value(0)).current;
-  const fadeAnim3 = useRef(new Animated.Value(0)).current;
   const slideAnim1 = useRef(new Animated.Value(30)).current;
   const slideAnim2 = useRef(new Animated.Value(30)).current;
-  const slideAnim3 = useRef(new Animated.Value(30)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -39,29 +37,15 @@ export default function Login() {
       }),
       Animated.timing(fadeAnim2, {
         toValue: 1,
-        duration: 800,
+        duration: 1000,
         delay: 300,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim2, {
         toValue: 0,
-        duration: 800,
+        duration: 1000,
         delay: 300,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim3, {
-        toValue: 1,
-        duration: 1000,
-        delay: 500,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim3, {
-        toValue: 0,
-        duration: 1000,
-        delay: 500,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
@@ -140,34 +124,19 @@ export default function Login() {
       <StatusBar barStyle="dark-content" backgroundColor="#FFC107" />
       
       <View style={loginStyles.headerSection}>
-        <Text style={loginStyles.headerTitle}>Hello</Text>
-        <Text style={loginStyles.headerSubtitle}>Welcome Back!</Text>
-        <View style={{ marginTop: 30 }}>
-          <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
+        <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
+          <Text style={loginStyles.headerTitle}>Hello</Text>
+          <Text style={loginStyles.headerSubtitle}>Welcome Back!</Text>
+          <View style={{ marginTop: 30 }}>
             <Text style={{ 
-              fontSize: 34, 
+              fontSize: 28, 
               fontWeight: '900', 
               color: '#000', 
-              marginBottom: 3,
+              marginBottom: 10,
               letterSpacing: -0.5,
             }}>
-              One Platform.
+              Rent Smarter. Live Easier.
             </Text>
-          </Animated.View>
-          
-          <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }}>
-            <Text style={{ 
-              fontSize: 34, 
-              fontWeight: '900', 
-              color: '#000', 
-              marginBottom: 20,
-              letterSpacing: -0.5,
-            }}>
-              All Rentals.
-            </Text>
-          </Animated.View>
-          
-          <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
             <View style={{ 
               backgroundColor: 'rgba(0,0,0,0.05)', 
               padding: 15, 
@@ -181,17 +150,15 @@ export default function Login() {
                 lineHeight: 26,
                 fontWeight: '500',
               }}>
-                Find, list, and manage rentals across properties, vehicles, equipment, and more  all in one place.
+                Login to continue exploring rentals near you.
               </Text>
             </View>
-          </Animated.View>
-        </View>
+          </View>
+        </Animated.View>
       </View>
       
-      <ScrollView 
-        style={loginStyles.contentSection} 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+      <Animated.View 
+        style={[loginStyles.contentSection, { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }]}
       >
         <View style={loginStyles.formCard}>
           <Text style={loginStyles.formCardTitle}>Login Account</Text>
@@ -263,7 +230,7 @@ export default function Login() {
             <Text style={loginStyles.signupLinkText}>Create New Account</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </Animated.View>
     </View>
   );
 }
