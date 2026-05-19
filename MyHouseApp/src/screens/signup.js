@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, Animated, Easing } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,60 +15,6 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
-
-  const fadeAnim1 = useRef(new Animated.Value(0)).current;
-  const fadeAnim2 = useRef(new Animated.Value(0)).current;
-  const fadeAnim3 = useRef(new Animated.Value(0)).current;
-  const slideAnim1 = useRef(new Animated.Value(30)).current;
-  const slideAnim2 = useRef(new Animated.Value(30)).current;
-  const slideAnim3 = useRef(new Animated.Value(30)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim1, {
-        toValue: 1,
-        duration: 800,
-        delay: 100,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim1, {
-        toValue: 0,
-        duration: 800,
-        delay: 100,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim2, {
-        toValue: 1,
-        duration: 800,
-        delay: 300,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim2, {
-        toValue: 0,
-        duration: 800,
-        delay: 300,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim3, {
-        toValue: 1,
-        duration: 1000,
-        delay: 500,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim3, {
-        toValue: 0,
-        duration: 1000,
-        delay: 500,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
 
   const handleSignup = async () => {
     if (!name || !age || !contact || !email || !password) {
@@ -143,52 +89,43 @@ export default function Signup() {
 
   return (
     <View style={signupStyles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFC107" />
+      <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
       <View style={signupStyles.headerSection}>
-        <View style={{ marginTop: 10 }}>
-          <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
-            <Text style={{ 
-              fontSize: 28, 
-              fontWeight: '900', 
-              color: '#000', 
-              marginBottom: 3,
-              letterSpacing: -0.5,
-            }}>
-              Join the future of
-            </Text>
-          </Animated.View>
-          
-          <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }}>
-            <Text style={{ 
-              fontSize: 28, 
-              fontWeight: '900', 
-              color: '#4A90E2', 
-              marginBottom: 20,
-              letterSpacing: -0.5,
-            }}>
-              renting.
-            </Text>
-          </Animated.View>
-          
-          <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
-            <View style={{ 
-              backgroundColor: 'rgba(0,0,0,0.05)', 
-              padding: 15, 
-              borderRadius: 15,
-              borderLeftWidth: 4,
-              borderLeftColor: '#4A90E2',
-            }}>
-              <Text style={{ 
-                fontSize: 16, 
-                color: '#333', 
-                lineHeight: 26,
-                fontWeight: '500',
-              }}>
-                A unified platform for all your rental needs. Safe. Simple. Seamless.
-              </Text>
-            </View>
-          </Animated.View>
+        <Text style={{ 
+          fontSize: 28, 
+          fontWeight: '900', 
+          color: '#fff', 
+          marginBottom: 3,
+          letterSpacing: -0.5,
+          marginTop: 10,
+        }}>
+          Join the future of
+        </Text>
+        <Text style={{ 
+          fontSize: 28, 
+          fontWeight: '900', 
+          color: '#fff', 
+          marginBottom: 20,
+          letterSpacing: -0.5,
+        }}>
+          renting.
+        </Text>
+        <View style={{ 
+          backgroundColor: 'rgba(255,255,255,0.1)', 
+          padding: 15, 
+          borderRadius: 15,
+          borderLeftWidth: 4,
+          borderLeftColor: '#fff',
+        }}>
+          <Text style={{ 
+            fontSize: 16, 
+            color: '#e2e8f0', 
+            lineHeight: 26,
+            fontWeight: '500',
+          }}>
+            A unified platform for all your rental needs. Safe. Simple. Seamless.
+          </Text>
         </View>
       </View>
       

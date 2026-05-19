@@ -62,7 +62,7 @@ export default function Dummy() {
 
   return (
     <View style={dummyStyles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFC107" />
+      <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
       <View style={dummyStyles.headerSection}>
         <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>

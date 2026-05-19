@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const signupStyles = StyleSheet.create({
   container: {
@@ -6,7 +6,7 @@ const signupStyles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
   },
   headerSection: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#1e3a5f',
     paddingTop: 50,
     paddingBottom: 60,
     paddingHorizontal: 30,
@@ -17,11 +17,11 @@ const signupStyles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
   },
   headerSubtitle: {
     fontSize: 18,
-    color: '#333',
+    color: '#e2e8f0',
     marginTop: 5,
   },
   contentSection: {
@@ -105,14 +105,14 @@ const signupStyles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   signupButton: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#1e3a5f',
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
     marginBottom: 15,
   },
   signupButtonText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
   },

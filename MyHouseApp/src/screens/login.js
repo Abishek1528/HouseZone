@@ -121,7 +121,7 @@ export default function Login() {
 
   return (
     <View style={loginStyles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFC107" />
+      <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
       <View style={loginStyles.headerSection}>
         <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
@@ -131,22 +131,22 @@ export default function Login() {
             <Text style={{ 
               fontSize: 28, 
               fontWeight: '900', 
-              color: '#000', 
+              color: '#fff', 
               marginBottom: 10,
               letterSpacing: -0.5,
             }}>
               Rent Smarter. Live Easier.
             </Text>
             <View style={{ 
-              backgroundColor: 'rgba(0,0,0,0.05)', 
+              backgroundColor: 'rgba(255,255,255,0.1)', 
               padding: 15, 
               borderRadius: 15,
               borderLeftWidth: 4,
-              borderLeftColor: '#000',
+              borderLeftColor: '#fff',
             }}>
               <Text style={{ 
                 fontSize: 16, 
-                color: '#333', 
+                color: '#e2e8f0', 
                 lineHeight: 26,
                 fontWeight: '500',
               }}>

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const loginStyles = StyleSheet.create({
   container: {
@@ -6,7 +6,7 @@ const loginStyles = StyleSheet.create({
     backgroundColor: '#f0f0f0', 
   },
   headerSection: {
-    backgroundColor: '#FFC107', 
+    backgroundColor: '#1e3a5f', 
     paddingTop: 60,
     paddingBottom: 70,
     paddingHorizontal: 30,
@@ -17,11 +17,11 @@ const loginStyles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
   },
   headerSubtitle: {
     fontSize: 18,
-    color: '#333',
+    color: '#e2e8f0',
     marginTop: 5,
   },
   contentSection: {
@@ -109,18 +109,18 @@ const loginStyles = StyleSheet.create({
   },
   forgotText: {
     fontSize: 11,
-    color: '#FFC107',
+    color: '#1e3a5f',
     fontWeight: 'bold',
   },
   loginButton: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#1e3a5f',
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
     marginBottom: 15,
   },
   loginButtonText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
   },
