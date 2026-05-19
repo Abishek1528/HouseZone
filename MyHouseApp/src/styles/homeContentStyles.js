@@ -1,137 +1,154 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const homeContentStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#f0f0f0',
+  },
+  headerSection: {
+    backgroundColor: '#1e3a5f',
+    paddingTop: 55,
+    paddingBottom: 80,
+    paddingHorizontal: 30,
+    alignItems: 'flex-start',
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
+  },
+  headerTitle: {
+    fontSize: 42,
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: -1,
+  },
+  headerSubtitle: {
+    fontSize: 17,
+    color: '#e2e8f0',
+    marginTop: 8,
+    fontWeight: '500',
   },
   middle: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingHorizontal: 22,
+    marginTop: -40,
   },
   row: {
-    flexDirection: "row",
-    marginBottom: 25,
-  },
-  button: {
-    width: 150,
-    height: 150,
-    backgroundColor: "#4A90E2",
-    marginHorizontal: 12,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1.5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 22,
+    alignItems: 'center',
   },
   pageTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1a1a1a',
   },
-  // Modal styles
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalView: {
-    width: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
+  button: {
+    width: '47%',
+    height: 175,
+    backgroundColor: '#fff',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 8
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 10,
+    borderWidth: 0,
+  },
+  btnText: {
+    fontSize: 19,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginTop: 12,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalView: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+    padding: 32,
+    paddingBottom: 45,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 15,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    marginBottom: 6,
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: 15,
+    color: '#666',
+    marginBottom: 22,
   },
-  modalButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  modalButton: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-    minWidth: 100,
-  },
-  cancelButton: {
-    backgroundColor: "#FF6B6B", // Changed from grey to red/pink color
-  },
-  submitButton: {
-    backgroundColor: "#4A90E2",
-  },
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  // Dropdown styles
   dropdown: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 15,
-    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+    borderWidth: 2,
+    borderRadius: 16,
+    borderColor: '#e5e7eb',
+    backgroundColor: '#f8f8f8',
   },
   dropdownText: {
-    fontSize: 16,
+    fontSize: 17,
+    color: '#1a1a1a',
+    fontWeight: '500',
   },
   arrow: {
-    fontSize: 18,
-    color: "#666",
+    fontSize: 16,
+    color: '#666',
   },
   dropdownList: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 20,
-    backgroundColor: "white",
+    borderWidth: 2,
+    borderTopWidth: 0,
+    borderRadius: 16,
+    borderColor: '#e5e7eb',
+    backgroundColor: '#fff',
+    marginTop: 6,
   },
   dropdownItem: {
-    padding: 15,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    alignItems: 'center', // Center the text
+    borderBottomColor: '#e5e7eb',
   },
   dropdownItemText: {
-    fontSize: 16,
-    textAlign: 'center', // Center the text
-  }
+    fontSize: 17,
+    color: '#1a1a1a',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 35,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 16,
+    borderRadius: 22,
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#6c757d',
+  },
+  submitButton: {
+    backgroundColor: '#1e3a5f',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: 'bold',
+  },
 });
 
 export default homeContentStyles;

@@ -6,7 +6,7 @@ const dummyStyles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
   },
   headerSection: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#1e3a5f',
     paddingTop: 50,
     paddingBottom: 90,
     paddingHorizontal: 30,
@@ -17,31 +17,31 @@ const dummyStyles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#333',
+    color: '#fff',
   },
   headerBrand: {
     fontSize: 40,
     fontWeight: '900',
-    color: '#000',
+    color: '#fff',
     marginTop: 5,
   },
   mainTagline: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#fff',
     marginBottom: 15,
     lineHeight: 28,
   },
   description: {
     fontSize: 15,
-    color: '#444',
+    color: '#e2e8f0',
     marginBottom: 25,
     lineHeight: 24,
   },
   featuresTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#fff',
     marginBottom: 15,
   },
   featuresGrid: {
@@ -59,7 +59,7 @@ const dummyStyles = StyleSheet.create({
   featuresListItemText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#222',
+    color: '#fff',
     flex: 1,
   },
   contentSection: {
@@ -91,19 +91,19 @@ const dummyStyles = StyleSheet.create({
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#1e3a5f',
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: 'center',
     marginBottom: 15,
-    shadowColor: '#FFC107',
+    shadowColor: '#1e3a5f',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
   },
   btnText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
