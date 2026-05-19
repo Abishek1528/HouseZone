@@ -102,10 +102,19 @@ router.get('/vehicles/owners', async (req, res) => {
       return res.status(200).json([]);
     }
 
-    const vehicles = rows.map(row => ({
-      ...row,
-      images: typeof row.images === 'string' ? JSON.parse(row.images) : (row.images || [])
-    }));
+    const vehicles = rows.map(row => {
+      let imgs = [];
+      try {
+        imgs = typeof row.images === 'string' ? JSON.parse(row.images) : (row.images || []);
+      } catch (e) {
+        console.error('Error parsing row images:', e);
+        imgs = [];
+      }
+      return {
+        ...row,
+        images: imgs
+      };
+    });
 
     res.status(200).json(vehicles);
   } catch (error) {

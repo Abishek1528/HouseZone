@@ -41,10 +41,16 @@ export default function ResidentialOwnerPage() {
       setLoading(true);
       const data = await getAllResidentialOwners();
       console.log('Loaded residential owners data:', data);
-      setOwners(data);
+      if (Array.isArray(data)) {
+        setOwners(data);
+      } else {
+        console.warn('API returned non-array data:', data);
+        setOwners([]);
+      }
     } catch (error) {
       Alert.alert('Error', 'Failed to load residential owners. Please try again.');
       console.error('Error loading owners:', error);
+      setOwners([]);
     } finally {
       setLoading(false);
     }
@@ -60,15 +66,15 @@ export default function ResidentialOwnerPage() {
   const handleUpdateDetails = (item) => {
     setSelectedOwner(item);
     setUpdateFormData({
-      streetSizeBreadth: '',
-      nearbyBusStop: '',
-      busStopDistance: '',
-      nearbySchool: '',
-      schoolDistance: '',
-      nearbyShoppingMall: '',
-      shoppingMallDistance: '',
-      nearbyBank: '',
-      bankDistance: ''
+      streetSizeBreadth: item.streetSize ? item.streetSize.toString() : '',
+      nearbyBusStop: item.nearbyBusStop || '',
+      busStopDistance: item.nearbyBusStopDistance ? item.nearbyBusStopDistance.toString() : '',
+      nearbySchool: item.nearbySchool || '',
+      schoolDistance: item.nearbySchoolDistance ? item.nearbySchoolDistance.toString() : '',
+      nearbyShoppingMall: item.nearbyShoppingMall || '',
+      shoppingMallDistance: item.nearbyShoppingMallDistance ? item.nearbyShoppingMallDistance.toString() : '',
+      nearbyBank: item.nearbyBank || '',
+      bankDistance: item.nearbyBankDistance ? item.nearbyBankDistance.toString() : ''
     });
     setShowUpdateModal(true);
   };
@@ -97,33 +103,40 @@ export default function ResidentialOwnerPage() {
   };
 
   const handleSubmitUpdate = async () => {
+    // Helper to validate numeric strings
+    const isValidNumber = (val) => {
+      if (!val || val.toString().trim() === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num >= 0;
+    };
+
     // Validate form
-    if (!updateFormData.streetSizeBreadth) {
-      Alert.alert('Validation Error', 'Please enter street size width');
+    if (!isValidNumber(updateFormData.streetSizeBreadth)) {
+      Alert.alert('Validation Error', 'Please enter a valid street size width (positive number)');
       return;
     }
     
     // Validate bus stop distance if a bus stop is selected
-    if (updateFormData.nearbyBusStop && !updateFormData.busStopDistance) {
-      Alert.alert('Validation Error', 'Please enter the distance for the selected bus stop');
+    if (updateFormData.nearbyBusStop && !isValidNumber(updateFormData.busStopDistance)) {
+      Alert.alert('Validation Error', 'Please enter a valid distance for the selected bus stop');
       return;
     }
     
     // Validate school distance if a school is selected
-    if (updateFormData.nearbySchool && !updateFormData.schoolDistance) {
-      Alert.alert('Validation Error', 'Please enter the distance for the selected school');
+    if (updateFormData.nearbySchool && !isValidNumber(updateFormData.schoolDistance)) {
+      Alert.alert('Validation Error', 'Please enter a valid distance for the selected school');
       return;
     }
     
     // Validate shopping mall distance if a shopping mall is selected
-    if (updateFormData.nearbyShoppingMall && !updateFormData.shoppingMallDistance) {
-      Alert.alert('Validation Error', 'Please enter the distance for the selected shopping mall');
+    if (updateFormData.nearbyShoppingMall && !isValidNumber(updateFormData.shoppingMallDistance)) {
+      Alert.alert('Validation Error', 'Please enter a valid distance for the selected shopping mall');
       return;
     }
     
     // Validate bank distance if a bank is selected
-    if (updateFormData.nearbyBank && !updateFormData.bankDistance) {
-      Alert.alert('Validation Error', 'Please enter the distance for the selected bank');
+    if (updateFormData.nearbyBank && !isValidNumber(updateFormData.bankDistance)) {
+      Alert.alert('Validation Error', 'Please enter a valid distance for the selected bank');
       return;
     }
 
@@ -146,17 +159,31 @@ export default function ResidentialOwnerPage() {
       );
     }
     
-    // Parse condition numbers if it's a JSON string
-    let parsedConditionNumbers = conditionNumbers;
-    if (typeof conditionNumbers === 'string') {
-      try {
-        parsedConditionNumbers = JSON.parse(conditionNumbers);
-      } catch (error) {
-        console.error('Error parsing condition numbers:', error);
-        return (
-          <Text style={residentialOwnerStyles.detailValue}>Error loading conditions</Text>
-        );
+    let parsedConditionNumbers = [];
+    
+    try {
+      if (Array.isArray(conditionNumbers)) {
+        parsedConditionNumbers = conditionNumbers;
+      } else if (typeof conditionNumbers === 'string') {
+        // Try to parse as JSON first
+        if (conditionNumbers.startsWith('[') || conditionNumbers.startsWith('{')) {
+          const parsed = JSON.parse(conditionNumbers);
+          parsedConditionNumbers = Array.isArray(parsed) ? parsed : [parsed];
+        } else if (conditionNumbers.includes(',')) {
+          // If it's a comma-separated string
+          parsedConditionNumbers = conditionNumbers.split(',').map(n => n.trim()).filter(n => n !== '');
+        } else if (conditionNumbers.trim() !== '') {
+          // Single value string
+          parsedConditionNumbers = [conditionNumbers.trim()];
+        }
+      } else if (typeof conditionNumbers === 'number') {
+        parsedConditionNumbers = [conditionNumbers];
       }
+    } catch (error) {
+      console.error('Error parsing condition numbers:', error, 'Value:', conditionNumbers);
+      return (
+        <Text style={residentialOwnerStyles.detailValue}>Error loading conditions</Text>
+      );
     }
     
     // Array of predefined conditions corresponding to numbers 1-6
@@ -169,26 +196,22 @@ export default function ResidentialOwnerPage() {
       'Only Vegetarian.'
     ];
     
-    // If no condition numbers are selected, show a message
-    if (!Array.isArray(parsedConditionNumbers) || parsedConditionNumbers.length === 0) {
+    // Filter and map to condition text
+    const validConditions = parsedConditionNumbers
+      .map(num => parseInt(num))
+      .filter(num => !isNaN(num) && num >= 1 && num <= predefinedConditions.length)
+      .map(num => predefinedConditions[num - 1]);
+    
+    if (validConditions.length === 0) {
       return (
         <Text style={residentialOwnerStyles.detailValue}>No conditions specified</Text>
       );
     }
     
     // Render each selected condition
-    return parsedConditionNumbers.map((conditionNum, index) => {
-      // Condition numbers are 1-indexed, so subtract 1 for array index
-      const conditionText = predefinedConditions[conditionNum - 1];
-      
-      if (!conditionText) {
-        return null; // Skip invalid condition numbers
-      }
-      
-      return (
-        <Text key={index} style={residentialOwnerStyles.conditionText}>{conditionText}</Text>
-      );
-    });
+    return validConditions.map((conditionText, index) => (
+      <Text key={index} style={residentialOwnerStyles.conditionText}>{conditionText}</Text>
+    ));
   };
 
   const renderOwner = ({ item }) => {
@@ -217,18 +240,21 @@ export default function ResidentialOwnerPage() {
         {isExpanded && (
             <View style={residentialOwnerStyles.detailedContainer}>
               {/* Images Gallery */}
-              {item.images && item.images.length > 0 && (
+              {Array.isArray(item.images) && item.images.filter(img => typeof img === 'string' && img.trim() !== '').length > 0 && (
                 <View style={residentialOwnerStyles.detailSection}>
                   <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
-                    {item.images.map((img, idx) => (
-                      <Image 
-                        key={idx} 
-                        source={{ uri: img }} 
-                        style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
-                        resizeMode="cover" 
-                      />
-                    ))}
+                    {item.images
+                      .filter(img => typeof img === 'string' && img.trim() !== '')
+                      .map((img, idx) => (
+                        <Image 
+                          key={idx} 
+                          source={{ uri: img }} 
+                          style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
+                          resizeMode="cover" 
+                        />
+                      ))
+                    }
                   </ScrollView>
                 </View>
               )}
@@ -278,7 +304,7 @@ export default function ResidentialOwnerPage() {
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Number of Bathrooms:</Text> <Text style={residentialOwnerStyles.detailValue}>{item.numberOfBathrooms || 'N/A'}</Text>
               </Text>
-              {item.numberOfBathrooms && parseInt(item.numberOfBathrooms) >= 1 && (
+              {item.numberOfBathrooms && !isNaN(parseInt(item.numberOfBathrooms)) && parseInt(item.numberOfBathrooms) >= 1 && (
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Bathroom 1:</Text> <Text style={residentialOwnerStyles.detailValue}>
                   {(item.bathroom1Access && item.bathroom1Type) ? `${item.bathroom1Access} - ${item.bathroom1Type}` : 
@@ -287,7 +313,7 @@ export default function ResidentialOwnerPage() {
                 </Text>
               </Text>
               )}
-              {item.numberOfBathrooms && parseInt(item.numberOfBathrooms) >= 2 && (
+              {item.numberOfBathrooms && !isNaN(parseInt(item.numberOfBathrooms)) && parseInt(item.numberOfBathrooms) >= 2 && (
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Bathroom 2:</Text> <Text style={residentialOwnerStyles.detailValue}>
                   {(item.bathroom2Access && item.bathroom2Type) ? `${item.bathroom2Access} - ${item.bathroom2Type}` : 
@@ -296,7 +322,7 @@ export default function ResidentialOwnerPage() {
                 </Text>
               </Text>
               )}
-              {item.numberOfBathrooms && parseInt(item.numberOfBathrooms) >= 3 && (
+              {item.numberOfBathrooms && !isNaN(parseInt(item.numberOfBathrooms)) && parseInt(item.numberOfBathrooms) >= 3 && (
               <Text style={residentialOwnerStyles.detailText}>
                 <Text style={residentialOwnerStyles.detailLabel}>Bathroom 3:</Text> <Text style={residentialOwnerStyles.detailValue}>
                   {(item.bathroom3Access && item.bathroom3Type) ? `${item.bathroom3Access} - ${item.bathroom3Type}` : 
@@ -398,7 +424,7 @@ export default function ResidentialOwnerPage() {
           <FlatList
             data={owners}
             renderItem={renderOwner}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
             showsVerticalScrollIndicator={false}
           />
         )}

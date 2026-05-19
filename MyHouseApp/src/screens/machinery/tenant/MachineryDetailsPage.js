@@ -87,9 +87,12 @@ export default function MachineryDetailsPage() {
             </ScrollView>
 
             <ImageView
-              images={details.images.map(uri => ({
-                uri: normalizeImageUrl(uri)
-              }))}
+              images={details.images
+                .filter(uri => typeof uri === 'string' && uri)
+                .map(uri => ({
+                  uri: normalizeImageUrl(uri)
+                }))
+              }
               imageIndex={currentImageIndex}
               visible={isImageViewVisible}
               onRequestClose={() => setIsImageViewVisible(false)}

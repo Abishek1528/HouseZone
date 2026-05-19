@@ -16,10 +16,16 @@ export default function MachineryOwnerPage() {
       setLoading(true);
       const data = await getAllMachineryOwners();
       console.log('Loaded machinery owners data:', data);
-      setOwners(data);
+      if (Array.isArray(data)) {
+        setOwners(data);
+      } else {
+        console.warn('API returned non-array data:', data);
+        setOwners([]);
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to load machinery owners. Please try again.");
       console.error("Error loading machinery owners:", error);
+      setOwners([]);
     } finally {
       setLoading(false);
     }
@@ -68,17 +74,20 @@ export default function MachineryOwnerPage() {
         {isExpanded && (
           <View style={residentialOwnerStyles.detailedContainer}>
             {/* Images Gallery */}
-            {item.images && item.images.length > 0 && (
+            {Array.isArray(item.images) && item.images.filter(img => typeof img === 'string' && img.trim() !== '').length > 0 && (
               <View style={residentialOwnerStyles.detailSection}>
                 <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {item.images.map((img, idx) => (
-                    <Image 
-                      key={idx} 
-                      source={{ uri: img }} 
-                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
-                    />
-                  ))}
+                  {item.images
+                    .filter(img => typeof img === 'string' && img.trim() !== '')
+                    .map((img, idx) => (
+                      <Image 
+                        key={idx} 
+                        source={{ uri: img }} 
+                        style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
+                      />
+                    ))
+                  }
                 </ScrollView>
               </View>
             )}
@@ -158,7 +167,7 @@ export default function MachineryOwnerPage() {
           <FlatList
             data={owners}
             renderItem={renderOwner}
-            keyExtractor={(item) => (item.machineryId ?? Math.random()).toString()}
+            keyExtractor={(item, index) => item?.machineryId?.toString() || index.toString()}
             showsVerticalScrollIndicator={false}
           />
         )}

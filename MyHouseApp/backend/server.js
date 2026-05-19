@@ -28,6 +28,15 @@ app.get('/', (req, res) => {
 // Use routes with /api prefix
 app.use('/api', routes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled Server Error:', err);
+  res.status(500).json({
+    message: 'An internal server error occurred',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
 // Start server
 // Bind to all interfaces to allow external connections
 app.listen(PORT, '0.0.0.0', async() => {

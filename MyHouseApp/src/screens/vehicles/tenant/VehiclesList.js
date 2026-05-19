@@ -107,7 +107,9 @@ const VehiclesList = () => {
 
     const renderVehicleCard = ({ item }) => {
         const firstImageRaw = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null;
-        const firstImage = firstImageRaw ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`) : null;
+        const firstImage = (typeof firstImageRaw === 'string' && firstImageRaw) 
+            ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`) 
+            : null;
         return (
             <View style={propertyListStyles.card}>
                 {firstImage ? (

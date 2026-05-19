@@ -92,9 +92,12 @@ export default function PropertyDetails({ route }) {
             </ScrollView>
             
             <ImageView
-              images={property.images.map(imgRaw => ({
-                uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
-              }))}
+              images={property.images
+                .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
+                .map(imgRaw => ({
+                  uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
+                }))
+              }
               imageIndex={currentImageIndex}
               visible={isImageViewVisible}
               onRequestClose={() => setIsImageViewVisible(false)}

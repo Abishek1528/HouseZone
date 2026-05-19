@@ -1,12 +1,10 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import loginStyles from '../styles/loginStyles';
-import categoryContentStyles from '../styles/categoryContentStyles';
 
-// Use the same API configuration as other parts of the app
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function Login() {
@@ -16,8 +14,61 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
+  const fadeAnim1 = useRef(new Animated.Value(0)).current;
+  const fadeAnim2 = useRef(new Animated.Value(0)).current;
+  const fadeAnim3 = useRef(new Animated.Value(0)).current;
+  const slideAnim1 = useRef(new Animated.Value(30)).current;
+  const slideAnim2 = useRef(new Animated.Value(30)).current;
+  const slideAnim3 = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim1, {
+        toValue: 1,
+        duration: 800,
+        delay: 100,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim1, {
+        toValue: 0,
+        duration: 800,
+        delay: 100,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim2, {
+        toValue: 1,
+        duration: 800,
+        delay: 300,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim2, {
+        toValue: 0,
+        duration: 800,
+        delay: 300,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim3, {
+        toValue: 1,
+        duration: 1000,
+        delay: 500,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim3, {
+        toValue: 0,
+        duration: 1000,
+        delay: 500,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   const handleLogin = async () => {
-    // Basic validation
     if (!name || !phone || !password) {
       Alert.alert("Validation Error", "Please fill in all fields");
       return;
@@ -39,12 +90,19 @@ export default function Login() {
 
       console.log(`Response status: ${response.status}`);
       
-      const result = await response.json();
+      const contentType = response.headers.get('content-type');
+      let result;
+      
+      if (contentType && contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        result = { message: text };
+      }
+      
       console.log('Response data:', result);
 
       if (response.ok) {
-        // Save user details to AsyncStorage
-        // Use result.user if available, otherwise use input data
         const userDetails = result.user || {
           name,
           contact: phone
@@ -60,7 +118,6 @@ export default function Login() {
     } catch (error) {
       console.error('Login error:', error);
       
-      // More detailed error handling
       let errorMessage = "Failed to connect to server. ";
       
       if (error.message && error.message.includes('Network request failed')) {
@@ -80,60 +137,133 @@ export default function Login() {
 
   return (
     <View style={loginStyles.container}>
-      <View style={{ flex: 1, justifyContent: 'center', width: '100%', maxWidth: 400, paddingHorizontal: 20 }}>
-        <View style={categoryContentStyles.formContainer}>
-          <Text style={categoryContentStyles.formTitle}>Login</Text>
-          <Text style={categoryContentStyles.label}>Name</Text>
-          <TextInput
-            style={categoryContentStyles.input}
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-          />
-          <Text style={categoryContentStyles.label}>Phone Number</Text>
-          <TextInput
-            style={categoryContentStyles.input}
-            placeholder="Phone Number"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={setPhone}
-          />
-          <Text style={categoryContentStyles.label}>Password</Text>  
-          <View style={categoryContentStyles.passwordContainer}>
-            <TextInput
-              style={categoryContentStyles.passwordInput}
-              placeholder="Password"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity 
-              style={categoryContentStyles.eyeIcon}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <MaterialCommunityIcons 
-                name={showPassword ? "eye" : "eye-off"} 
-                size={24} 
-                color="#4A90E2" 
-              />
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]} 
-            onPress={handleLogin}
-          >
-            <Text style={categoryContentStyles.buttonText}>Login</Text>
-          </TouchableOpacity>
-
-          <View style={{ marginTop: 15, flexDirection: "row", justifyContent: 'center' }}>
-            <Text>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-              <Text style={{ color: "blue" }}>Signup</Text>
-            </TouchableOpacity>
-          </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFC107" />
+      
+      <View style={loginStyles.headerSection}>
+        <Text style={loginStyles.headerTitle}>Hello</Text>
+        <Text style={loginStyles.headerSubtitle}>Welcome Back!</Text>
+        <View style={{ marginTop: 30 }}>
+          <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
+            <Text style={{ 
+              fontSize: 34, 
+              fontWeight: '900', 
+              color: '#000', 
+              marginBottom: 3,
+              letterSpacing: -0.5,
+            }}>
+              One Platform.
+            </Text>
+          </Animated.View>
+          
+          <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }}>
+            <Text style={{ 
+              fontSize: 34, 
+              fontWeight: '900', 
+              color: '#000', 
+              marginBottom: 20,
+              letterSpacing: -0.5,
+            }}>
+              All Rentals.
+            </Text>
+          </Animated.View>
+          
+          <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
+            <View style={{ 
+              backgroundColor: 'rgba(0,0,0,0.05)', 
+              padding: 15, 
+              borderRadius: 15,
+              borderLeftWidth: 4,
+              borderLeftColor: '#000',
+            }}>
+              <Text style={{ 
+                fontSize: 16, 
+                color: '#333', 
+                lineHeight: 26,
+                fontWeight: '500',
+              }}>
+                Find, list, and manage rentals across properties, vehicles, equipment, and more  all in one place.
+              </Text>
+            </View>
+          </Animated.View>
         </View>
       </View>
+      
+      <ScrollView 
+        style={loginStyles.contentSection} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View style={loginStyles.formCard}>
+          <Text style={loginStyles.formCardTitle}>Login Account</Text>
+          
+          <View style={loginStyles.inputGroup}>
+            <Text style={loginStyles.label}>Name</Text>
+            <TextInput
+              style={loginStyles.input}
+              placeholder="Your Name"
+              placeholderTextColor="#999"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
+          
+          <View style={loginStyles.inputGroup}>
+            <Text style={loginStyles.label}>Phone Number</Text>
+            <TextInput
+              style={loginStyles.input}
+              placeholder="Phone Number"
+              placeholderTextColor="#999"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+            />
+          </View>
+          
+          <View style={loginStyles.inputGroup}>
+            <Text style={loginStyles.label}>Password</Text>
+            <View style={loginStyles.passwordContainer}>
+              <TextInput
+                style={loginStyles.passwordInput}
+                placeholder="Password"
+                placeholderTextColor="#999"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity 
+                style={loginStyles.eyeIcon}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <MaterialCommunityIcons 
+                  name={showPassword ? "eye" : "eye-off"} 
+                  size={22} 
+                  color="#999" 
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          
+          <View style={{ alignItems: 'flex-end', marginBottom: 20, marginTop: 5 }}>
+            <TouchableOpacity>
+              <Text style={loginStyles.forgotText}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <TouchableOpacity 
+            style={loginStyles.loginButton} 
+            onPress={handleLogin}
+          >
+            <Text style={loginStyles.loginButtonText}>Login Account</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={loginStyles.signupLinkContainer}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            <Text style={loginStyles.signupLinkText}>Create New Account</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }

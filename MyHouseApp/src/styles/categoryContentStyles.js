@@ -74,8 +74,6 @@ const categoryContentStyles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     alignSelf: 'flex-start',
-    flex: 1,
-    flexWrap: 'wrap',
   },
   button: {
     paddingVertical: 12,

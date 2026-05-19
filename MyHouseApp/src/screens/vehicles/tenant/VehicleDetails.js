@@ -83,13 +83,16 @@ const VehicleDetails = () => {
                             </ScrollView>
                             
                             <ImageView
-                                images={vehicle.vehicle_images.map(imgRaw => {
-                                    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-                                    const API_HOST = API_BASE_URL.replace(/\/api$/, '');
-                                    return {
-                                        uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
-                                    };
-                                })}
+                                images={vehicle.vehicle_images
+                                    .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
+                                    .map(imgRaw => {
+                                        const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+                                        const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+                                        return {
+                                            uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
+                                        };
+                                    })
+                                }
                                 imageIndex={currentImageIndex}
                                 visible={isImageViewVisible}
                                 onRequestClose={() => setIsImageViewVisible(false)}

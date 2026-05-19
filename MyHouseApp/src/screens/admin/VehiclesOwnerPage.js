@@ -15,11 +15,16 @@ export default function VehiclesOwnerPage() {
     try {
       setLoading(true);
       const data = await getAllVehiclesOwners();
-      console.log('Loaded vehicles owners data:', data);
-      setRows(data);
+      if (Array.isArray(data)) {
+        setRows(data);
+      } else {
+        console.warn('API returned non-array data:', data);
+        setRows([]);
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to load vehicles owners. Please try again.");
       console.error("Error loading vehicles owners:", error);
+      setRows([]);
     } finally {
       setLoading(false);
     }
@@ -68,18 +73,21 @@ export default function VehiclesOwnerPage() {
         {isExpanded && (
           <View style={residentialOwnerStyles.detailedContainer}>
             {/* Images Gallery */}
-            {item.images && item.images.length > 0 && (
+            {Array.isArray(item.images) && item.images.filter(img => typeof img === 'string' && img.trim() !== '').length > 0 && (
               <View style={residentialOwnerStyles.detailSection}>
                 <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
-                  {item.images.map((img, idx) => (
-                    <Image 
-                      key={idx} 
-                      source={{ uri: img }} 
-                      style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
-                      resizeMode="cover" 
-                    />
-                  ))}
+                  {item.images
+                    .filter(img => typeof img === 'string' && img.trim() !== '')
+                    .map((img, idx) => (
+                      <Image 
+                        key={idx} 
+                        source={{ uri: img }} 
+                        style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
+                        resizeMode="cover" 
+                      />
+                    ))
+                  }
                 </ScrollView>
               </View>
             )}
@@ -180,12 +188,12 @@ export default function VehiclesOwnerPage() {
             <Text style={residentialOwnerStyles.noDataText}>No vehicles found</Text>
           </View>
         ) : (
-          <FlatList
-            data={rows}
-            renderItem={renderItem}
-            keyExtractor={(item) => (item.vehicleId ?? Math.random()).toString()}
-            showsVerticalScrollIndicator={false}
-          />
+            <FlatList
+              data={rows}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => item?.vehicleId?.toString() || index.toString()}
+              showsVerticalScrollIndicator={false}
+            />
         )}
       </View>
     </View>

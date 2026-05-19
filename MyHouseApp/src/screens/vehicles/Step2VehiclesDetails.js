@@ -123,6 +123,14 @@ const Step2VehiclesDetails = ({ formData, handleInputChange, colors }) => {
     });
     handleInputChange("vehicles", updatedVehicles);
   };
+  
+  // Function to remove a vehicle
+  const removeVehicle = (id) => {
+    if (vehicles.length > 1) {
+      const updatedVehicles = vehicles.filter(vehicle => vehicle.id !== id);
+      handleInputChange("vehicles", updatedVehicles);
+    }
+  };
 
   // Existing image picker logic...
   // Ask permission for image picker

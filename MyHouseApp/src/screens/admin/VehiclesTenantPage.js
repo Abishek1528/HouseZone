@@ -15,7 +15,7 @@ export default function VehiclesTenantPage() {
     try {
       setLoading(true);
       const result = await getVehicleTenantsWithItems();
-      setData(result);
+      setData(result || []);
     } catch (error) {
       console.error("Error fetching vehicle tenant data:", error);
       Alert.alert("Error", "Failed to fetch vehicle tenant and item details");

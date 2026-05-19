@@ -19,11 +19,20 @@ export default function SignupPage() {
       
       const response = await fetch(`${API_BASE_URL}/signups/today`);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(text || `HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+      }
+      
       setSignups(data);
       setLoading(false);
     } catch (error) {

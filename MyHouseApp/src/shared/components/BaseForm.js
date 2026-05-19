@@ -43,22 +43,75 @@ const BaseForm = ({
 
   // VALIDATIONS
   const validateStep1 = () => {
-    if (
-      !formData.name ||
-      !formData.doorNo ||
-      !formData.street ||
-      !formData.pincode ||
-      !formData.area ||
-      !formData.city ||
-      !formData.contactNo
-    ) {
-      Alert.alert("Validation Error", "Please fill in all required fields in Step 1");
+    const requiredFields = ["name", "doorNo", "street", "pincode", "area", "city", "contactNo"];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        Alert.alert("Validation Error", `Please fill in ${field} in Step 1`);
+        return false;
+      }
+    }
+
+    // Numeric validation for Step 1
+    const pincodeRegex = /^\d{6}$/;
+    if (!pincodeRegex.test(formData.pincode)) {
+      Alert.alert("Validation Error", "Please enter a valid 6-digit pincode.");
       return false;
     }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(formData.contactNo)) {
+      Alert.alert("Validation Error", "Please enter a valid 10-digit contact number.");
+      return false;
+    }
+
     return true;
   };
 
-  const validateStep2 = () => true;
+  const validateStep2 = () => {
+    // If it's residential, validate the dimensions
+    if (category === "residential") {
+      const numericFields = [
+        "hallLength", "hallBreadth", 
+        "kitchenLength", "kitchenBreadth",
+        "floorNo"
+      ];
+
+      for (const field of numericFields) {
+        if (formData[field]) {
+          const val = parseFloat(formData[field]);
+          if (isNaN(val) || val <= 0) {
+            Alert.alert("Validation Error", `Please enter a valid positive number for ${field}`);
+            return false;
+          }
+        }
+      }
+
+      // Validate bedrooms if any
+      const numBedrooms = parseInt(formData.noOfBedrooms);
+      if (!isNaN(numBedrooms) && numBedrooms > 0) {
+        for (let i = 1; i <= numBedrooms; i++) {
+          const lenField = `bedroom${i}Length`;
+          const breadField = `bedroom${i}Breadth`;
+          
+          if (formData[lenField]) {
+            const val = parseFloat(formData[lenField]);
+            if (isNaN(val) || val <= 0) {
+              Alert.alert("Validation Error", `Please enter a valid positive number for Bedroom ${i} Length`);
+              return false;
+            }
+          }
+          if (formData[breadField]) {
+            const val = parseFloat(formData[breadField]);
+            if (isNaN(val) || val <= 0) {
+              Alert.alert("Validation Error", `Please enter a valid positive number for Bedroom ${i} Breadth`);
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  };
 
   const validateStep3 = () => {
     // Shared validation for Step 3 (Payment and Images)
@@ -141,7 +194,18 @@ const BaseForm = ({
 
   // Handle next step WITHOUT saving data
   const handleNextStep = () => {
-    // Just move to the next step without validation or saving
+    // Validate current step before proceeding
+    if (step === 1) {
+      if (!validateStep1()) return;
+    } else if (step === 2) {
+      // For Step 2, we use the custom validation function if provided, plus internal validation
+      if (validationFunction) {
+        const isValid = validationFunction(formData);
+        if (!isValid) return;
+      }
+      if (!validateStep2()) return;
+    }
+
     handleNext(step, setStep, () => { });
   };
 
@@ -201,10 +265,15 @@ const BaseForm = ({
 
             const { saveVehiclesStep1, saveVehiclesStep2 } = await import("../../screens/vehicles/logic/api");
             const step1Response = await saveVehiclesStep1(step1Data);
+            
+            if (!step1Response) {
+              throw new Error("No response received from vehicles step 1 save");
+            }
+            
             const voNo = step1Response.voNo || step1Response.id || step1Response.insertId;
 
             if (!voNo) {
-              throw new Error("Failed to obtain vehicle owner id from step1 response");
+              throw new Error("Failed to obtain vehicle owner id from step1 response: " + JSON.stringify(step1Response));
             }
 
             // Upload images, then prepare and save step2 data (vehicles array and images)
@@ -264,10 +333,15 @@ const BaseForm = ({
 
             const { saveMachineryStep1, saveMachineryStep2, uploadMachineryImages } = await import("../../screens/machinery/logic/api");
             const step1Response = await saveMachineryStep1(step1Data);
+            
+            if (!step1Response) {
+              throw new Error("No response received from machinery step 1 save");
+            }
+            
             const moNo = step1Response.moNo || step1Response.id || step1Response.insertId;
 
             if (!moNo) {
-              throw new Error("Failed to obtain machinery owner id from step1 response");
+              throw new Error("Failed to obtain machinery owner id from step1 response: " + JSON.stringify(step1Response));
             }
 
             // Upload images first if present
@@ -371,10 +445,15 @@ const BaseForm = ({
               console.log("Saving step 1 data:", step1Data);
               const step1Response = await saveResidentialStep1(step1Data);
               console.log("Step 1 response:", step1Response);
-              roNo = step1Response.roNo || step1Response.id; // Handle both possible return values
+              
+              if (!step1Response) {
+                throw new Error("No response received from step 1 save");
+              }
+              
+              roNo = step1Response.roNo || step1Response.id || step1Response.insertId;
 
               if (!roNo) {
-                throw new Error("Failed to get ID from step 1 response");
+                throw new Error("Failed to get ID from step 1 response: " + JSON.stringify(step1Response));
               }
             } catch (step1Error) {
               console.error("Step 1 error:", step1Error);
@@ -387,7 +466,7 @@ const BaseForm = ({
             try {
               // Prepare bedrooms array
               const bedrooms = [];
-              const numBedrooms = parseInt(formData.noOfBedrooms);
+              const numBedrooms = parseInt(formData.noOfBedrooms) || 0;
 
               if (numBedrooms >= 1) {
                 bedrooms.push({
@@ -530,10 +609,15 @@ const BaseForm = ({
 
               const { saveBusinessStep1, saveBusinessStep2, saveBusinessStep3 } = await import('../../screens/business/logic/api');
               const step1Response = await saveBusinessStep1(step1Data);
+              
+              if (!step1Response) {
+                throw new Error("No response received from business step 1 save");
+              }
+              
               const boNo = step1Response.boNo || step1Response.id || step1Response.insertId;
 
               if (!boNo) {
-                throw new Error('Failed to obtain business owner id from step1 response');
+                throw new Error('Failed to obtain business owner id from step1 response: ' + JSON.stringify(step1Response));
               }
 
               // Prepare and save step2

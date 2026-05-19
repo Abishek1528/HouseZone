@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import footerStyles from './styles/footerStyles';
@@ -9,11 +9,20 @@ export default function Footer() {
   const navigation = useNavigation();
   const { colors } = useTheme();
 
+  const handleNavigation = (screenName) => {
+    try {
+      navigation.navigate(screenName);
+    } catch (error) {
+      console.error(`Navigation error to ${screenName}:`, error);
+      Alert.alert("Navigation Error", `Could not navigate to ${screenName}. Please try again.`);
+    }
+  };
+
   return (
     <View style={[footerStyles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
       <TouchableOpacity 
         style={footerStyles.footerItem}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => handleNavigation("Home")}
       >
         <Ionicons name="home-outline" size={24} color={colors.text} />
         <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Home</Text>
@@ -21,7 +30,7 @@ export default function Footer() {
 
       <TouchableOpacity 
         style={footerStyles.footerItem}
-        onPress={() => navigation.navigate("MyHistory")}
+        onPress={() => handleNavigation("MyHistory")}
       >
         <Ionicons name="time-outline" size={24} color={colors.text} />
         <Text style={[footerStyles.footerLabel, { color: colors.text }]}>My History</Text>
@@ -29,7 +38,7 @@ export default function Footer() {
 
       <TouchableOpacity 
         style={footerStyles.footerItem}
-        onPress={() => navigation.navigate("Settings")}
+        onPress={() => handleNavigation("Settings")}
       >
         <Ionicons name="settings-outline" size={24} color={colors.text} />
         <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Settings</Text>
@@ -37,7 +46,7 @@ export default function Footer() {
 
       <TouchableOpacity 
         style={footerStyles.footerItem}
-        onPress={() => navigation.navigate("Profile")}
+        onPress={() => handleNavigation("Profile")}
       >
         <Ionicons name="person-outline" size={24} color={colors.text} />
         <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Profile</Text>

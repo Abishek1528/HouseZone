@@ -45,7 +45,7 @@ export default function ConditionsPage() {
     }
 
     // If there's location amenities data to save, save it first
-    if (formData) {
+    if (formData && ownerData) {
       try {
         // Prepare the data to send to the API
         const locationData = {
@@ -73,7 +73,15 @@ export default function ConditionsPage() {
           body: JSON.stringify(locationData)
         });
         
-        const locationResult = await locationResponse.json();
+        const contentType = locationResponse.headers.get('content-type');
+        let locationResult;
+        
+        if (contentType && contentType.includes('application/json')) {
+          locationResult = await locationResponse.json();
+        } else {
+          const text = await locationResponse.text();
+          locationResult = { message: text };
+        }
         
         if (!locationResponse.ok) {
           Alert.alert('Error', locationResult.message || 'Failed to update location & amenities details');
@@ -84,10 +92,18 @@ export default function ConditionsPage() {
         Alert.alert('Error', 'Failed to update location & amenities details. Please try again.');
         return;
       }
+    } else if (formData && !ownerData) {
+      Alert.alert('Error', 'Missing owner data. Please go back and try again.');
+      return;
     }
 
     // Now save the selected conditions
     try {
+      if (!ownerData) {
+        Alert.alert('Error', 'Missing owner data. Please go back and try again.');
+        return;
+      }
+
       // Convert selected conditions to an array of numbers (1-6)
       const conditionNumbers = [];
       if (conditions.condition1) conditionNumbers.push(1);
@@ -113,7 +129,15 @@ export default function ConditionsPage() {
         body: JSON.stringify(conditionsData)
       });
 
-      const conditionsResult = await conditionsResponse.json();
+      const contentType = conditionsResponse.headers.get('content-type');
+      let conditionsResult;
+      
+      if (contentType && contentType.includes('application/json')) {
+        conditionsResult = await conditionsResponse.json();
+      } else {
+        const text = await conditionsResponse.text();
+        conditionsResult = { message: text };
+      }
 
       if (!conditionsResponse.ok) {
         Alert.alert('Error', conditionsResult.message || 'Failed to update conditions');
