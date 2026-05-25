@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -88,7 +88,11 @@ export default function Signup() {
   };
 
   return (
-    <View style={signupStyles.container}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      style={signupStyles.container}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
       <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
       <View style={signupStyles.headerSection}>
@@ -129,7 +133,11 @@ export default function Signup() {
         </View>
       </View>
       
-      <ScrollView style={signupStyles.contentSection} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={signupStyles.contentSection} 
+        showsVerticalScrollIndicator={false}
+        onTouchStart={() => Keyboard.dismiss()}
+      >
         <View style={signupStyles.formCard}>
           <Text style={signupStyles.formCardTitle}>Create Free Account</Text>
           
@@ -219,6 +227,6 @@ export default function Signup() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -120,7 +120,11 @@ export default function Login() {
   };
 
   return (
-    <View style={loginStyles.container}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      style={loginStyles.container}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
       <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
       <View style={loginStyles.headerSection}>
@@ -157,9 +161,14 @@ export default function Login() {
         </Animated.View>
       </View>
       
-      <Animated.View 
-        style={[loginStyles.contentSection, { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }]}
+      <ScrollView 
+        style={{ flex: 1 }} 
+        showsVerticalScrollIndicator={false}
+        onTouchStart={() => Keyboard.dismiss()}
       >
+        <Animated.View 
+          style={[loginStyles.contentSection, { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }]}
+        >
         <View style={loginStyles.formCard}>
           <Text style={loginStyles.formCardTitle}>Login Account</Text>
           
@@ -231,6 +240,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
       </Animated.View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
