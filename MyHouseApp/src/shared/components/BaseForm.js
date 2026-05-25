@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Keyboard, ScrollView } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import categoryContentStyles from "../../styles/categoryContentStyles";
 import Header from "../../components/Header";
@@ -708,58 +708,68 @@ const BaseForm = ({
   const maxSteps = isTwoStepCategory ? 2 : 3;
 
   return (
-    <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      style={[categoryContentStyles.container, { backgroundColor: colors.background }]}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
       <Header />
 
-      <View style={categoryContentStyles.progressContainer}>
-        <Text style={[categoryContentStyles.progressText, { color: colors.text }]}>Step {step} of {maxSteps}</Text>
-      </View>
+      <ScrollView 
+        style={{ flex: 1 }} 
+        showsVerticalScrollIndicator={false}
+        onTouchStart={() => Keyboard.dismiss()}
+      >
+        <View style={categoryContentStyles.progressContainer}>
+          <Text style={[categoryContentStyles.progressText, { color: colors.text }]}>Step {step} of {maxSteps}</Text>
+        </View>
 
-      <View style={[categoryContentStyles.content, { paddingHorizontal: 20, width: "100%" }]}>
-        {step === 1 && (
-          <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} />
-        )}
-        {step === 2 && (
-          <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} />
-        )}
-        {!isTwoStepCategory && step === 3 && (
-          <Step3PaymentImages
-            formData={formData}
-            handleInputChange={handleInputChange}
-            handleImageSelect={handleImageSelection}
-            handleRemoveImage={handleImageRemoval}
-            colors={colors}
-            dark={dark}
-          />
-        )}
-
-        <View style={categoryContentStyles.buttonRow}>
-          {(step > 1 || step === 1) && (
-            <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
-              onPress={step > 1 ? handlePrevStep : handleGoBack}
-              disabled={isSubmitting}
-            >
-              <Text style={categoryContentStyles.buttonText}>Back</Text>
-            </TouchableOpacity>
+        <View style={[categoryContentStyles.content, { paddingHorizontal: 20, width: "100%" }]}>
+          {step === 1 && (
+            <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} />
+          )}
+          {step === 2 && (
+            <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} />
+          )}
+          {!isTwoStepCategory && step === 3 && (
+            <Step3PaymentImages
+              formData={formData}
+              handleInputChange={handleInputChange}
+              handleImageSelect={handleImageSelection}
+              handleRemoveImage={handleImageRemoval}
+              colors={colors}
+              dark={dark}
+            />
           )}
 
-          <View style={{ flex: 1 }} />
+          <View style={categoryContentStyles.buttonRow}>
+            {(step > 1 || step === 1) && (
+              <TouchableOpacity
+                style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
+                onPress={step > 1 ? handlePrevStep : handleGoBack}
+                disabled={isSubmitting}
+              >
+                <Text style={categoryContentStyles.buttonText}>Back</Text>
+              </TouchableOpacity>
+            )}
 
-          <TouchableOpacity
-            style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
-            onPress={step < maxSteps ? handleNextStep : handleFormSubmit}
-            disabled={isSubmitting}
-          >
-            <Text style={categoryContentStyles.buttonText}>
-              {isSubmitting ? "Submitting..." : (step < maxSteps ? "Next" : "Submit")}
-            </Text>
-          </TouchableOpacity>
+            <View style={{ flex: 1 }} />
+
+            <TouchableOpacity
+              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              onPress={step < maxSteps ? handleNextStep : handleFormSubmit}
+              disabled={isSubmitting}
+            >
+              <Text style={categoryContentStyles.buttonText}>
+                {isSubmitting ? "Submitting..." : (step < maxSteps ? "Next" : "Submit")}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ScrollView>
 
       <Footer />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
