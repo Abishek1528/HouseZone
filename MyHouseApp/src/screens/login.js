@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -164,7 +164,8 @@ export default function Login() {
       <ScrollView 
         style={{ flex: 1 }} 
         showsVerticalScrollIndicator={false}
-        onTouchStart={() => Keyboard.dismiss()}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
       >
         <Animated.View 
           style={[loginStyles.contentSection, { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }]}

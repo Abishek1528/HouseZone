@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -136,7 +136,8 @@ export default function Signup() {
       <ScrollView 
         style={signupStyles.contentSection} 
         showsVerticalScrollIndicator={false}
-        onTouchStart={() => Keyboard.dismiss()}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
       >
         <View style={signupStyles.formCard}>
           <Text style={signupStyles.formCardTitle}>Create Free Account</Text>

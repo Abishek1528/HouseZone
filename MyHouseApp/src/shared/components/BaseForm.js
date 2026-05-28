@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Keyboard, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import categoryContentStyles from "../../styles/categoryContentStyles";
 import Header from "../../components/Header";
@@ -718,7 +718,8 @@ const BaseForm = ({
       <ScrollView 
         style={{ flex: 1 }} 
         showsVerticalScrollIndicator={false}
-        onTouchStart={() => Keyboard.dismiss()}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
       >
         <View style={categoryContentStyles.progressContainer}>
           <Text style={[categoryContentStyles.progressText, { color: colors.text }]}>Step {step} of {maxSteps}</Text>
