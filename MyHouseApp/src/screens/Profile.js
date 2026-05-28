@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert, Image, TextInput, StatusBar, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert, Image, TextInput, StatusBar, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -133,12 +133,21 @@ export default function Profile() {
       <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
       <View style={profileStyles.headerSection}>
-        <Text style={profileStyles.headerTitle}>Profile</Text>
+        <View style={profileStyles.headerTop}>
+          <Text style={profileStyles.headerTitle}>Profile</Text>
+          <TouchableOpacity
+            style={profileStyles.headerIconButton}
+            onPress={() => Alert.alert('Notifications', 'No new notifications yet.')}
+          >
+            <Ionicons name="notifications-outline" size={22} color="#fff" />
+          </TouchableOpacity>
+        </View>
+        <Text style={profileStyles.headerSubtitle}>Your account details and personal settings in one place.</Text>
       </View>
       
       <ScrollView 
         contentContainerStyle={profileStyles.scrollContent}
-        onTouchStart={() => Keyboard.dismiss()}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={profileStyles.profileCard}>
           <View style={profileStyles.avatarWrapper}>
@@ -190,7 +199,9 @@ export default function Profile() {
           <Text style={profileStyles.sectionTitle}>Personal Information</Text>
           
           <View style={profileStyles.infoRow}>
-            <Ionicons name="person-outline" size={22} color="#666" />
+            <View style={profileStyles.iconWrapper}>
+              <Ionicons name="person-outline" size={20} color="#2563eb" />
+            </View>
             <View style={profileStyles.infoTextContainer}>
               <Text style={profileStyles.infoLabel}>Name</Text>
               {isEditing ? (
@@ -203,10 +214,13 @@ export default function Profile() {
                 <Text style={profileStyles.infoValue}>{userDetails?.name || 'Not provided'}</Text>
               )}
             </View>
+            {!isEditing && <Ionicons name="chevron-forward-outline" size={20} color="#94a3b8" />}
           </View>
 
           <View style={profileStyles.infoRow}>
-            <Ionicons name="calendar-outline" size={22} color="#666" />
+            <View style={profileStyles.iconWrapper}>
+              <Ionicons name="calendar-outline" size={20} color="#2563eb" />
+            </View>
             <View style={profileStyles.infoTextContainer}>
               <Text style={profileStyles.infoLabel}>Age</Text>
               {isEditing ? (
@@ -220,10 +234,13 @@ export default function Profile() {
                 <Text style={profileStyles.infoValue}>{userDetails?.age || 'Not provided'}</Text>
               )}
             </View>
+            {!isEditing && <Ionicons name="chevron-forward-outline" size={20} color="#94a3b8" />}
           </View>
 
           <View style={profileStyles.infoRow}>
-            <Ionicons name="call-outline" size={22} color="#666" />
+            <View style={profileStyles.iconWrapper}>
+              <Ionicons name="call-outline" size={20} color="#2563eb" />
+            </View>
             <View style={profileStyles.infoTextContainer}>
               <Text style={profileStyles.infoLabel}>Phone Number</Text>
               {isEditing ? (
@@ -237,10 +254,13 @@ export default function Profile() {
                 <Text style={profileStyles.infoValue}>{userDetails?.contact || userDetails?.contact_number || 'Not provided'}</Text>
               )}
             </View>
+            {!isEditing && <Ionicons name="chevron-forward-outline" size={20} color="#94a3b8" />}
           </View>
 
           <View style={profileStyles.infoRow}>
-            <Ionicons name="mail-outline" size={22} color="#666" />
+            <View style={profileStyles.iconWrapper}>
+              <Ionicons name="mail-outline" size={20} color="#2563eb" />
+            </View>
             <View style={profileStyles.infoTextContainer}>
               <Text style={profileStyles.infoLabel}>Email</Text>
               {isEditing ? (
@@ -254,6 +274,7 @@ export default function Profile() {
                 <Text style={profileStyles.infoValue}>{userDetails?.email || 'Not provided'}</Text>
               )}
             </View>
+            {!isEditing && <Ionicons name="chevron-forward-outline" size={20} color="#94a3b8" />}
           </View>
         </View>
 
