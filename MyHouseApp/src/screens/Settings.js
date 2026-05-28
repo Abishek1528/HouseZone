@@ -33,24 +33,10 @@ export default function Settings() {
       <StatusBar barStyle="light-content" backgroundColor="#183b74" />
 
       <View style={styles.headerArea}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => Alert.alert('Menu', 'Menu pressed')}>
-            <Ionicons name="menu-outline" size={26} color="#fff" />
-          </TouchableOpacity>
-
-          <View style={styles.brandRow}>
-            <View style={styles.brandIcon}>
-              <Ionicons name="home-outline" size={18} color="#3b82f6" />
-            </View>
-            <Text style={styles.brandText}>MyRentalApp</Text>
-          </View>
-
-          <View style={styles.iconButton} />
-        </View>
       </View>
 
       <View style={styles.heroCard}>
-        <View>
+        <View style={styles.heroTextBlock}>
           <Text style={styles.heroTitle}>Settings</Text>
           <Text style={styles.heroSubtitle}>Manage your preferences and account settings</Text>
         </View>
@@ -158,59 +144,31 @@ const styles = StyleSheet.create({
   headerArea: {
     backgroundColor: '#183b74',
     paddingTop: 52,
-    paddingBottom: 22,
+    paddingBottom: 42,
     paddingHorizontal: 22,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 80,
     position: 'relative',
     overflow: 'hidden',
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  iconButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  brandIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    backgroundColor: '#eff6ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  brandText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '800',
-  },
   heroCard: {
     backgroundColor: '#fff',
     borderRadius: 30,
     marginHorizontal: 16,
-    marginTop: -32,
+    marginTop: -8,
     paddingVertical: 24,
     paddingHorizontal: 24,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 16 },
     shadowOpacity: 0.08,
     shadowRadius: 20,
     elevation: 7,
+  },
+  heroTextBlock: {
+    paddingTop: 8,
   },
   heroTitle: {
     fontSize: 32,
@@ -231,6 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.12,
