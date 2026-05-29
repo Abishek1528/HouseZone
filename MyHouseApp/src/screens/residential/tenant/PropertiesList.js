@@ -74,6 +74,21 @@ export default function PropertiesList() {
   const [areaFilter, setAreaFilter] = useState('');
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
+  const normalizePropertiesResponse = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.properties)) return payload.properties;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.rows)) return payload.rows;
+
+    if (payload != null) {
+      console.error("Unexpected properties response shape", {
+        receivedType: typeof payload,
+        payload,
+      });
+    }
+    return [];
+  };
+
   useEffect(() => {
     loadProperties();
   }, []);
@@ -84,7 +99,8 @@ export default function PropertiesList() {
       console.log('Fetching properties...');
       const data = await getAllProperties(filters);
       console.log('Properties fetched:', data);
-      setProperties(data || []);
+      const normalizedProperties = normalizePropertiesResponse(data);
+      setProperties(normalizedProperties);
     } catch (error) {
       console.error('Error loading properties:', error);
       setProperties([]);
@@ -109,6 +125,11 @@ export default function PropertiesList() {
 
   const handleViewDetails = (propertyId) => {
     try {
+      if (!propertyId) {
+        console.error("Invalid property id while navigating to details", { propertyId });
+        Alert.alert('Error', 'Invalid property selected. Please refresh and try again.');
+        return;
+      }
       console.log('Navigating to PropertyDetails with ID:', propertyId);
       navigation.navigate('PropertyDetails', { propertyId });
     } catch (error) {

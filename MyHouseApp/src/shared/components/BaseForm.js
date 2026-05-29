@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import categoryContentStyles from "../../styles/categoryContentStyles";
@@ -29,13 +30,57 @@ const BaseForm = ({
   const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const prefillOwnerContactFromAccount = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('userDetails');
+        if (!stored) return;
+        const user = JSON.parse(stored);
+        const accountContact = user?.contact || user?.contact_number;
+        if (!accountContact) return;
+
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || user?.name || '',
+          contactNo: prev.contactNo || String(accountContact).replace(/\D/g, '').slice(-10),
+        }));
+      } catch (error) {
+        console.error(`[${title}] Could not prefill owner form from account:`, error);
+      }
+    };
+    prefillOwnerContactFromAccount();
+  }, []);
+
+  const getSafeImagesArray = (value) => {
+    if (Array.isArray(value)) return value;
+    if (value == null) return [];
+    console.error(`[${title}] Invalid images payload in formData`, {
+      category,
+      step,
+      receivedType: typeof value,
+      value,
+    });
+    return [];
+  };
+
   const handleStep1Change = handleStep1InputChange(formData, setFormData);
 
   const handleInputChange = (field, value) => {
-    setFormData({
-      ...formData,
-      [field]: value
-    });
+    try {
+      setFormData({
+        ...formData,
+        [field]: value
+      });
+    } catch (error) {
+      console.error(`[${title}] Failed to update field`, {
+        category,
+        step,
+        field,
+        value,
+        error: error?.message || error,
+      });
+      Alert.alert("Error", `Unable to update field "${field}". Please try again.`);
+    }
   };
 
   const handleImageSelection = handleImageSelect(formData, setFormData);
@@ -154,7 +199,7 @@ const BaseForm = ({
       return false;
     }
 
-    const images = formData.images || [];
+    const images = getSafeImagesArray(formData.images);
     if (images.length < 4) {
       Alert.alert("Validation Error", "Please add at least 4 images of your property");
       return false;
@@ -200,7 +245,19 @@ const BaseForm = ({
     } else if (step === 2) {
       // For Step 2, we use the custom validation function if provided, plus internal validation
       if (validationFunction) {
-        const isValid = validationFunction(formData);
+        let isValid = false;
+        try {
+          isValid = validationFunction(formData);
+        } catch (error) {
+          console.error(`[${title}] Step 2 validation crashed`, {
+            category,
+            step,
+            formData,
+            error: error?.message || error,
+          });
+          Alert.alert("Error", "Step 2 validation failed unexpectedly. Please review the entered fields.");
+          return;
+        }
         if (!isValid) return;
       }
       if (!validateStep2()) return;
@@ -285,7 +342,7 @@ const BaseForm = ({
 
             console.log('Prepared step2 data:', step2Data);
 
-            const imagesToUpload = (formData.images || []).slice(0, 12);
+            const imagesToUpload = getSafeImagesArray(formData.images).slice(0, 12);
             if (imagesToUpload.length > 0) {
               try {
                 const { uploadVehiclesImages } = await import("../../screens/vehicles/logic/api");
@@ -346,9 +403,10 @@ const BaseForm = ({
 
             // Upload images first if present
             let uploadedImageUrls = [];
-            if (formData.images && formData.images.length > 0) {
+            const safeMachineryImages = getSafeImagesArray(formData.images);
+            if (safeMachineryImages.length > 0) {
               try {
-                const uploadResult = await uploadMachineryImages(moNo, formData.images);
+                const uploadResult = await uploadMachineryImages(moNo, safeMachineryImages);
                 uploadedImageUrls = uploadResult.images || [];
                 console.log('Machinery images uploaded:', uploadedImageUrls);
               } catch (uploadError) {
@@ -361,7 +419,7 @@ const BaseForm = ({
             const step2Data = { 
               ...formData, 
               moNo,
-              images: uploadedImageUrls.length > 0 ? uploadedImageUrls : formData.images 
+              images: uploadedImageUrls.length > 0 ? uploadedImageUrls : safeMachineryImages 
             };
             console.log('Prepared machinery step2 data:', step2Data);
             await saveMachineryStep2(step2Data);
@@ -521,7 +579,7 @@ const BaseForm = ({
 
                 // Upload images to backend and then save step 3 data
                 try {
-                  const imagesToUpload = (formData.images || []).slice(0, 7);
+                  const imagesToUpload = getSafeImagesArray(formData.images).slice(0, 7);
                   if (imagesToUpload.length > 0) {
                     try {
                       const { uploadResidentialImages } = await import("../../screens/residential/logic/api");
@@ -634,7 +692,7 @@ const BaseForm = ({
               await saveBusinessStep2(step2Data);
 
               // Prepare and save step3
-              const imagesToUpload = (formData.images || []).slice(0, 7);
+              const imagesToUpload = getSafeImagesArray(formData.images).slice(0, 7);
               if (imagesToUpload.length > 0) {
                 try {
                   const { uploadBusinessImages } = await import('../../screens/business/logic/api');
@@ -707,6 +765,47 @@ const BaseForm = ({
   const isTwoStepCategory = isVehiclesCategory || isMachineryCategory;
   const maxSteps = isTwoStepCategory ? 2 : 3;
 
+  const renderCurrentStep = () => {
+    try {
+      if (step === 1) {
+        return <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} />;
+      }
+
+      if (step === 2) {
+        return <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} />;
+      }
+
+      if (!isTwoStepCategory && step === 3) {
+        return (
+          <Step3PaymentImages
+            formData={formData}
+            handleInputChange={handleInputChange}
+            handleImageSelect={handleImageSelection}
+            handleRemoveImage={handleImageRemoval}
+            colors={colors}
+            dark={dark}
+          />
+        );
+      }
+      return null;
+    } catch (renderError) {
+      console.error(`[${title}] Form render crashed`, {
+        category,
+        step,
+        formData,
+        error: renderError?.message || renderError,
+      });
+      return (
+        <View style={[categoryContentStyles.formContainer, { borderColor: colors.primary, backgroundColor: colors.card }]}>
+          <Text style={[categoryContentStyles.formTitle, { color: colors.primary }]}>Something went wrong</Text>
+          <Text style={{ color: colors.text, marginTop: 8 }}>
+            We hit a form rendering issue on step {step}. Please go back and retry this step.
+          </Text>
+        </View>
+      );
+    }
+  };
+
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
@@ -726,22 +825,7 @@ const BaseForm = ({
         </View>
 
         <View style={[categoryContentStyles.content, { paddingHorizontal: 20, width: "100%" }]}>
-          {step === 1 && (
-            <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} />
-          )}
-          {step === 2 && (
-            <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} />
-          )}
-          {!isTwoStepCategory && step === 3 && (
-            <Step3PaymentImages
-              formData={formData}
-              handleInputChange={handleInputChange}
-              handleImageSelect={handleImageSelection}
-              handleRemoveImage={handleImageRemoval}
-              colors={colors}
-              dark={dark}
-            />
-          )}
+          {renderCurrentStep()}
 
           <View style={categoryContentStyles.buttonRow}>
             {(step > 1 || step === 1) && (
