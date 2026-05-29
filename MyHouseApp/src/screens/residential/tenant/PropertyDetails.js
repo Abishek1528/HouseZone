@@ -86,6 +86,32 @@ export default function PropertyDetails() {
     }
     return 'N/A';
   };
+
+  const getPropertyImages = () => {
+    const rawImages = property?.images;
+    if (Array.isArray(rawImages)) {
+      return rawImages.filter((img) => typeof img === 'string' && img);
+    }
+    if (typeof rawImages === 'string') {
+      try {
+        const parsed = JSON.parse(rawImages);
+        if (Array.isArray(parsed)) {
+          return parsed.filter((img) => typeof img === 'string' && img);
+        }
+      } catch (error) {
+        console.error('Invalid property.images JSON format:', {
+          rawImages,
+          message: error?.message || error
+        });
+      }
+    } else if (rawImages != null) {
+      console.error('Unexpected property.images type:', {
+        receivedType: typeof rawImages,
+        rawImages
+      });
+    }
+    return [];
+  };
   
   const renderConditions = (conditionNumbers) => {
     if (!conditionNumbers) {
@@ -136,6 +162,8 @@ export default function PropertyDetails() {
     }) : null;
   };
 
+  const propertyImages = getPropertyImages();
+
   return (
     <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
       <Header />
@@ -148,11 +176,10 @@ export default function PropertyDetails() {
         >
           <Text style={[categoryContentStyles.pageTitle, { color: colors.text }]}>Property Details</Text>
           
-          {Array.isArray(property.images) && property.images.length > 0 && (
+          {propertyImages.length > 0 && (
             <View style={{ marginVertical: 10 }}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {property.images.map((imgRaw, idx) => {
-                  if (typeof imgRaw !== 'string' || !imgRaw) return null;
+                {propertyImages.map((imgRaw, idx) => {
                   const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
                   return (
                   <TouchableOpacity 
@@ -165,7 +192,7 @@ export default function PropertyDetails() {
                   >
                     <View style={{ width: 200, height: 140, backgroundColor: dark ? '#333' : '#eee', borderRadius: 8, overflow: 'hidden' }}>
                       <Text style={{ position: 'absolute', zIndex: 1, backgroundColor: 'rgba(0,0,0,0.4)', color: '#fff', paddingHorizontal: 6, paddingVertical: 2, borderBottomRightRadius: 8 }}>
-                        {idx + 1}/{property.images.length}
+                        {idx + 1}/{propertyImages.length}
                       </Text>
                       <Image source={{ uri: img }} style={{ width: 200, height: 140 }} />
                     </View>
@@ -175,13 +202,11 @@ export default function PropertyDetails() {
               </ScrollView>
               
               <ImageView
-                images={property.images
-                  .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
-                  .map(imgRaw => ({
+                images={propertyImages.map(imgRaw => ({
                     uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
                   }))
                 }
-                imageIndex={currentImageIndex}
+                imageIndex={Math.min(currentImageIndex, Math.max(propertyImages.length - 1, 0))}
                 visible={isImageViewVisible}
                 onRequestClose={() => setIsImageViewVisible(false)}
               />

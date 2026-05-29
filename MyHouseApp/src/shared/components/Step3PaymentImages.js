@@ -60,12 +60,22 @@ const Step3PaymentImages = ({ formData, handleInputChange, handleImageSelect, ha
         });
       }
     } catch (err) {
-      console.error('Image picker error:', err);
+      console.error('Image picker error in Step3PaymentImages:', {
+        source,
+        message: err?.message || err,
+        stack: err?.stack,
+      });
       Alert.alert('Error', 'Failed to pick image: ' + (err.message || 'Unknown'));
     }
   };
 
-  const images = formData.images || [];
+  const images = Array.isArray(formData?.images) ? formData.images : [];
+  if (!Array.isArray(formData?.images) && formData?.images !== undefined) {
+    console.error("Invalid images data received in Step3PaymentImages", {
+      images: formData.images,
+      receivedType: typeof formData.images,
+    });
+  }
 
   // Helper functions to check if amounts are filled
   const hasLeaseAmount = formData.leaseAmount && !isNaN(parseFloat(formData.leaseAmount)) && parseFloat(formData.leaseAmount) > 0;

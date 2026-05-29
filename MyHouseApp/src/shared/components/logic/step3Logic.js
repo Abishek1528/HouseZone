@@ -14,7 +14,14 @@ export const step3InitialData = {
 export const handleImageSelect = (formData, setFormData) => (imageUri) => {
   console.log("Adding image URI:", imageUri);
 
-  const currentImages = formData.images || [];
+  const currentImages = Array.isArray(formData.images) ? formData.images : [];
+  if (!Array.isArray(formData.images) && formData.images !== undefined) {
+    console.error("Invalid images state while adding image", {
+      images: formData.images,
+      receivedType: typeof formData.images,
+      imageUri
+    });
+  }
 
   // Check limit
   if (currentImages.length >= 7) {
@@ -23,6 +30,11 @@ export const handleImageSelect = (formData, setFormData) => (imageUri) => {
   }
 
   // Add new image
+  if (!imageUri || typeof imageUri !== "string") {
+    console.error("Skipped invalid image URI", { imageUri });
+    return;
+  }
+
   const updatedImages = [...currentImages, imageUri];
   console.log("Updated images:", updatedImages);
 
@@ -38,7 +50,14 @@ export const handleImageSelect = (formData, setFormData) => (imageUri) => {
 export const handleRemoveImage = (formData, setFormData) => (index) => {
   console.log("Removing image index:", index);
 
-  const currentImages = formData.images || [];
+  const currentImages = Array.isArray(formData.images) ? formData.images : [];
+  if (!Array.isArray(formData.images) && formData.images !== undefined) {
+    console.error("Invalid images state while removing image", {
+      images: formData.images,
+      receivedType: typeof formData.images,
+      index
+    });
+  }
 
   const updatedImages = currentImages.filter((_, i) => i !== index);
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import categoryContentStyles from '../../../styles/categoryContentStyles';
@@ -23,6 +24,26 @@ const NewTenantForm = () => {
     alternateNumber: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const prefillFromAccount = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('userDetails');
+        if (!stored) return;
+        const user = JSON.parse(stored);
+        const accountMobile = user?.contact || user?.contact_number;
+        if (!accountMobile) return;
+        setTenantData((prev) => ({
+          ...prev,
+          name: prev.name || user?.name || '',
+          mobileNumber: prev.mobileNumber || String(accountMobile).replace(/\D/g, '').slice(-10),
+        }));
+      } catch (error) {
+        console.error('Could not prefill tenant form from account:', error);
+      }
+    };
+    prefillFromAccount();
+  }, []);
 
   const handleInputChange = (field, value) => {
     setTenantData({

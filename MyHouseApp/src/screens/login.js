@@ -87,9 +87,13 @@ export default function Login() {
       console.log('Response data:', result);
 
       if (response.ok) {
-        const userDetails = result.user || {
-          name,
-          contact: phone
+        const apiUser = result.user || {};
+        const userDetails = {
+          id: apiUser.id,
+          name: apiUser.name || name,
+          email: apiUser.email,
+          contact: apiUser.contact_number || phone,
+          contact_number: apiUser.contact_number || phone,
         };
         await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
 
