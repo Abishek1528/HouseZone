@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TextInput, ScrollView } from "react-native";
 import categoryContentStyles from '../../styles/categoryContentStyles';
+import { sanitizePhoneInput } from '../utils/phoneInput';
 
 const Step1Address = ({ formData, handleInputChange, colors }) => {
   return (
@@ -69,8 +70,9 @@ const Step1Address = ({ formData, handleInputChange, colors }) => {
           placeholder="Contact No"
           placeholderTextColor={colors?.placeholder || "#999999"}
           value={formData.contactNo}
-          onChangeText={(value) => handleInputChange('contactNo', value)}
+          onChangeText={(value) => handleInputChange('contactNo', sanitizePhoneInput(value))}
           keyboardType="phone-pad"
+          maxLength={10}
         />
       </View>
     </ScrollView>

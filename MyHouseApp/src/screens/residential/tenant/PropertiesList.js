@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, Alert } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+import OptionSelectField from '../../../shared/components/OptionSelectField';
 import { useNavigation } from "@react-navigation/native";
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import Header from '../../../components/Header';
@@ -63,6 +63,30 @@ const SelectedFilterBox = ({ label, value, onRemove, colors, dark }) => {
     </View>
   );
 };
+
+const RENT_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "2000-4000", value: "2000-4000" },
+  { label: "4000-6000", value: "4000-6000" },
+  { label: "6000-8000", value: "6000-8000" },
+  { label: "8000-10000", value: "8000-10000" },
+  { label: "10000-12000", value: "10000-12000" },
+];
+
+const BEDROOM_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "1 BHK", value: "1" },
+  { label: "2 BHK", value: "2" },
+  { label: "3 BHK", value: "3" },
+  { label: "3+ BHK", value: "4" },
+];
+
+const AREA_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Area 1", value: "Area 1" },
+  { label: "Area 2", value: "Area 2" },
+  { label: "Area 3", value: "Area 3" },
+];
 
 export default function PropertiesList() {
   const navigation = useNavigation();
@@ -191,54 +215,36 @@ export default function PropertiesList() {
         {isFilterVisible && (
           <View style={propertyListStyles.filterContainer}>
             <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyListStyles.filterLabel, { color: colors.text }]}>Rent:</Text>
-              <Picker
+              <OptionSelectField
+                label="Rent:"
+                options={RENT_FILTER_OPTIONS}
                 selectedValue={rentFilter}
-                style={[propertyListStyles.picker, { color: colors.text }]}
-                dropdownIconColor={colors.text}
-                onValueChange={(itemValue) => setRentFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color={colors.placeholder} style={{ fontSize: 15 }} />
-                <Picker.Item label="2000-4000" value="2000-4000" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="4000-6000" value="4000-6000" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="6000-8000" value="6000-8000" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="8000-10000" value="8000-10000" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="10000-12000" value="10000-12000" color={colors.text} style={{ fontSize: 15 }} />
-              </Picker>
+                onSelect={setRentFilter}
+                colors={colors}
+                compact
+              />
             </View>
-            
+
             <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyListStyles.filterLabel, { color: colors.text }]}>Bedrooms:</Text>
-              <Picker
+              <OptionSelectField
+                label="Bedrooms:"
+                options={BEDROOM_FILTER_OPTIONS}
                 selectedValue={bedroomFilter}
-                style={[propertyListStyles.picker, { color: colors.text }]}
-                dropdownIconColor={colors.text}
-                onValueChange={(itemValue) => setBedroomFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color={colors.placeholder} style={{ fontSize: 15 }} />
-                <Picker.Item label="1 BHK" value="1" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="2 BHK" value="2" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="3 BHK" value="3" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="3+ BHK" value="4" color={colors.text} style={{ fontSize: 15 }} />
-              </Picker>
+                onSelect={setBedroomFilter}
+                colors={colors}
+                compact
+              />
             </View>
-            
+
             <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyListStyles.filterLabel, { color: colors.text }]}>Area:</Text>
-              <Picker
+              <OptionSelectField
+                label="Area:"
+                options={AREA_FILTER_OPTIONS}
                 selectedValue={areaFilter}
-                style={[propertyListStyles.picker, { color: colors.text }]}
-                dropdownIconColor={colors.text}
-                onValueChange={(itemValue) => setAreaFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color={colors.placeholder} style={{ fontSize: 15 }} />
-                <Picker.Item label="Area 1" value="Area 1" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="Area 2" value="Area 2" color={colors.text} style={{ fontSize: 15 }} />
-                <Picker.Item label="Area 3" value="Area 3" color={colors.text} style={{ fontSize: 15 }} />
-              </Picker>
+                onSelect={setAreaFilter}
+                colors={colors}
+                compact
+              />
             </View>
           </View>
         )}

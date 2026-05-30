@@ -7,6 +7,7 @@ import ImageView from "react-native-image-viewing";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Footer from '../components/Footer';
 import profileStyles from '../styles/profileStyles';
+import { sanitizePhoneInput } from '../shared/utils/phoneInput';
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -248,7 +249,8 @@ export default function Profile() {
                   style={profileStyles.editInput}
                   value={editedDetails.contact}
                   keyboardType="phone-pad"
-                  onChangeText={(val) => setEditedDetails({...editedDetails, contact: val})}
+                  maxLength={10}
+                  onChangeText={(val) => setEditedDetails({ ...editedDetails, contact: sanitizePhoneInput(val) })}
                 />
               ) : (
                 <Text style={profileStyles.infoValue}>{userDetails?.contact || userDetails?.contact_number || 'Not provided'}</Text>

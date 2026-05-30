@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import signupStyles from '../styles/signupStyles';
+import { sanitizePhoneInput } from '../shared/utils/phoneInput';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -173,7 +174,8 @@ export default function Signup() {
               placeholderTextColor="#999"
               keyboardType="phone-pad"
               value={contact}
-              onChangeText={setContact}
+              onChangeText={(value) => setContact(sanitizePhoneInput(value))}
+              maxLength={10}
             />
           </View>
           

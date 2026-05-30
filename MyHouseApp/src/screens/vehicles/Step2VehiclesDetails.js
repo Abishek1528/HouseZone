@@ -9,9 +9,9 @@ import {
   Image,
   Alert
 } from "react-native";
-import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from "expo-image-picker";
 import categoryContentStyles from '../../styles/categoryContentStyles';
+import OptionSelectField from '../../shared/components/OptionSelectField';
 
 
 
@@ -192,14 +192,12 @@ const Step2VehiclesDetails = ({ formData, handleInputChange, colors }) => {
 
   // Define options
   const vehicleTypeOptions = [
-    { label: "Select Vehicle Type", value: "" },
     { label: "Car", value: "car" },
     { label: "Van", value: "van" },
     { label: "Bus", value: "bus" }
   ];
 
   const seatCapacityOptions = [
-    { label: "Select Seat Capacity", value: "" },
     { label: "4", value: "4" },
     { label: "7", value: "7" },
     { label: "9", value: "9" },
@@ -208,7 +206,6 @@ const Step2VehiclesDetails = ({ formData, handleInputChange, colors }) => {
   ];
 
   const fuelTypeOptions = [
-    { label: "Select Fuel Type", value: "" },
     { label: "Electric", value: "electric" },
     { label: "Petrol", value: "petrol" },
     { label: "Diesel", value: "diesel" }
@@ -223,28 +220,13 @@ const Step2VehiclesDetails = ({ formData, handleInputChange, colors }) => {
           <View key={vehicle.id} style={[styles.vehicleContainer, { backgroundColor: colors?.card || '#f9f9f9', borderColor: colors?.border || '#ddd' }]}>
             <Text style={[styles.vehicleTitle, { color: colors?.text || '#333' }]}>Vehicle {index + 1}</Text>
 
-            {/* Vehicle Type Dropdown */}
-            <View style={categoryContentStyles.inputContainer}>
-              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Vehicle Type *</Text>
-              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-                <Picker
-                  selectedValue={vehicle.type || ""}
-                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-                  dropdownIconColor={colors?.text || '#000'}
-                  onValueChange={(value) => updateVehicle(vehicle.id, "type", value)}
-                >
-                  {vehicleTypeOptions.map((option, idx) => (
-                    <Picker.Item
-                      key={option.value}
-                      label={option.label}
-                      value={option.value}
-                      color={idx === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                      style={{ fontSize: 15 }}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+            <OptionSelectField
+              label="Vehicle Type *"
+              options={vehicleTypeOptions}
+              selectedValue={vehicle.type || ""}
+              onSelect={(value) => updateVehicle(vehicle.id, "type", value)}
+              colors={colors}
+            />
 
             {/* Vehicle Name */}
             <View style={categoryContentStyles.inputContainer}>
@@ -271,50 +253,21 @@ const Step2VehiclesDetails = ({ formData, handleInputChange, colors }) => {
             </View>
 
             {/* Seat Capacity Dropdown */}
-            <View style={categoryContentStyles.inputContainer}>
-              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Seat Capacity *</Text>
-              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-                <Picker
-                  selectedValue={vehicle.seatCapacity || ""}
-                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-                  dropdownIconColor={colors?.text || '#000'}
-                  onValueChange={(value) => updateVehicle(vehicle.id, "seatCapacity", value)}
-                >
-                  {seatCapacityOptions.map((option, idx) => (
-                    <Picker.Item
-                      key={option.value}
-                      label={option.label}
-                      value={option.value}
-                      color={idx === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                      style={{ fontSize: 15 }}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+            <OptionSelectField
+              label="Seat Capacity *"
+              options={seatCapacityOptions}
+              selectedValue={vehicle.seatCapacity || ""}
+              onSelect={(value) => updateVehicle(vehicle.id, "seatCapacity", value)}
+              colors={colors}
+            />
 
-            {/* Fuel Type Dropdown */}
-            <View style={categoryContentStyles.inputContainer}>
-              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Fuel Type *</Text>
-              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-                <Picker
-                  selectedValue={vehicle.fuelType || ""}
-                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-                  dropdownIconColor={colors?.text || '#000'}
-                  onValueChange={(value) => updateVehicle(vehicle.id, "fuelType", value)}
-                >
-                  {fuelTypeOptions.map((option, idx) => (
-                    <Picker.Item
-                      key={option.value}
-                      label={option.label}
-                      value={option.value}
-                      color={idx === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                      style={{ fontSize: 15 }}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+            <OptionSelectField
+              label="Fuel Type *"
+              options={fuelTypeOptions}
+              selectedValue={vehicle.fuelType || ""}
+              onSelect={(value) => updateVehicle(vehicle.id, "fuelType", value)}
+              colors={colors}
+            />
 
             {/* Horizontal Line Below Fuel Type */}
             <View style={styles.mainContainer}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+import OptionSelectField from "../../../shared/components/OptionSelectField";
 import { useNavigation } from '@react-navigation/native';
 import categoryContentStyles from "../../../styles/categoryContentStyles";
 import propertyListStyles from "../../residential/tenant/propertyListStyles";
@@ -8,6 +8,7 @@ import machineryListStyles from "./machineryListStyles";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import { getMachineryProperties } from "./api";
+import { useTheme } from "../../../context/ThemeContext";
 
 // Component to display selected filters as horizontal boxes with remove option
 const SelectedFilterBox = ({ label, value, onRemove }) => {
@@ -26,7 +27,32 @@ const SelectedFilterBox = ({ label, value, onRemove }) => {
   );
 };
 
+const RENT_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "2000-4000", value: "2000-4000" },
+  { label: "4000-6000", value: "4000-6000" },
+  { label: "6000-8000", value: "6000-8000" },
+  { label: "8000-10000", value: "8000-10000" },
+  { label: "10000-12000", value: "10000-12000" },
+];
+
+const TYPE_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Excavator", value: "Excavator" },
+  { label: "Crane", value: "Crane" },
+  { label: "Bulldozer", value: "Bulldozer" },
+  { label: "Loader", value: "Loader" },
+];
+
+const AREA_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Area 1", value: "Area 1" },
+  { label: "Area 2", value: "Area 2" },
+  { label: "Area 3", value: "Area 3" },
+];
+
 export default function MachineryListPage() {
+  const { colors } = useTheme();
   const navigation = useNavigation();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -164,51 +190,15 @@ export default function MachineryListPage() {
         {isFilterVisible && (
           <View style={propertyListStyles.filterContainer}>
             <View style={propertyListStyles.filterBox}>
-              <Text style={propertyListStyles.filterLabel}>Rent:</Text>
-              <Picker
-                selectedValue={rentFilter}
-                style={propertyListStyles.picker}
-                onValueChange={(itemValue) => setRentFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color="#999999" style={{ fontSize: 15 }} />
-                <Picker.Item label="2000-4000" value="2000-4000" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="4000-6000" value="4000-6000" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="6000-8000" value="6000-8000" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="8000-10000" value="8000-10000" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="10000-12000" value="10000-12000" color="#000000" style={{ fontSize: 15 }} />
-              </Picker>
+              <OptionSelectField label="Rent:" options={RENT_FILTER_OPTIONS} selectedValue={rentFilter} onSelect={setRentFilter} colors={colors} compact />
             </View>
-            
+
             <View style={propertyListStyles.filterBox}>
-              <Text style={propertyListStyles.filterLabel}>Type:</Text>
-              <Picker
-                selectedValue={typeFilter}
-                style={propertyListStyles.picker}
-                onValueChange={(itemValue) => setTypeFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color="#999999" style={{ fontSize: 15 }} />
-                <Picker.Item label="Excavator" value="Excavator" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="Crane" value="Crane" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="Bulldozer" value="Bulldozer" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="Loader" value="Loader" color="#000000" style={{ fontSize: 15 }} />
-              </Picker>
+              <OptionSelectField label="Type:" options={TYPE_FILTER_OPTIONS} selectedValue={typeFilter} onSelect={setTypeFilter} colors={colors} compact />
             </View>
-            
+
             <View style={propertyListStyles.filterBox}>
-              <Text style={propertyListStyles.filterLabel}>Area:</Text>
-              <Picker
-                selectedValue={areaFilter}
-                style={propertyListStyles.picker}
-                onValueChange={(itemValue) => setAreaFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color="#999999" style={{ fontSize: 15 }} />
-                <Picker.Item label="Area 1" value="Area 1" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="Area 2" value="Area 2" color="#000000" style={{ fontSize: 15 }} />
-                <Picker.Item label="Area 3" value="Area 3" color="#000000" style={{ fontSize: 15 }} />
-              </Picker>
+              <OptionSelectField label="Area:" options={AREA_FILTER_OPTIONS} selectedValue={areaFilter} onSelect={setAreaFilter} colors={colors} compact />
             </View>
           </View>
         )}

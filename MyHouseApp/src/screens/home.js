@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, Modal, Alert, Animated, Easing, StatusBar } from "react-native";
+import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Modal, Animated, Easing, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import homeContentStyles from '../styles/homeContentStyles';
+import OptionButtonGroup from '../shared/components/OptionButtonGroup';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Home() {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedRole, setSelectedRole] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const fadeAnim1 = useRef(new Animated.Value(0)).current;
   const fadeAnim2 = useRef(new Animated.Value(0)).current;
@@ -69,21 +68,43 @@ export default function Home() {
 
   const handleCategoryPress = (category) => {
     setSelectedCategory(category);
-    setSelectedRole("");
     setModalVisible(true);
   };
 
-  const handleRoleSelection = () => {
-    if (!selectedRole) {
-      Alert.alert("Selection Required", "Please select a role");
-      return;
-    }
-    
+  const handleRolePress = (role) => {
+    if (!selectedCategory) return;
+
     setModalVisible(false);
-    navigation.navigate(selectedCategory, { role: selectedRole });
+
+    const routes = {
+      Residential: {
+        Tenant: { screen: "PropertiesList" },
+        Owner: { screen: "AddHouse", params: { role: "Owner" } },
+      },
+      Business: {
+        Tenant: { screen: "BusinessPropertiesList" },
+        Owner: { screen: "AddBusiness", params: { role: "Owner" } },
+      },
+      Vehicles: {
+        Tenant: { screen: "VehiclesList" },
+        Owner: { screen: "AddVehicles", params: { role: "Owner" } },
+      },
+      Machinery: {
+        Tenant: { screen: "MachineryListPage" },
+        Owner: { screen: "AddMachinery", params: { role: "Owner" } },
+      },
+    };
+
+    const destination = routes[selectedCategory]?.[role];
+    if (destination) {
+      navigation.navigate(destination.screen, destination.params);
+    }
   };
 
-  const roles = ["Tenant", "Owner"];
+  const roles = [
+    { label: "Tenant", value: "Tenant" },
+    { label: "Owner", value: "Owner" },
+  ];
 
   const getCategoryIcon = (category) => {
     switch(category) {
@@ -201,55 +222,23 @@ export default function Home() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={homeContentStyles.modalContainer}>
-          <View style={homeContentStyles.modalView}>
-            <Text style={homeContentStyles.modalTitle}>Select Your Role</Text>
-            <Text style={homeContentStyles.modalText}>Category: {selectedCategory}</Text>
-            
-            <TouchableOpacity 
-              style={homeContentStyles.dropdown}
-              onPress={() => setDropdownVisible(!dropdownVisible)}
-            >
-              <Text style={homeContentStyles.dropdownText}>
-                {selectedRole || "Select a role"}
-              </Text>
-              <Text style={homeContentStyles.arrow}>{dropdownVisible ? "▲" : "▼"}</Text>
-            </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View style={homeContentStyles.modalContainer}>
+            <TouchableWithoutFeedback>
+              <View style={homeContentStyles.modalView}>
+                <Text style={homeContentStyles.modalTitle}>Select Your Role</Text>
+                <Text style={homeContentStyles.modalText}>Category: {selectedCategory}</Text>
 
-            {dropdownVisible && (
-              <View style={homeContentStyles.dropdownList}>
-                {roles.map((role) => (
-                  <TouchableOpacity
-                    key={role}
-                    style={homeContentStyles.dropdownItem}
-                    onPress={() => {
-                      setSelectedRole(role);
-                      setDropdownVisible(false);
-                    }}
-                  >
-                    <Text style={homeContentStyles.dropdownItemText}>{role}</Text>
-                  </TouchableOpacity>
-                ))}
+                <OptionButtonGroup
+                  options={roles}
+                  selectedValue=""
+                  onSelect={handleRolePress}
+                  colors={{ primary: '#4A90E2', text: '#333', card: '#fff', border: '#4A90E2' }}
+                />
               </View>
-            )}
-            
-            <View style={homeContentStyles.modalButtonContainer}>
-              <TouchableOpacity
-                style={[homeContentStyles.modalButton, homeContentStyles.cancelButton]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={homeContentStyles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
-                style={[homeContentStyles.modalButton, homeContentStyles.submitButton]}
-                onPress={handleRoleSelection}
-              >
-                <Text style={homeContentStyles.modalButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       <Footer />
