@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import loginStyles from '../styles/loginStyles';
+import { sanitizePhoneInput } from '../shared/utils/phoneInput';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -196,7 +197,8 @@ export default function Login() {
               placeholderTextColor="#999"
               keyboardType="phone-pad"
               value={phone}
-              onChangeText={setPhone}
+              onChangeText={(value) => setPhone(sanitizePhoneInput(value))}
+              maxLength={10}
             />
           </View>
           

@@ -7,6 +7,7 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { saveNewTenantDetails } from './api';
 import { useTheme } from '../../../context/ThemeContext';
+import { sanitizePhoneInput } from '../../../shared/utils/phoneInput';
 
 const NewTenantForm = () => {
   const navigation = useNavigation();
@@ -204,8 +205,9 @@ const NewTenantForm = () => {
                 placeholder="Mobile Number"
                 placeholderTextColor={colors.placeholder}
                 value={tenantData.mobileNumber}
-                onChangeText={(value) => handleInputChange('mobileNumber', value)}
+                onChangeText={(value) => handleInputChange('mobileNumber', sanitizePhoneInput(value))}
                 keyboardType="phone-pad"
+                maxLength={10}
                 editable={!isSubmitting}
               />
               
@@ -215,8 +217,9 @@ const NewTenantForm = () => {
                 placeholder="Alternate Number"
                 placeholderTextColor={colors.placeholder}
                 value={tenantData.alternateNumber}
-                onChangeText={(value) => handleInputChange('alternateNumber', value)}
+                onChangeText={(value) => handleInputChange('alternateNumber', sanitizePhoneInput(value))}
                 keyboardType="phone-pad"
+                maxLength={10}
                 editable={!isSubmitting}
               />
             </View>

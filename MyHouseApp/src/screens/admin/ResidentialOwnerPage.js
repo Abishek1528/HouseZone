@@ -1,13 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity, Modal, TextInput, ScrollView, Image } from "react-native";
-import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import OptionSelectField from "../../shared/components/OptionSelectField";
+import { useTheme } from "../../context/ThemeContext";
 import adminStyles from "../../styles/admin/adminStyles";
 import residentialOwnerStyles from "../../styles/admin/residentialOwnerStyles";
 import { getAllResidentialOwners } from "./api";
 
+const BUS_STOP_OPTIONS = [
+  { label: "Vandigate", value: "Vandigate" },
+  { label: "Main Busstand", value: "Main Busstand" },
+  { label: "Kanjithotimunai", value: "Kanjithotimunai" },
+  { label: "Depo", value: "Depo" },
+  { label: "South Car Street", value: "South Car Street" },
+];
+
+const SCHOOL_OPTIONS = [
+  { label: "Kamraj Matric", value: "Kamraj Matric" },
+  { label: "Kamraj CBSE", value: "Kamraj CBSE" },
+  { label: "Raghavendra CBSE", value: "Raghavendra CBSE" },
+  { label: "Edison", value: "Edison" },
+  { label: "Oxford", value: "Oxford" },
+  { label: "Kamraj Main", value: "Kamraj Main" },
+  { label: "Venus Matric", value: "Venus Matric" },
+];
+
+const SHOPPING_MALL_OPTIONS = [
+  { label: "National", value: "National" },
+  { label: "Noothanam", value: "Noothanam" },
+  { label: "Metro Hyper Mall", value: "Metro Hyper Mall" },
+  { label: "VK Mart", value: "VK Mart" },
+  { label: "Asian", value: "Asian" },
+];
+
+const BANK_OPTIONS = [
+  { label: "Indian", value: "Indian" },
+  { label: "HDFC", value: "HDFC" },
+  { label: "Canara", value: "Canara" },
+  { label: "Central", value: "Central" },
+  { label: "SBI", value: "SBI" },
+];
+
 export default function ResidentialOwnerPage() {
   const navigation = useNavigation();
+  const { colors } = useTheme();
   const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedOwners, setExpandedOwners] = useState({});
@@ -463,22 +499,13 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby Bus Stop */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Bus Stop</Text>
-                <View style={residentialOwnerStyles.pickerContainer}>
-                  <Picker
-                    selectedValue={updateFormData.nearbyBusStop}
-                    style={residentialOwnerStyles.picker}
-                    onValueChange={(value) => handleInputChange('nearbyBusStop', value)}
-                    mode="dropdown"
-                  >
-                    <Picker.Item label="Select Bus Stop" value="" color="#999999" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Vandigate" value="Vandigate" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Main Busstand" value="Main Busstand" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Kanjithotimunai" value="Kanjithotimunai" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Depo" value="Depo" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="South Car Street" value="South Car Street" color="#000000" style={{ fontSize: 15 }} />
-                  </Picker>
-                </View>
+                <OptionSelectField
+                  label="Bus Stop"
+                  options={BUS_STOP_OPTIONS}
+                  selectedValue={updateFormData.nearbyBusStop}
+                  onSelect={(value) => handleInputChange('nearbyBusStop', value)}
+                  colors={colors}
+                />
                 
                 {/* Distance input field - shown only when a bus stop is selected */}
                 {updateFormData.nearbyBusStop !== '' && (
@@ -497,24 +524,13 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby School */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>School</Text>
-                <View style={residentialOwnerStyles.pickerContainer}>
-                  <Picker
-                    selectedValue={updateFormData.nearbySchool}
-                    style={residentialOwnerStyles.picker}
-                    onValueChange={(value) => handleInputChange('nearbySchool', value)}
-                    mode="dropdown"
-                  >
-                    <Picker.Item label="Select School" value="" color="#999999" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Kamraj Matric" value="Kamraj Matric" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Kamraj CBSE" value="Kamraj CBSE" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Raghavendra CBSE" value="Raghavendra CBSE" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Edison" value="Edison" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Oxford" value="Oxford" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Kamraj Main" value="Kamraj Main" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Venus Matric" value="Venus Matric" color="#000000" style={{ fontSize: 15 }} />
-                  </Picker>
-                </View>
+                <OptionSelectField
+                  label="School"
+                  options={SCHOOL_OPTIONS}
+                  selectedValue={updateFormData.nearbySchool}
+                  onSelect={(value) => handleInputChange('nearbySchool', value)}
+                  colors={colors}
+                />
                 
                 
                 {updateFormData.nearbySchool !== '' && (
@@ -533,22 +549,13 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby Shopping Mall */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Shopping Mall</Text>
-                <View style={residentialOwnerStyles.pickerContainer}>
-                  <Picker
-                    selectedValue={updateFormData.nearbyShoppingMall}
-                    style={residentialOwnerStyles.picker}
-                    onValueChange={(value) => handleInputChange('nearbyShoppingMall', value)}
-                    mode="dropdown"
-                  >
-                    <Picker.Item label="Select Shopping Mall" value="" color="#999999" style={{ fontSize: 15 }} />
-                    <Picker.Item label="National" value="National" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Noothanam" value="Noothanam" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Metro Hyper Mall" value="Metro Hyper Mall" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="VK Mart" value="VK Mart" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Asian" value="Asian" color="#000000" style={{ fontSize: 15 }} />
-                  </Picker>
-                </View>
+                <OptionSelectField
+                  label="Shopping Mall"
+                  options={SHOPPING_MALL_OPTIONS}
+                  selectedValue={updateFormData.nearbyShoppingMall}
+                  onSelect={(value) => handleInputChange('nearbyShoppingMall', value)}
+                  colors={colors}
+                />
                 
                 {/* Distance input field - shown only when a shopping mall is selected */}
                 {updateFormData.nearbyShoppingMall !== '' && (
@@ -567,22 +574,13 @@ export default function ResidentialOwnerPage() {
 
               {/* Nearby Bank */}
               <View style={residentialOwnerStyles.formGroup}>
-                <Text style={residentialOwnerStyles.formLabel}>Bank</Text>
-                <View style={residentialOwnerStyles.pickerContainer}>
-                  <Picker
-                    selectedValue={updateFormData.nearbyBank}
-                    style={residentialOwnerStyles.picker}
-                    onValueChange={(value) => handleInputChange('nearbyBank', value)}
-                    mode="dropdown"
-                  >
-                    <Picker.Item label="Select Bank" value="" color="#999999" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Indian" value="Indian" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="HDFC" value="HDFC" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Canara" value="Canara" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="Central" value="Central" color="#000000" style={{ fontSize: 15 }} />
-                    <Picker.Item label="SBI" value="SBI" color="#000000" style={{ fontSize: 15 }} />
-                  </Picker>
-                </View>
+                <OptionSelectField
+                  label="Bank"
+                  options={BANK_OPTIONS}
+                  selectedValue={updateFormData.nearbyBank}
+                  onSelect={(value) => handleInputChange('nearbyBank', value)}
+                  colors={colors}
+                />
                 
                 {/* Distance input field - shown only when a bank is selected */}
                 {updateFormData.nearbyBank !== '' && (

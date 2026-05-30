@@ -270,11 +270,6 @@ export default function PropertyDetails() {
                 </Text>
               </View>
               
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bedrooms:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.numberOfBedrooms || 'N/A'}</Text>
-              </View>
-              
               {Array.isArray(property.houseDetails?.bedrooms) && property.houseDetails.bedrooms.map((bedroom, index) => (
                 <View key={index} style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
                   <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bedroom {bedroom?.bedroomNumber || (index + 1)} (L X B):</Text>
@@ -287,11 +282,6 @@ export default function PropertyDetails() {
                   </Text>
                 </View>
               ))}
-              
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bathrooms:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.numberOfBathrooms || 'N/A'}</Text>
-              </View>
               
               {property.houseDetails?.numberOfBathrooms && (
                 Array.from({ length: Math.max(0, parseInt(property.houseDetails.numberOfBathrooms) || 0) }, (_, index) => {
@@ -349,14 +339,6 @@ export default function PropertyDetails() {
                 <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
                   {property.area ? `${property.area}` : 'N/A'}
                 </Text>
-              </View>
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Total Bedrooms:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.numberOfBedrooms || 'N/A'}</Text>
-              </View>
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Total Bathrooms:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.numberOfBathrooms || 'N/A'}</Text>
               </View>
             </View>
           )}

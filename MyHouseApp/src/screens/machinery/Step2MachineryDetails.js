@@ -9,9 +9,9 @@ import {
   Image,
   Alert
 } from "react-native";
-import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from "expo-image-picker";
 import categoryContentStyles from '../../styles/categoryContentStyles';
+import OptionSelectField from '../../shared/components/OptionSelectField';
 
 
 
@@ -171,21 +171,12 @@ const Step2MachineryDetails = ({ formData, handleInputChange, colors }) => {
 
   // Define options
   const machineryTypeOptions = [
-    { label: "Select Machinery Type", value: "" },
     { label: "Excavator", value: "excavator" },
     { label: "Bulldozer", value: "bulldozer" },
     { label: "Crane", value: "crane" },
     { label: "Loader", value: "loader" },
     { label: "Tractor", value: "tractor" },
     { label: "Generator", value: "generator" }
-  ];
-
-  const capacityOptions = [
-    { label: "Select Capacity", value: "" },
-    { label: "Small", value: "small" },
-    { label: "Medium", value: "medium" },
-    { label: "Large", value: "large" },
-    { label: "Extra Large", value: "extra_large" }
   ];
 
   return (
@@ -197,28 +188,13 @@ const Step2MachineryDetails = ({ formData, handleInputChange, colors }) => {
           <View key={mach.id} style={[styles.vehicleContainer, { borderColor: colors?.border || '#eee' }]}>
             <Text style={[styles.vehicleTitle, { color: colors?.text || '#333' }]}>Machinery {index + 1}</Text>
             
-            {/* Machinery Type Dropdown */}
-            <View style={categoryContentStyles.inputContainer}>
-              <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Machinery Type *</Text>
-              <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-                <Picker
-                  selectedValue={mach.type || ""}
-                  style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-                  dropdownIconColor={colors?.text || '#000'}
-                  onValueChange={(value) => updateMachinery(mach.id, "type", value)}
-                >
-                  {machineryTypeOptions.map((option, optionIndex) => (
-                    <Picker.Item 
-                      key={option.value} 
-                      label={option.label} 
-                      value={option.value} 
-                      color={optionIndex === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                      style={{ fontSize: 15 }}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+            <OptionSelectField
+              label="Machinery Type *"
+              options={machineryTypeOptions}
+              selectedValue={mach.type || ""}
+              onSelect={(value) => updateMachinery(mach.id, "type", value)}
+              colors={colors}
+            />
 
             {/* Machinery Name */}
             <View style={categoryContentStyles.inputContainer}>

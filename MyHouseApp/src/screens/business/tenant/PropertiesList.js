@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Alert, Image } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+import OptionSelectField from '../../../shared/components/OptionSelectField';
 import { useNavigation } from "@react-navigation/native";
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -60,6 +60,30 @@ const SelectedFilterBox = ({ label, value, onRemove, colors, dark }) => {
     </View>
   );
 };
+
+const RENT_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "2000-4000", value: "2000-4000" },
+  { label: "4000-6000", value: "4000-6000" },
+  { label: "6000-8000", value: "6000-8000" },
+  { label: "8000-10000", value: "8000-10000" },
+  { label: "10000-12000", value: "10000-12000" },
+];
+
+const TYPE_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Shop", value: "Shop" },
+  { label: "Office", value: "Office" },
+  { label: "Godown", value: "Godown" },
+  { label: "Industry", value: "Industry" },
+];
+
+const AREA_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Area 1", value: "Area 1" },
+  { label: "Area 2", value: "Area 2" },
+  { label: "Area 3", value: "Area 3" },
+];
 
 export default function PropertiesList() {
   const navigation = useNavigation();
@@ -134,54 +158,15 @@ export default function PropertiesList() {
         {isFilterVisible && (
           <View style={propertyListStyles.filterContainer}>
             <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyListStyles.filterLabel, { color: colors.text }]}>Rent:</Text>
-              <Picker
-                selectedValue={rentFilter}
-                style={[propertyListStyles.picker, { color: colors.text }]}
-                dropdownIconColor={colors.text}
-                onValueChange={(itemValue) => setRentFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color={colors.placeholder} />
-                <Picker.Item label="2000-4000" value="2000-4000" color={colors.text} />
-                <Picker.Item label="4000-6000" value="4000-6000" color={colors.text} />
-                <Picker.Item label="6000-8000" value="6000-8000" color={colors.text} />
-                <Picker.Item label="8000-10000" value="8000-10000" color={colors.text} />
-                <Picker.Item label="10000-12000" value="10000-12000" color={colors.text} />
-              </Picker>
+              <OptionSelectField label="Rent:" options={RENT_FILTER_OPTIONS} selectedValue={rentFilter} onSelect={setRentFilter} colors={colors} compact />
             </View>
-            
+
             <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyListStyles.filterLabel, { color: colors.text }]}>Type:</Text>
-              <Picker
-                selectedValue={typeFilter}
-                style={[propertyListStyles.picker, { color: colors.text }]}
-                dropdownIconColor={colors.text}
-                onValueChange={(itemValue) => setTypeFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color={colors.placeholder} />
-                <Picker.Item label="Shop" value="Shop" color={colors.text} />
-                <Picker.Item label="Office" value="Office" color={colors.text} />
-                <Picker.Item label="Godown" value="Godown" color={colors.text} />
-                <Picker.Item label="Industry" value="Industry" color={colors.text} />
-              </Picker>
+              <OptionSelectField label="Type:" options={TYPE_FILTER_OPTIONS} selectedValue={typeFilter} onSelect={setTypeFilter} colors={colors} compact />
             </View>
-            
+
             <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyListStyles.filterLabel, { color: colors.text }]}>Area:</Text>
-              <Picker
-                selectedValue={areaFilter}
-                style={[propertyListStyles.picker, { color: colors.text }]}
-                dropdownIconColor={colors.text}
-                onValueChange={(itemValue) => setAreaFilter(itemValue)}
-                mode="dropdown"
-              >
-                <Picker.Item label="Any" value="" color={colors.placeholder} />
-                <Picker.Item label="Area 1" value="Area 1" color={colors.text} />
-                <Picker.Item label="Area 2" value="Area 2" color={colors.text} />
-                <Picker.Item label="Area 3" value="Area 3" color={colors.text} />
-              </Picker>
+              <OptionSelectField label="Area:" options={AREA_FILTER_OPTIONS} selectedValue={areaFilter} onSelect={setAreaFilter} colors={colors} compact />
             </View>
           </View>
         )}

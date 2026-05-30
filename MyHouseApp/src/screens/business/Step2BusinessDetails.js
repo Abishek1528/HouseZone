@@ -1,12 +1,10 @@
 import React from "react";
 import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import { Picker } from '@react-native-picker/picker';
 import categoryContentStyles from '../../styles/categoryContentStyles';
+import OptionSelectField from '../../shared/components/OptionSelectField';
 
 const Step2BusinessDetails = ({ formData, handleInputChange, colors }) => {
-  // Define options for dropdowns
   const doorFacingOptions = [
-    { label: "Select Door Facing", value: "" },
     { label: "North", value: "north" },
     { label: "South", value: "south" },
     { label: "East", value: "east" },
@@ -14,7 +12,6 @@ const Step2BusinessDetails = ({ formData, handleInputChange, colors }) => {
   ];
 
   const propertyTypeOptions = [
-    { label: "Select Property Type", value: "" },
     { label: "Shop", value: "shop" },
     { label: "Office", value: "office" },
     { label: "Warehouse", value: "warehouse" },
@@ -22,7 +19,6 @@ const Step2BusinessDetails = ({ formData, handleInputChange, colors }) => {
   ];
 
   const floorOptions = [
-    { label: "Select Floor", value: "" },
     { label: "Ground", value: "ground" },
     { label: "1", value: "1" },
     { label: "2", value: "2" },
@@ -35,51 +31,21 @@ const Step2BusinessDetails = ({ formData, handleInputChange, colors }) => {
       <View style={[categoryContentStyles.formContainer, { borderColor: colors?.primary || '#4A90E2' }]}>
         <Text style={[categoryContentStyles.formTitle, { color: colors?.primary || '#4A90E2' }]}>Business Details</Text>
         
-        {/* Door Facing Dropdown */}
-        <View style={categoryContentStyles.inputContainer}>
-          <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Door Facing *</Text>
-          <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-            <Picker
-              selectedValue={formData.doorFacing || ""}
-              style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-              dropdownIconColor={colors?.text || '#000'}
-              onValueChange={(value) => handleInputChange("doorFacing", value)}
-            >
-              {doorFacingOptions.map((option, index) => (
-                <Picker.Item 
-                  key={option.value} 
-                  label={option.label} 
-                  value={option.value} 
-                  color={index === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                  style={{ fontSize: 15 }}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
+        <OptionSelectField
+          label="Door Facing *"
+          options={doorFacingOptions}
+          selectedValue={formData.doorFacing || ""}
+          onSelect={(value) => handleInputChange("doorFacing", value)}
+          colors={colors}
+        />
 
-        {/* Property Type Dropdown */}
-        <View style={categoryContentStyles.inputContainer}>
-          <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Property Type *</Text>
-          <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-            <Picker
-              selectedValue={formData.propertyType || ""}
-              style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-              dropdownIconColor={colors?.text || '#000'}
-              onValueChange={(value) => handleInputChange("propertyType", value)}
-            >
-              {propertyTypeOptions.map((option, index) => (
-                <Picker.Item 
-                  key={option.value} 
-                  label={option.label} 
-                  value={option.value} 
-                  color={index === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                  style={{ fontSize: 15 }}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
+        <OptionSelectField
+          label="Property Type *"
+          options={propertyTypeOptions}
+          selectedValue={formData.propertyType || ""}
+          onSelect={(value) => handleInputChange("propertyType", value)}
+          colors={colors}
+        />
 
         {/* Total Area - Length and Breadth */}
         <View style={categoryContentStyles.inputContainer}>
@@ -135,28 +101,13 @@ const Step2BusinessDetails = ({ formData, handleInputChange, colors }) => {
           </View>
         </View>
 
-        {/* Floor Number Dropdown */}
-        <View style={categoryContentStyles.inputContainer}>
-          <Text style={[categoryContentStyles.label, { color: colors?.text || '#000' }]}>Floor Number *</Text>
-          <View style={[categoryContentStyles.pickerContainer, { backgroundColor: colors?.card || '#fff', borderColor: colors?.border || '#4A90E2' }]}>
-            <Picker
-              selectedValue={formData.floorNumber || ""}
-              style={[categoryContentStyles.picker, { color: colors?.text || '#000' }]}
-              dropdownIconColor={colors?.text || '#000'}
-              onValueChange={(value) => handleInputChange("floorNumber", value)}
-            >
-              {floorOptions.map((option, index) => (
-                <Picker.Item 
-                  key={option.value} 
-                  label={option.label} 
-                  value={option.value} 
-                  color={index === 0 ? (colors?.placeholder || '#999999') : (colors?.text || '#000000')}
-                  style={{ fontSize: 15 }}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
+        <OptionSelectField
+          label="Floor Number *"
+          options={floorOptions}
+          selectedValue={formData.floorNumber || ""}
+          onSelect={(value) => handleInputChange("floorNumber", value)}
+          colors={colors}
+        />
       </View>
     </ScrollView>
   );
