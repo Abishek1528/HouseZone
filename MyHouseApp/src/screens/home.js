@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Modal, Animated
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import homeContentStyles from '../styles/homeContentStyles';
-import OptionButtonGroup from '../shared/components/OptionButtonGroup';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -102,8 +101,8 @@ export default function Home() {
   };
 
   const roles = [
-    { label: "Tenant", value: "Tenant" },
     { label: "Owner", value: "Owner" },
+    { label: "Tenant", value: "Tenant" },
   ];
 
   const getCategoryIcon = (category) => {
@@ -229,12 +228,21 @@ export default function Home() {
                 <Text style={homeContentStyles.modalTitle}>Select Your Role</Text>
                 <Text style={homeContentStyles.modalText}>Category: {selectedCategory}</Text>
 
-                <OptionButtonGroup
-                  options={roles}
-                  selectedValue=""
-                  onSelect={handleRolePress}
-                  colors={{ primary: '#4A90E2', text: '#333', card: '#fff', border: '#4A90E2' }}
-                />
+                <View style={homeContentStyles.roleRow}>
+                  {roles.map((role, index) => (
+                    <TouchableOpacity
+                      key={role.value}
+                      style={[
+                        homeContentStyles.roleBtn,
+                        index === 0 ? homeContentStyles.roleBtnOwner : homeContentStyles.roleBtnTenant,
+                      ]}
+                      onPress={() => handleRolePress(role.value)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={homeContentStyles.roleBtnText}>{role.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import categoryContentStyles from "../../styles/categoryContentStyles";
-import Header from "../../components/Header";
+import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
 import Footer from "../../components/Footer";
+import OwnerFormHeader from "./OwnerFormHeader";
 import Step1Address from "./Step1Address";
 import Step3PaymentImages from "./Step3PaymentImages";
 import { handleStep1InputChange } from "./logic/step1Logic";
@@ -764,15 +765,16 @@ const BaseForm = ({
   const isMachineryCategory = title === "Add Machinery";
   const isTwoStepCategory = isVehiclesCategory || isMachineryCategory;
   const maxSteps = isTwoStepCategory ? 2 : 3;
+  const ofs = getOwnerFormStyles(colors, dark);
 
   const renderCurrentStep = () => {
     try {
       if (step === 1) {
-        return <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={colors} />;
+        return <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={ofs.themeColors} dark={dark} />;
       }
 
       if (step === 2) {
-        return <Step2Component formData={formData} handleInputChange={handleInputChange} colors={colors} />;
+        return <Step2Component formData={formData} handleInputChange={handleInputChange} colors={ofs.themeColors} dark={dark} />;
       }
 
       if (!isTwoStepCategory && step === 3) {
@@ -782,7 +784,7 @@ const BaseForm = ({
             handleInputChange={handleInputChange}
             handleImageSelect={handleImageSelection}
             handleRemoveImage={handleImageRemoval}
-            colors={colors}
+            colors={ofs.themeColors}
             dark={dark}
           />
         );
@@ -807,46 +809,40 @@ const BaseForm = ({
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-      style={[categoryContentStyles.container, { backgroundColor: colors.background }]}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={ofs.screen}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
     >
-      <Header />
+      <StatusBar barStyle="light-content" backgroundColor="#0f213d" />
 
-      <ScrollView 
-        style={{ flex: 1 }} 
+      <OwnerFormHeader title={title} step={step} maxSteps={maxSteps} dark={dark} />
+
+      <ScrollView
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+        contentContainerStyle={ofs.scrollContent}
       >
-        <View style={categoryContentStyles.progressContainer}>
-          <Text style={[categoryContentStyles.progressText, { color: colors.text }]}>Step {step} of {maxSteps}</Text>
-        </View>
-
-        <View style={[categoryContentStyles.content, { paddingHorizontal: 20, width: "100%" }]}>
+        <View style={ofs.formCenterWrap}>
           {renderCurrentStep()}
 
-          <View style={categoryContentStyles.buttonRow}>
-            {(step > 1 || step === 1) && (
-              <TouchableOpacity
-                style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
-                onPress={step > 1 ? handlePrevStep : handleGoBack}
-                disabled={isSubmitting}
-              >
-                <Text style={categoryContentStyles.buttonText}>Back</Text>
-              </TouchableOpacity>
-            )}
-
-            <View style={{ flex: 1 }} />
+          <View style={ofs.formActionsRow}>
+            <TouchableOpacity
+              style={[ofs.formActionBtn, ofs.formActionBtnOutline]}
+              onPress={step > 1 ? handlePrevStep : handleGoBack}
+              disabled={isSubmitting}
+            >
+              <Text style={ofs.formActionBtnOutlineText}>Back</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              style={[ofs.formActionBtn, ofs.formActionBtnPrimary]}
               onPress={step < maxSteps ? handleNextStep : handleFormSubmit}
               disabled={isSubmitting}
             >
-              <Text style={categoryContentStyles.buttonText}>
-                {isSubmitting ? "Submitting..." : (step < maxSteps ? "Next" : "Submit")}
+              <Text style={ofs.formActionBtnText}>
+                {isSubmitting ? "..." : step < maxSteps ? "Next" : "Submit"}
               </Text>
             </TouchableOpacity>
           </View>
