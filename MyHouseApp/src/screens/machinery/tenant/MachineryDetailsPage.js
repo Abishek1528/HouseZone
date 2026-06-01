@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image, Alert, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, Alert, TouchableOpacity } from "react-native";
 import { useRoute, useNavigation } from '@react-navigation/native';
 import ImageView from "react-native-image-viewing";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
-import categoryContentStyles from "../../../styles/categoryContentStyles";
-import { getMachineryDetails } from "./api"; // We will create this API function
+import { getMachineryDetails } from "./api";
+import {
+  tenantMachineryDetailsStyles as styles,
+  getTenantPageStyles,
+} from "../../../styles/tenantPageStyles";
+import TenantPageHeader from "../../../shared/components/TenantPageHeader";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function MachineryDetailsPage() {
   const route = useRoute();
   const navigation = useNavigation();
+  const { dark } = useTheme();
+  const tps = getTenantPageStyles(dark);
   const { machineryId } = route.params;
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isImageViewVisible, setIsImageViewVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Helper to normalize image URLs
   const normalizeImageUrl = (url) => {
     if (!url) return null;
     if (typeof url !== 'string') return null;
     if (url.startsWith('http')) return url;
-    
-    // If it's just a filename, prepend the base upload URL
+
     const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
     const baseHost = API_BASE_URL.replace('/api', '');
     return `${baseHost}/uploads/machinery/${url.split('/').pop()}`;
@@ -42,9 +47,7 @@ export default function MachineryDetailsPage() {
       }
     };
 
-    if (machineryId) {
-      fetchDetails();
-    }
+    if (machineryId) fetchDetails();
   }, [machineryId]);
 
   const handleProceed = () => {
@@ -52,19 +55,33 @@ export default function MachineryDetailsPage() {
   };
 
   if (loading) {
-    return <View style={styles.centered}><Text>Loading details...</Text></View>;
+    return (
+      <View style={styles.centered}>
+        <Header />
+        <Text style={styles.centeredText}>Loading details...</Text>
+        <Footer />
+      </View>
+    );
   }
 
   if (!details) {
-    return <View style={styles.centered}><Text>No details found for this machinery.</Text></View>;
+    return (
+      <View style={styles.centered}>
+        <Header />
+        <Text style={styles.centeredText}>No details found for this machinery.</Text>
+        <Footer />
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <Header />
+      <TenantPageHeader
+        title={details?.machinery_name || "Machinery Details"}
+        subtitle="Review specifications and pricing"
+      />
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.title}>{details?.machinery_name || "Machinery Details"}</Text>
-
         {Array.isArray(details?.images) && details.images.length > 0 && (
           <View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
@@ -73,8 +90,8 @@ export default function MachineryDetailsPage() {
                 const normalizedUri = normalizeImageUrl(uri);
                 if (!normalizedUri) return null;
                 return (
-                  <TouchableOpacity 
-                    key={index} 
+                  <TouchableOpacity
+                    key={index}
                     onPress={() => {
                       setCurrentImageIndex(index);
                       setIsImageViewVisible(true);
@@ -89,9 +106,7 @@ export default function MachineryDetailsPage() {
             <ImageView
               images={details.images
                 .filter(uri => typeof uri === 'string' && uri)
-                .map(uri => ({
-                  uri: normalizeImageUrl(uri)
-                }))
+                .map(uri => ({ uri: normalizeImageUrl(uri) }))
               }
               imageIndex={currentImageIndex}
               visible={isImageViewVisible}
@@ -100,59 +115,37 @@ export default function MachineryDetailsPage() {
           </View>
         )}
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>Location</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Area:</Text> {details?.area || 'N/A'}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>City:</Text> {details?.city || 'N/A'}</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Specifications</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>Specifications</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Type:</Text> {details?.machinery_type || 'N/A'}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Model:</Text> {details?.machinery_model || 'N/A'}</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Pricing</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>Pricing</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details?.charge_per_day || 'N/A'}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details?.charge_per_km || 'N/A'}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details?.waiting_charge_per_hour || 'N/A'}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details?.waiting_charge_per_night || 'N/A'}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Fixed Rate:</Text> {details?.is_fixed ? 'Yes' : 'No'}</Text>
         </View>
-
       </ScrollView>
 
-      {/* Button Row */}
-      <View style={categoryContentStyles.buttonRow}>
-        <TouchableOpacity 
-          style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={categoryContentStyles.buttonText}>Back</Text>
+      <View style={[tps.bottomBar, { paddingHorizontal: 16, paddingBottom: 12 }]}>
+        <TouchableOpacity style={tps.btnOutline} onPress={() => navigation.goBack()}>
+          <Text style={tps.btnOutlineText}>Back</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
-          onPress={handleProceed}
-        >
-          <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+        <TouchableOpacity style={tps.btnPrimary} onPress={handleProceed}>
+          <Text style={tps.btnText}>Click OK to Proceed</Text>
         </TouchableOpacity>
       </View>
       <Footer />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f9fa' },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  contentContainer: { padding: 20 },
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 20, color: '#343a40', textAlign: 'center' },
-  imageScrollView: { marginBottom: 20 },
-  image: { width: 300, height: 200, borderRadius: 10, marginRight: 15 },
-  section: { backgroundColor: '#fff', padding: 20, borderRadius: 10, marginBottom: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 3 },
-  sectionTitle: { fontSize: 20, fontWeight: '600', color: '#4A90E2', marginBottom: 15, borderBottomWidth: 1, borderBottomColor: '#eee', paddingBottom: 10 },
-  detailText: { fontSize: 16, color: '#555', marginBottom: 8, lineHeight: 24 },
-  detailLabel: { fontWeight: 'bold', color: '#333' }
-});

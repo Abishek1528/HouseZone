@@ -9,13 +9,15 @@ import {
     Alert,
     Image
 } from 'react-native';
-import OptionSelectField from '../../../shared/components/OptionSelectField';
+import TenantFilterPanel from '../../../shared/components/TenantFilterPanel';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import categoryContentStyles from '../../../styles/categoryContentStyles';
 import propertyListStyles from '../../residential/tenant/propertyListStyles';
 import { getAvailableVehicles } from './api';
+import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
+import { getOwnerFormThemeColors } from '../../../styles/ownerFormStyles';
+import TenantPageHeader from '../../../shared/components/TenantPageHeader';
 import { useTheme } from '../../../context/ThemeContext';
 
 // Component to display selected filters as horizontal boxes with remove option
@@ -60,7 +62,9 @@ const AREA_FILTER_OPTIONS = [
 ];
 
 const VehiclesList = () => {
-    const { colors } = useTheme();
+    const { dark } = useTheme();
+    const themeColors = getOwnerFormThemeColors(dark);
+    const tps = getTenantPageStyles(dark);
     const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [rentFilter, setRentFilter] = useState('');
@@ -137,13 +141,13 @@ const VehiclesList = () => {
             ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`) 
             : null;
         return (
-            <View style={propertyListStyles.card}>
+            <View style={tps.card}>
                 {firstImage ? (
                     <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
                 ) : (
                     <View style={propertyListStyles.imagePlaceholder}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#4A90E2' }}>
+                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#2563eb' }}>
                                 {item.type ? item.type.toUpperCase() : 'VEHICLE'}
                             </Text>
                             <Text style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
@@ -156,7 +160,7 @@ const VehiclesList = () => {
                 <View style={propertyListStyles.detailsContainer}>
                     <Text style={propertyListStyles.location}>{item.area || item.city || 'Unknown'}</Text>
 
-                    <View style={propertyListStyles.propertyInfo}>
+                    <View style={tps.propertyInfo}>
                         <Text style={propertyListStyles.bedroomsText}>{item.name || 'Vehicle'}</Text>
                         <Text style={propertyListStyles.rentText}>
                             ₹{item.acPrice || item.nonAcPrice || 0} / day
@@ -179,41 +183,31 @@ const VehiclesList = () => {
     };
 
     return (
-        <View style={categoryContentStyles.container}>
+        <View style={tps.screen}>
             <Header />
-
-            {/* Content */}
-            <View style={categoryContentStyles.content}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={categoryContentStyles.pageTitle}>Available Vehicles</Text>
-                    <TouchableOpacity 
-                        style={[propertyListStyles.searchButton, { marginBottom: 15, flexDirection: 'row', alignItems: 'center' }]}
-                        onPress={() => setIsFilterVisible(!isFilterVisible)}
-                    >
-                        <Text style={propertyListStyles.searchButtonText}>
-                            {isFilterVisible ? 'Hide Filter' : 'Filter'}
-                        </Text>
-                        <Text style={[propertyListStyles.searchButtonText, { marginLeft: 5 }]}>
-                            {isFilterVisible ? '▲' : '▼'}
+            <TenantPageHeader
+                title="Available Vehicles"
+                subtitle="Browse cars, buses, and more for rent"
+            />
+            <View style={propertyListStyles.content}>
+                <View style={propertyListStyles.titleRow}>
+                    <Text style={tps.pageTitle}>Listings</Text>
+                    <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
+                        <Text style={tps.filterBtnText}>
+                            {isFilterVisible ? 'Hide Filter' : 'Filter'} {isFilterVisible ? '▲' : '▼'}
                         </Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Filter Section with Three Rectangular Boxes */}
                 {isFilterVisible && (
-                    <View style={propertyListStyles.filterContainer}>
-                        <View style={propertyListStyles.filterBox}>
-                            <OptionSelectField label="Rent:" options={RENT_FILTER_OPTIONS} selectedValue={rentFilter} onSelect={setRentFilter} colors={colors} compact />
-                        </View>
-
-                        <View style={propertyListStyles.filterBox}>
-                            <OptionSelectField label="Type:" options={TYPE_FILTER_OPTIONS} selectedValue={typeFilter} onSelect={setTypeFilter} colors={colors} compact />
-                        </View>
-
-                        <View style={propertyListStyles.filterBox}>
-                            <OptionSelectField label="Area:" options={AREA_FILTER_OPTIONS} selectedValue={areaFilter} onSelect={setAreaFilter} colors={colors} compact />
-                        </View>
-                    </View>
+                    <TenantFilterPanel
+                        colors={themeColors}
+                        sections={[
+                            { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
+                            { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
+                            { key: "area", label: "Area", options: AREA_FILTER_OPTIONS, value: areaFilter, onSelect: setAreaFilter },
+                        ]}
+                    />
                 )}
 
                 {/* Display selected filters horizontally with remove option */}

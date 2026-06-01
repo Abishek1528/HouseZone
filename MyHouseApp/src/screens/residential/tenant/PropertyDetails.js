@@ -7,12 +7,16 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { getPropertyDetails } from './api';
 import propertyDetailsStyles from './propertyDetailsStyles';
+import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
+import TenantPageHeader from '../../../shared/components/TenantPageHeader';
 import { useTheme } from '../../../context/ThemeContext';
 
 export default function PropertyDetails() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { dark, colors } = useTheme();
+  const { dark } = useTheme();
+  const tps = getTenantPageStyles(dark);
+  const { colors } = tps;
   const { propertyId } = route.params || {};
   
   const [property, setProperty] = useState(null);
@@ -44,10 +48,11 @@ export default function PropertyDetails() {
 
   if (loading) {
     return (
-      <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
+      <View style={tps.screen}>
         <Header />
-        <View style={categoryContentStyles.content}>
-          <Text style={[propertyDetailsStyles.loadingText, { color: colors.subText }]}>Loading property details...</Text>
+        <TenantPageHeader title="Property Details" subtitle="Loading…" />
+        <View style={propertyDetailsStyles.scrollContentContainer}>
+          <Text style={tps.loadingText}>Loading property details...</Text>
         </View>
         <Footer />
       </View>
@@ -56,15 +61,13 @@ export default function PropertyDetails() {
 
   if (!property) {
     return (
-      <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
+      <View style={tps.screen}>
         <Header />
-        <View style={categoryContentStyles.content}>
-          <Text style={[propertyDetailsStyles.errorText, { color: colors.subText }]}>Property not found</Text>
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.primaryButton, { backgroundColor: colors.primary }]} 
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={categoryContentStyles.buttonText}>Go Back</Text>
+        <TenantPageHeader title="Property Details" subtitle="Not found" />
+        <View style={propertyDetailsStyles.scrollContentContainer}>
+          <Text style={propertyDetailsStyles.errorText}>Property not found</Text>
+          <TouchableOpacity style={tps.btnPrimary} onPress={() => navigation.goBack()}>
+            <Text style={tps.btnText}>Go Back</Text>
           </TouchableOpacity>
         </View>
         <Footer />
@@ -116,7 +119,7 @@ export default function PropertyDetails() {
   const renderConditions = (conditionNumbers) => {
     if (!conditionNumbers) {
       return (
-        <Text style={propertyDetailsStyles.value}>No conditions specified</Text>
+        <Text style={tps.value}>No conditions specified</Text>
       );
     }
     
@@ -127,7 +130,7 @@ export default function PropertyDetails() {
       } catch (error) {
         console.error('Error parsing condition numbers:', error);
         return (
-          <Text style={propertyDetailsStyles.value}>Error loading conditions</Text>
+          <Text style={tps.value}>Error loading conditions</Text>
         );
       }
     }
@@ -143,7 +146,7 @@ export default function PropertyDetails() {
     
     if (!Array.isArray(parsedConditionNumbers) || parsedConditionNumbers.length === 0) {
       return (
-        <Text style={propertyDetailsStyles.value}>No conditions specified</Text>
+        <Text style={tps.value}>No conditions specified</Text>
       );
     }
     
@@ -165,16 +168,18 @@ export default function PropertyDetails() {
   const propertyImages = getPropertyImages();
 
   return (
-    <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
+    <View style={tps.screen}>
       <Header />
-      
-      <View style={categoryContentStyles.content}>
-        <ScrollView 
+      <TenantPageHeader
+        title="Property Details"
+        subtitle={property?.area ? `Located in ${property.area}` : "Review listing information"}
+      />
+      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+        <ScrollView
           style={propertyDetailsStyles.scrollContainer}
           contentContainerStyle={propertyDetailsStyles.scrollContentContainer}
           nestedScrollEnabled={true}
         >
-          <Text style={[categoryContentStyles.pageTitle, { color: colors.text }]}>Property Details</Text>
           
           {propertyImages.length > 0 && (
             <View style={{ marginVertical: 10 }}>
@@ -213,44 +218,44 @@ export default function PropertyDetails() {
             </View>
           )}
           
-          <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-            <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>💰 Payment Information</Text>
+          <View style={tps.section}>
+            <Text style={tps.sectionTitle}>💰 Payment Information</Text>
             
             {property.paymentDetails?.leaseAmount ? (
-              <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Lease Amount:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>₹{property.paymentDetails.leaseAmount}</Text>
+              <View style={tps.firstDetailRow}>
+                <Text style={tps.label}>Lease Amount:</Text>
+                <Text style={tps.value}>₹{property.paymentDetails.leaseAmount}</Text>
               </View>
             ) : (
               <>
-                <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
-                  <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Advance Amount:</Text>
-                  <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>₹{property.paymentDetails?.advanceAmount || 'N/A'}</Text>
+                <View style={tps.firstDetailRow}>
+                  <Text style={tps.label}>Advance Amount:</Text>
+                  <Text style={tps.value}>₹{property.paymentDetails?.advanceAmount || 'N/A'}</Text>
                 </View>
-                <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                  <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Monthly Rent:</Text>
-                  <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>₹{property.paymentDetails?.monthlyRent || 'N/A'}</Text>
+                <View style={tps.detailRow}>
+                  <Text style={tps.label}>Monthly Rent:</Text>
+                  <Text style={tps.value}>₹{property.paymentDetails?.monthlyRent || 'N/A'}</Text>
                 </View>
               </>
             )}
             
-            <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-              <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Agreement:</Text>
-              <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>N/A</Text>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>Agreement:</Text>
+              <Text style={tps.value}>N/A</Text>
             </View>
           </View>
           
           {property.houseDetails && (
-            <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>🏠 House Details</Text>
-              <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Facing Direction:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.facingDirection || 'N/A'}</Text>
+            <View style={tps.section}>
+              <Text style={tps.sectionTitle}>🏠 House Details</Text>
+              <View style={tps.firstDetailRow}>
+                <Text style={tps.label}>Facing Direction:</Text>
+                <Text style={tps.value}>{property.houseDetails.facingDirection || 'N/A'}</Text>
               </View>
               
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Hall Size (L X B):</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+              <View style={tps.detailRow}>
+                <Text style={tps.label}>Hall Size (L X B):</Text>
+                <Text style={tps.value}>
                   {formatDimensions(
                     property.houseDetails.hallLength,
                     property.houseDetails.hallBreadth,
@@ -259,9 +264,9 @@ export default function PropertyDetails() {
                 </Text>
               </View>
               
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Kitchen Size (L X B):</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+              <View style={tps.detailRow}>
+                <Text style={tps.label}>Kitchen Size (L X B):</Text>
+                <Text style={tps.value}>
                   {formatDimensions(
                     property.houseDetails.kitchenLength,
                     property.houseDetails.kitchenBreadth,
@@ -271,9 +276,9 @@ export default function PropertyDetails() {
               </View>
               
               {Array.isArray(property.houseDetails?.bedrooms) && property.houseDetails.bedrooms.map((bedroom, index) => (
-                <View key={index} style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                  <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bedroom {bedroom?.bedroomNumber || (index + 1)} (L X B):</Text>
-                  <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+                <View key={index} style={tps.detailRow}>
+                  <Text style={tps.label}>Bedroom {bedroom?.bedroomNumber || (index + 1)} (L X B):</Text>
+                  <Text style={tps.value}>
                     {formatDimensions(
                       bedroom?.length,
                       bedroom?.breadth,
@@ -288,9 +293,9 @@ export default function PropertyDetails() {
                   const bathroomType = property.houseDetails?.[`bathroom${index + 1}Type`];
                   const bathroomAccess = property.houseDetails?.[`bathroom${index + 1}Access`];
                   return (
-                    <View key={index + 1} style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                      <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bathroom {index + 1}:</Text>
-                      <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+                    <View key={index + 1} style={tps.detailRow}>
+                      <Text style={tps.label}>Bathroom {index + 1}:</Text>
+                      <Text style={tps.value}>
                         {(bathroomAccess && bathroomType) ? `${bathroomAccess} - ${bathroomType}` : 
                          (bathroomAccess ? bathroomAccess : 
                          (bathroomType || 'N/A'))}
@@ -302,17 +307,17 @@ export default function PropertyDetails() {
               
               {property.houseDetails && (
                 <>
-                  <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                    <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Parking (2-Wheeler):</Text>
-                    <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+                  <View style={tps.detailRow}>
+                    <Text style={tps.label}>Parking (2-Wheeler):</Text>
+                    <Text style={tps.value}>
                       {(property.houseDetails.parking2Wheeler !== undefined && property.houseDetails.parking2Wheeler !== null) 
                         ? property.houseDetails.parking2Wheeler 
                         : 'N/A'}
                     </Text>
                   </View>
-                  <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                    <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Parking (4-Wheeler):</Text>
-                    <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+                  <View style={tps.detailRow}>
+                    <Text style={tps.label}>Parking (4-Wheeler):</Text>
+                    <Text style={tps.value}>
                       {(property.houseDetails.parking4Wheeler !== undefined && property.houseDetails.parking4Wheeler !== null) 
                         ? property.houseDetails.parking4Wheeler 
                         : 'N/A'}
@@ -324,79 +329,72 @@ export default function PropertyDetails() {
           )}
           
           {property.houseDetails && (
-            <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>🏢 Property Specifications</Text>
-              <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Facing Direction:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.facingDirection || 'N/A'}</Text>
+            <View style={tps.section}>
+              <Text style={tps.sectionTitle}>🏢 Property Specifications</Text>
+              <View style={tps.firstDetailRow}>
+                <Text style={tps.label}>Facing Direction:</Text>
+                <Text style={tps.value}>{property.houseDetails.facingDirection || 'N/A'}</Text>
               </View>
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Floor Number:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>{property.houseDetails.floorNumber || 'N/A'}</Text>
+              <View style={tps.detailRow}>
+                <Text style={tps.label}>Floor Number:</Text>
+                <Text style={tps.value}>{property.houseDetails.floorNumber || 'N/A'}</Text>
               </View>
-              <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-                <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Built-up Area:</Text>
-                <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+              <View style={tps.detailRow}>
+                <Text style={tps.label}>Built-up Area:</Text>
+                <Text style={tps.value}>
                   {property.area ? `${property.area}` : 'N/A'}
                 </Text>
               </View>
             </View>
           )}
           
-          <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-            <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>📍 Location & Nearby Amenities</Text>
-            <View style={[propertyDetailsStyles.firstDetailRow, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
-              <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Street Size:</Text>
-              <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+          <View style={tps.section}>
+            <Text style={tps.sectionTitle}>📍 Location & Nearby Amenities</Text>
+            <View style={tps.firstDetailRow}>
+              <Text style={tps.label}>Street Size:</Text>
+              <Text style={tps.value}>
                 {property?.streetSize ? `${property.streetSize} ft` : 'N/A'}
               </Text>
             </View>
-            <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-              <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bus Stop:</Text>
-              <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>Bus Stop:</Text>
+              <Text style={tps.value}>
                 {property?.nearbyBusStop ? `${property.nearbyBusStop}${property?.nearbyBusStopDistance ? ` - ${property.nearbyBusStopDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
-            <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-              <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>School:</Text>
-              <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>School:</Text>
+              <Text style={tps.value}>
                 {property?.nearbySchool ? `${property.nearbySchool}${property?.nearbySchoolDistance ? ` - ${property.nearbySchoolDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
-            <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-              <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Shopping Mall:</Text>
-              <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>Shopping Mall:</Text>
+              <Text style={tps.value}>
                 {property?.nearbyShoppingMall ? `${property.nearbyShoppingMall}${property?.nearbyShoppingMallDistance ? ` - ${property.nearbyShoppingMallDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
-            <View style={[propertyDetailsStyles.detailRow, { borderBottomColor: colors.border }]}>
-              <Text style={[propertyDetailsStyles.label, { color: colors.subText }]}>Bank:</Text>
-              <Text style={[propertyDetailsStyles.value, { color: colors.text }]}>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>Bank:</Text>
+              <Text style={tps.value}>
                 {property?.nearbyBank ? `${property.nearbyBank}${property?.nearbyBankDistance ? ` - ${property.nearbyBankDistance} km` : ''}` : 'N/A'}
               </Text>
             </View>
           </View>
           
-          <View style={[propertyDetailsStyles.section, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-            <Text style={[propertyDetailsStyles.sectionTitle, { color: colors.text, borderBottomColor: colors.primary }]}>✅ Property Conditions</Text>
+          <View style={tps.section}>
+            <Text style={tps.sectionTitle}>✅ Property Conditions</Text>
             {renderConditions(property?.conditionNumbers)}
           </View>
 
         </ScrollView>
         
-        <View style={categoryContentStyles.buttonRow}>
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.cancelButton, { backgroundColor: dark ? '#444' : '#6c757d' }]}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={categoryContentStyles.buttonText}>Back to Properties</Text>
+        <View style={tps.bottomBar}>
+          <TouchableOpacity style={tps.btnOutline} onPress={() => navigation.goBack()}>
+            <Text style={tps.btnOutlineText}>Back to Properties</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[categoryContentStyles.button, categoryContentStyles.primaryButton, { backgroundColor: colors.primary }]}
-            onPress={handleProceed}
-          >
-            <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+          <TouchableOpacity style={tps.btnPrimary} onPress={handleProceed}>
+            <Text style={tps.btnText}>Click OK to Proceed</Text>
           </TouchableOpacity>
         </View>
       </View>

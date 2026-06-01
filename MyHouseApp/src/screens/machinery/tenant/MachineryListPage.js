@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
-import OptionSelectField from "../../../shared/components/OptionSelectField";
+import TenantFilterPanel from "../../../shared/components/TenantFilterPanel";
 import { useNavigation } from '@react-navigation/native';
-import categoryContentStyles from "../../../styles/categoryContentStyles";
 import propertyListStyles from "../../residential/tenant/propertyListStyles";
 import machineryListStyles from "./machineryListStyles";
+import { getTenantPageStyles } from "../../../styles/tenantPageStyles";
+import { getOwnerFormThemeColors } from "../../../styles/ownerFormStyles";
+import TenantPageHeader from "../../../shared/components/TenantPageHeader";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import { getMachineryProperties } from "./api";
@@ -52,7 +54,9 @@ const AREA_FILTER_OPTIONS = [
 ];
 
 export default function MachineryListPage() {
-  const { colors } = useTheme();
+  const { dark } = useTheme();
+  const themeColors = getOwnerFormThemeColors(dark);
+  const tps = getTenantPageStyles(dark);
   const navigation = useNavigation();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,7 +128,7 @@ export default function MachineryListPage() {
     const firstImage = item.images && item.images.length > 0 ? normalizeImageUrl(item.images[0]) : null;
 
     return (
-      <View style={machineryListStyles.card}>
+      <View style={[machineryListStyles.card, tps.card]}>
         {/* Left Side - Image Container */}
         <TouchableOpacity 
           style={machineryListStyles.imageContainer}
@@ -167,40 +171,31 @@ export default function MachineryListPage() {
   };
 
   return (
-    <View style={categoryContentStyles.container}>
+    <View style={tps.screen}>
       <Header />
-      
-      <View style={categoryContentStyles.content}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={categoryContentStyles.pageTitle}>Available Machinery</Text>
-          <TouchableOpacity 
-            style={[propertyListStyles.searchButton, { marginBottom: 15, flexDirection: 'row', alignItems: 'center' }]}
-            onPress={() => setIsFilterVisible(!isFilterVisible)}
-          >
-            <Text style={propertyListStyles.searchButtonText}>
-              {isFilterVisible ? 'Hide Filter' : 'Filter'}
-            </Text>
-            <Text style={[propertyListStyles.searchButtonText, { marginLeft: 5 }]}>
-              {isFilterVisible ? '▲' : '▼'}
+      <TenantPageHeader
+        title="Available Machinery"
+        subtitle="Find equipment for rent in your area"
+      />
+      <View style={propertyListStyles.content}>
+        <View style={propertyListStyles.titleRow}>
+          <Text style={tps.pageTitle}>Listings</Text>
+          <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
+            <Text style={tps.filterBtnText}>
+              {isFilterVisible ? "Hide Filter" : "Filter"} {isFilterVisible ? "▲" : "▼"}
             </Text>
           </TouchableOpacity>
         </View>
         
-        {/* Filter Section with Three Rectangular Boxes */}
         {isFilterVisible && (
-          <View style={propertyListStyles.filterContainer}>
-            <View style={propertyListStyles.filterBox}>
-              <OptionSelectField label="Rent:" options={RENT_FILTER_OPTIONS} selectedValue={rentFilter} onSelect={setRentFilter} colors={colors} compact />
-            </View>
-
-            <View style={propertyListStyles.filterBox}>
-              <OptionSelectField label="Type:" options={TYPE_FILTER_OPTIONS} selectedValue={typeFilter} onSelect={setTypeFilter} colors={colors} compact />
-            </View>
-
-            <View style={propertyListStyles.filterBox}>
-              <OptionSelectField label="Area:" options={AREA_FILTER_OPTIONS} selectedValue={areaFilter} onSelect={setAreaFilter} colors={colors} compact />
-            </View>
-          </View>
+          <TenantFilterPanel
+            colors={themeColors}
+            sections={[
+              { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
+              { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
+              { key: "area", label: "Area", options: AREA_FILTER_OPTIONS, value: areaFilter, onSelect: setAreaFilter },
+            ]}
+          />
         )}
 
         {/* Display selected filters horizontally with remove option */}

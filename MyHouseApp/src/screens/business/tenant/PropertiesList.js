@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Alert, Image } from "react-native";
-import OptionSelectField from '../../../shared/components/OptionSelectField';
+import TenantFilterPanel from '../../../shared/components/TenantFilterPanel';
 import { useNavigation } from "@react-navigation/native";
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import propertyListStyles from '../../residential/tenant/propertyListStyles';
 import { getAllProperties } from './api';
+import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
+import { getOwnerFormThemeColors } from '../../../styles/ownerFormStyles';
+import TenantPageHeader from '../../../shared/components/TenantPageHeader';
 import { useTheme } from '../../../context/ThemeContext';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
 const API_HOST = API_BASE_URL.replace(/\/api$/, '');
 
-const PropertyCard = ({ property, onViewDetails, colors, dark }) => {
+const PropertyCard = ({ property, onViewDetails, tps, dark }) => {
+  const { colors } = tps;
   if (!property) return null;
   const firstImageRaw = Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : null;
   const firstImage = (typeof firstImageRaw === 'string' && firstImageRaw)
     ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`)
     : null;
   return (
-    <View style={[propertyListStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={tps.card}>
       {firstImage ? (
         <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
       ) : (
@@ -29,7 +33,7 @@ const PropertyCard = ({ property, onViewDetails, colors, dark }) => {
       )}
       <View style={propertyListStyles.detailsContainer}>
         <Text style={[propertyListStyles.location, { color: colors.text }]}>{property?.area || property?.city || 'Unknown'}</Text>
-        <View style={[propertyListStyles.propertyInfo, { backgroundColor: dark ? '#2a2a2a' : '#f9f9f9' }]}>
+        <View style={tps.propertyInfo}>
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>{property?.property_type || 'N/A'}</Text>
           <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>₹{property?.lease_amount ? property.lease_amount : (property?.monthly_rent || 'N/A')}{property?.lease_amount ? '' : '/month'}</Text>
         </View>
@@ -45,15 +49,16 @@ const PropertyCard = ({ property, onViewDetails, colors, dark }) => {
 };
 
 // Component to display selected filters as horizontal boxes with remove option
-const SelectedFilterBox = ({ label, value, onRemove, colors, dark }) => {
+const SelectedFilterBox = ({ label, value, onRemove, tps }) => {
+  const { colors } = tps;
   if (!value) return null;
   return (
-    <View style={[propertyListStyles.selectedFilterBox, { backgroundColor: dark ? '#1a3a5a' : '#e1f0fa', borderColor: colors.primary }]}>
+    <View style={propertyListStyles.selectedFilterBox}>
       <View style={propertyListStyles.selectedFilterContent}>
         <Text style={[propertyListStyles.selectedFilterText, { color: colors.text }]}>
           {label}: {value}
         </Text>
-        <TouchableOpacity onPress={onRemove} style={[propertyListStyles.removeFilterButton, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity onPress={onRemove} style={propertyListStyles.removeFilterButton}>
           <Text style={propertyListStyles.removeFilterText}>✕</Text>
         </TouchableOpacity>
       </View>
@@ -87,7 +92,9 @@ const AREA_FILTER_OPTIONS = [
 
 export default function PropertiesList() {
   const navigation = useNavigation();
-  const { dark, colors } = useTheme();
+  const { dark } = useTheme();
+  const themeColors = getOwnerFormThemeColors(dark);
+  const tps = getTenantPageStyles(dark);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [rentFilter, setRentFilter] = useState('');
@@ -136,75 +143,49 @@ export default function PropertiesList() {
   };
 
   return (
-    <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
+    <View style={tps.screen}>
       <Header />
-      <View style={categoryContentStyles.content}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <Text style={[categoryContentStyles.pageTitle, { color: colors.text }]}>Available Business Properties</Text>
-          <TouchableOpacity 
-            style={[propertyListStyles.searchButton, { backgroundColor: colors.primary, marginBottom: 15, flexDirection: 'row', alignItems: 'center' }]}
-            onPress={() => setIsFilterVisible(!isFilterVisible)}
-          >
-            <Text style={propertyListStyles.searchButtonText}>
-              {isFilterVisible ? 'Hide Filter' : 'Filter'}
-            </Text>
-            <Text style={[propertyListStyles.searchButtonText, { marginLeft: 5 }]}>
-              {isFilterVisible ? '▲' : '▼'}
+      <TenantPageHeader
+        title="Business Properties"
+        subtitle="Browse commercial spaces available to rent"
+      />
+      <View style={propertyListStyles.content}>
+        <View style={propertyListStyles.titleRow}>
+          <Text style={tps.pageTitle}>Listings</Text>
+          <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
+            <Text style={tps.filterBtnText}>
+              {isFilterVisible ? "Hide Filter" : "Filter"} {isFilterVisible ? "▲" : "▼"}
             </Text>
           </TouchableOpacity>
         </View>
         
-        {/* Filter Section */}
         {isFilterVisible && (
-          <View style={propertyListStyles.filterContainer}>
-            <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <OptionSelectField label="Rent:" options={RENT_FILTER_OPTIONS} selectedValue={rentFilter} onSelect={setRentFilter} colors={colors} compact />
-            </View>
-
-            <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <OptionSelectField label="Type:" options={TYPE_FILTER_OPTIONS} selectedValue={typeFilter} onSelect={setTypeFilter} colors={colors} compact />
-            </View>
-
-            <View style={[propertyListStyles.filterBox, { backgroundColor: colors.card, borderColor: colors.primary }]}>
-              <OptionSelectField label="Area:" options={AREA_FILTER_OPTIONS} selectedValue={areaFilter} onSelect={setAreaFilter} colors={colors} compact />
-            </View>
-          </View>
+          <TenantFilterPanel
+            colors={themeColors}
+            sections={[
+              { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
+              { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
+              { key: "area", label: "Area", options: AREA_FILTER_OPTIONS, value: areaFilter, onSelect: setAreaFilter },
+            ]}
+          />
         )}
 
         {/* Selected Filters Display */}
         <View style={propertyListStyles.selectedFiltersContainer}>
-          <SelectedFilterBox 
-            label="Rent" 
-            value={getRentLabel(rentFilter)} 
-            onRemove={() => setRentFilter('')} 
-            colors={colors}
-            dark={dark}
-          />
-          <SelectedFilterBox 
-            label="Type" 
-            value={typeFilter} 
-            onRemove={() => setTypeFilter('')} 
-            colors={colors}
-            dark={dark}
-          />
-          <SelectedFilterBox 
-            label="Area" 
-            value={areaFilter} 
-            onRemove={() => setAreaFilter('')} 
-            colors={colors}
-            dark={dark}
-          />
+          <SelectedFilterBox label="Rent" value={getRentLabel(rentFilter)} onRemove={() => setRentFilter('')} tps={tps} />
+          <SelectedFilterBox label="Type" value={typeFilter} onRemove={() => setTypeFilter('')} tps={tps} />
+          <SelectedFilterBox label="Area" value={areaFilter} onRemove={() => setAreaFilter('')} tps={tps} />
         </View>
 
         {loading ? (
-          <Text style={[propertyListStyles.loadingText, { color: colors.subText }]}>Loading properties...</Text>
+          <Text style={tps.loadingText}>Loading properties...</Text>
         ) : properties.length === 0 ? (
-          <Text style={[propertyListStyles.noPropertiesText, { color: colors.subText }]}>No properties found</Text>
+          <Text style={propertyListStyles.noPropertiesText}>No properties found</Text>
         ) : (
           <FlatList
             data={properties}
             keyExtractor={(item) => (item?.id || Math.random()).toString()}
-            renderItem={({ item }) => <PropertyCard property={item} onViewDetails={handleViewDetails} colors={colors} dark={dark} />}
+            renderItem={({ item }) => <PropertyCard property={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />}
             style={propertyListStyles.list}
           />
         )}

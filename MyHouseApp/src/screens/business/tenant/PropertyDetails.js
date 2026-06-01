@@ -4,12 +4,16 @@ import { useNavigation } from '@react-navigation/native';
 import ImageView from "react-native-image-viewing";
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import categoryContentStyles from '../../../styles/categoryContentStyles';
 import propertyDetailsStyles from '../../residential/tenant/propertyDetailsStyles';
 import { getPropertyDetails } from './api';
+import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
+import TenantPageHeader from '../../../shared/components/TenantPageHeader';
+import { useTheme } from '../../../context/ThemeContext';
 
 export default function PropertyDetails({ route }) {
   const navigation = useNavigation();
+  const { dark } = useTheme();
+  const tps = getTenantPageStyles(dark);
   const { propertyId } = route.params || {};
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,29 +44,34 @@ export default function PropertyDetails({ route }) {
   };
 
   if (loading) return (
-    <View style={categoryContentStyles.container}>
+    <View style={tps.screen}>
       <Header />
-      <View style={categoryContentStyles.content}><Text>Loading...</Text></View>
+      <TenantPageHeader title="Business Property" subtitle="Loading…" />
+      <Text style={tps.loadingText}>Loading...</Text>
       <Footer />
     </View>
   );
 
   if (!property) return (
-    <View style={categoryContentStyles.container}>
+    <View style={tps.screen}>
       <Header />
-      <View style={categoryContentStyles.content}><Text>Property not found</Text></View>
+      <TenantPageHeader title="Business Property" subtitle="Not found" />
+      <Text style={propertyDetailsStyles.errorText}>Property not found</Text>
       <Footer />
     </View>
   );
 
   return (
-    <View style={categoryContentStyles.container}>
+    <View style={tps.screen}>
       <Header />
-      <ScrollView 
+      <TenantPageHeader
+        title={property?.propertySpecs?.property_type || 'Business Property'}
+        subtitle={property?.addressDetails?.area || 'Review listing details'}
+      />
+      <ScrollView
         style={propertyDetailsStyles.scrollContainer}
-        contentContainerStyle={propertyDetailsStyles.scrollContentContainer}
+        contentContainerStyle={[propertyDetailsStyles.scrollContentContainer, { paddingHorizontal: 16 }]}
       >
-        <Text style={categoryContentStyles.pageTitle}>{property?.propertySpecs?.property_type || 'Business Property'}</Text>
         
         {/* Images Gallery */}
         {Array.isArray(property?.images) && property.images.length > 0 && (
@@ -106,113 +115,105 @@ export default function PropertyDetails({ route }) {
         )}
 
         {/* Property Overview */}
-        <View style={propertyDetailsStyles.section}>
-          <Text style={propertyDetailsStyles.sectionTitle}>Property Overview</Text>
-          <View style={propertyDetailsStyles.firstDetailRow}>
-            <Text style={propertyDetailsStyles.label}>Location</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.area || property?.addressDetails?.city || 'Unknown'}</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>Property Overview</Text>
+          <View style={tps.firstDetailRow}>
+            <Text style={tps.label}>Location</Text>
+            <Text style={tps.value}>{property?.addressDetails?.area || property?.addressDetails?.city || 'Unknown'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Owner</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.name_of_person || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Owner</Text>
+            <Text style={tps.value}>{property?.addressDetails?.name_of_person || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Monthly Rent</Text>
-            <Text style={propertyDetailsStyles.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Monthly Rent</Text>
+            <Text style={tps.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
           </View>
         </View>
 
         {/* Address & Location */}
-        <View style={propertyDetailsStyles.section}>
-          <Text style={propertyDetailsStyles.sectionTitle}>📍 Address & Location</Text>
-          <View style={propertyDetailsStyles.firstDetailRow}>
-            <Text style={propertyDetailsStyles.label}>Door Number</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.door_no || 'N/A'}</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>📍 Address & Location</Text>
+          <View style={tps.firstDetailRow}>
+            <Text style={tps.label}>Door Number</Text>
+            <Text style={tps.value}>{property?.addressDetails?.door_no || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Street</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.street || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Street</Text>
+            <Text style={tps.value}>{property?.addressDetails?.street || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Area</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.area || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Area</Text>
+            <Text style={tps.value}>{property?.addressDetails?.area || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>City</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.city || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>City</Text>
+            <Text style={tps.value}>{property?.addressDetails?.city || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Pincode</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.addressDetails?.pincode || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Pincode</Text>
+            <Text style={tps.value}>{property?.addressDetails?.pincode || 'N/A'}</Text>
           </View>
         </View>
 
         {/* Property Specifications */}
-        <View style={propertyDetailsStyles.section}>
-          <Text style={propertyDetailsStyles.sectionTitle}>🏢 Property Specifications</Text>
-          <View style={propertyDetailsStyles.firstDetailRow}>
-            <Text style={propertyDetailsStyles.label}>Door Facing</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.door_facing || 'N/A'}</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>🏢 Property Specifications</Text>
+          <View style={tps.firstDetailRow}>
+            <Text style={tps.label}>Door Facing</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.door_facing || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Property Type</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.property_type || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Property Type</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.property_type || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Total Area (sq ft)</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.totalArea || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Total Area (sq ft)</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.totalArea || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Length (ft)</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.length_feet || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Length (ft)</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.length_feet || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Breadth (ft)</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.breadth_feet || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Breadth (ft)</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.breadth_feet || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Restroom Available</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.restroom_available ? 'Yes' : 'No'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Restroom Available</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.restroom_available ? 'Yes' : 'No'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Floor Number</Text>
-            <Text style={propertyDetailsStyles.value}>{property?.propertySpecs?.floor_number || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Floor Number</Text>
+            <Text style={tps.value}>{property?.propertySpecs?.floor_number || 'N/A'}</Text>
           </View>
         </View>
 
         {/* Payment Information */}
-        <View style={propertyDetailsStyles.section}>
-          <Text style={propertyDetailsStyles.sectionTitle}>💰 Payment Information</Text>
-          <View style={propertyDetailsStyles.firstDetailRow}>
-            <Text style={propertyDetailsStyles.label}>Advance Amount</Text>
-            <Text style={propertyDetailsStyles.value}>₹{property?.paymentInfo?.advance_amount || 'N/A'}</Text>
+        <View style={tps.section}>
+          <Text style={tps.sectionTitle}>💰 Payment Information</Text>
+          <View style={tps.firstDetailRow}>
+            <Text style={tps.label}>Advance Amount</Text>
+            <Text style={tps.value}>₹{property?.paymentInfo?.advance_amount || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Monthly Rent</Text>
-            <Text style={propertyDetailsStyles.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Monthly Rent</Text>
+            <Text style={tps.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
           </View>
-          <View style={propertyDetailsStyles.detailRow}>
-            <Text style={propertyDetailsStyles.label}>Lease Amount</Text>
-            <Text style={propertyDetailsStyles.value}>₹{property?.paymentInfo?.lease_amount || 'N/A'}</Text>
+          <View style={tps.detailRow}>
+            <Text style={tps.label}>Lease Amount</Text>
+            <Text style={tps.value}>₹{property?.paymentInfo?.lease_amount || 'N/A'}</Text>
           </View>
         </View>
 
       </ScrollView>
 
-      {/* Button Row */}
-      <View style={categoryContentStyles.buttonRow}>
-        <TouchableOpacity 
-          style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={categoryContentStyles.buttonText}>Back</Text>
+      <View style={[tps.bottomBar, { paddingHorizontal: 16, paddingBottom: 12 }]}>
+        <TouchableOpacity style={tps.btnOutline} onPress={() => navigation.goBack()}>
+          <Text style={tps.btnOutlineText}>Back</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
-          onPress={handleProceed}
-        >
-          <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+        <TouchableOpacity style={tps.btnPrimary} onPress={handleProceed}>
+          <Text style={tps.btnText}>Click OK to Proceed</Text>
         </TouchableOpacity>
       </View>
       <Footer />
