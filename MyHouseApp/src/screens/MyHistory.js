@@ -1,29 +1,33 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   FlatList,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
   Alert,
+  StatusBar,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
-import categoryContentStyles from '../styles/categoryContentStyles';
-import { useTheme } from '../context/ThemeContext';
+import myHistoryStyles, { HISTORY_COLORS } from '../styles/myHistoryStyles';
 import { getMyBookingHistory } from './MyHistory/api';
 
 const CATEGORY_META = {
-  residential: { label: 'House', icon: 'home-outline', color: '#2563eb' },
-  business: { label: 'Business', icon: 'business-outline', color: '#7c3aed' },
-  vehicles: { label: 'Vehicle', icon: 'car-outline', color: '#059669' },
-  machinery: { label: 'Machinery', icon: 'construct-outline', color: '#d97706' },
+  residential: { label: 'House', icon: 'home-outline', color: HISTORY_COLORS.primary },
+  business: { label: 'Business', icon: 'business-outline', color: HISTORY_COLORS.headerBgAlt },
+  vehicles: { label: 'Vehicle', icon: 'car-outline', color: HISTORY_COLORS.accent },
+  machinery: { label: 'Machinery', icon: 'construct-outline', color: '#475569' },
 };
+
+const FILTER_OPTIONS = [
+  { id: 'all', label: 'All' },
+  { id: 'booking', label: 'Booked' },
+  { id: 'listing', label: 'Listed' },
+];
 
 const formatAmount = (value) => {
   if (value == null || value === '') return null;
@@ -32,10 +36,9 @@ const formatAmount = (value) => {
   return `₹${num.toLocaleString('en-IN')}`;
 };
 
-const HistoryCard = ({ item, colors }) => {
+const HistoryCard = ({ item }) => {
   const meta = CATEGORY_META[item.category] || CATEGORY_META.residential;
   const isListing = item.activityType === 'listing';
-  const activityColor = isListing ? '#059669' : '#2563eb';
   const displayName = isListing ? item.ownerName : item.tenantName;
   const displayContact = isListing ? item.contactNo : item.mobileNumber;
   const rentLabel = item.leaseAmount
@@ -51,61 +54,70 @@ const HistoryCard = ({ item, colors }) => {
   const recordId = item.recordId || item.bookingId;
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <View style={styles.cardHeader}>
-        <View style={[styles.badge, { backgroundColor: `${meta.color}22` }]}>
+    <View style={myHistoryStyles.card}>
+      <View style={myHistoryStyles.cardHeader}>
+        <View style={myHistoryStyles.badge}>
           <Ionicons name={meta.icon} size={18} color={meta.color} />
-          <Text style={[styles.badgeText, { color: meta.color }]}>{meta.label}</Text>
+          <Text style={[myHistoryStyles.badgeText, { color: meta.color }]}>{meta.label}</Text>
         </View>
-        <View style={[styles.activityPill, { backgroundColor: `${activityColor}22` }]}>
-          <Text style={[styles.activityPillText, { color: activityColor }]}>
+        <View
+          style={[
+            myHistoryStyles.activityPill,
+            isListing ? myHistoryStyles.activityPillListed : myHistoryStyles.activityPillBooked,
+          ]}
+        >
+          <Text
+            style={[
+              myHistoryStyles.activityPillText,
+              isListing ? myHistoryStyles.activityPillTextListed : myHistoryStyles.activityPillTextBooked,
+            ]}
+          >
             {isListing ? 'Listed' : 'Booked'}
           </Text>
         </View>
       </View>
 
-      <Text style={[styles.bookingType, { color: colors.subText, marginBottom: 6 }]}>{item.type}</Text>
-      <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
-      <Text style={[styles.cardSubtitle, { color: colors.subText }]}>{item.subtitle}</Text>
+      <Text style={myHistoryStyles.bookingType}>{item.type}</Text>
+      <Text style={myHistoryStyles.cardTitle}>{item.title}</Text>
+      <Text style={myHistoryStyles.cardSubtitle}>{item.subtitle}</Text>
 
       {recordId ? (
-        <Text style={[styles.metaLine, { color: colors.subText }]}>
+        <Text style={myHistoryStyles.metaLine}>
           {isListing ? 'Listing' : 'Booking'} #{recordId}
           {item.propertyId && item.propertyId !== recordId ? ` • Ref #${item.propertyId}` : ''}
         </Text>
       ) : null}
 
-      <View style={[styles.detailsBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-        <Text style={[styles.detailsTitle, { color: colors.text }]}>
+      <View style={myHistoryStyles.detailsBox}>
+        <Text style={myHistoryStyles.detailsTitle}>
           {isListing ? 'Owner details' : 'Your details'}
         </Text>
-        <Text style={[styles.detailRow, { color: colors.subText }]}>
-          Name: <Text style={{ color: colors.text }}>{displayName || 'N/A'}</Text>
+        <Text style={myHistoryStyles.detailRow}>
+          Name: <Text style={myHistoryStyles.detailValue}>{displayName || 'N/A'}</Text>
         </Text>
         {!isListing ? (
           <>
-            <Text style={[styles.detailRow, { color: colors.subText }]}>
-              Job: <Text style={{ color: colors.text }}>{item.job || 'N/A'}</Text>
+            <Text style={myHistoryStyles.detailRow}>
+              Job: <Text style={myHistoryStyles.detailValue}>{item.job || 'N/A'}</Text>
             </Text>
-            <Text style={[styles.detailRow, { color: colors.subText }]}>
-              Salary: <Text style={{ color: colors.text }}>{formatAmount(item.salary) || 'N/A'}</Text>
+            <Text style={myHistoryStyles.detailRow}>
+              Salary:{' '}
+              <Text style={myHistoryStyles.detailValue}>{formatAmount(item.salary) || 'N/A'}</Text>
             </Text>
           </>
         ) : null}
-        <Text style={[styles.detailRow, { color: colors.subText }]}>
-          Mobile: <Text style={{ color: colors.text }}>{displayContact || 'N/A'}</Text>
+        <Text style={myHistoryStyles.detailRow}>
+          Mobile: <Text style={myHistoryStyles.detailValue}>{displayContact || 'N/A'}</Text>
         </Text>
         {isListing && item.itemCount != null ? (
-          <Text style={[styles.detailRow, { color: colors.subText }]}>
-            Items listed: <Text style={{ color: colors.text }}>{item.itemCount}</Text>
+          <Text style={myHistoryStyles.detailRow}>
+            Items listed: <Text style={myHistoryStyles.detailValue}>{item.itemCount}</Text>
           </Text>
         ) : null}
-        {rentLabel ? (
-          <Text style={[styles.rentLine, { color: '#059669' }]}>{rentLabel}</Text>
-        ) : null}
+        {rentLabel ? <Text style={myHistoryStyles.rentLine}>{rentLabel}</Text> : null}
         {item.advance ? (
-          <Text style={[styles.detailRow, { color: colors.subText }]}>
-            Advance: <Text style={{ color: colors.text }}>{formatAmount(item.advance)}</Text>
+          <Text style={myHistoryStyles.detailRow}>
+            Advance: <Text style={myHistoryStyles.detailValue}>{formatAmount(item.advance)}</Text>
           </Text>
         ) : null}
       </View>
@@ -115,13 +127,21 @@ const HistoryCard = ({ item, colors }) => {
 
 export default function MyHistory() {
   const navigation = useNavigation();
-  const { colors } = useTheme();
   const [bookings, setBookings] = useState([]);
   const [stats, setStats] = useState({ bookings: 0, listings: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activityFilter, setActivityFilter] = useState('all');
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+
+  const filteredBookings = useMemo(() => {
+    if (activityFilter === 'all') return bookings;
+    return bookings.filter((item) => item.activityType === activityFilter);
+  }, [bookings, activityFilter]);
+
+  const filterLabel = FILTER_OPTIONS.find((f) => f.id === activityFilter)?.label || 'All';
 
   const loadHistory = useCallback(async (isRefresh = false) => {
     try {
@@ -185,62 +205,186 @@ export default function MyHistory() {
 
     if (!isLoggedIn) {
       return (
-        <View style={styles.emptyWrap}>
-          <Ionicons name="log-in-outline" size={48} color={colors.subText} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Please log in</Text>
-          <Text style={[styles.emptyText, { color: colors.subText }]}>
+        <View style={myHistoryStyles.emptyWrap}>
+          <View style={myHistoryStyles.emptyIconCircle}>
+            <Ionicons name="log-in-outline" size={36} color={HISTORY_COLORS.accent} />
+          </View>
+          <Text style={myHistoryStyles.emptyTitle}>Please log in</Text>
+          <Text style={myHistoryStyles.emptyText}>
             Sign in to see all your bookings and owner listings (house, business, vehicle, machinery).
           </Text>
           <TouchableOpacity
-            style={[styles.actionBtn, { backgroundColor: colors.primary }]}
+            style={myHistoryStyles.actionBtn}
             onPress={() => navigation.navigate('Login')}
           >
-            <Text style={styles.actionBtnText}>Go to Login</Text>
+            <Text style={myHistoryStyles.actionBtnText}>Go to Login</Text>
           </TouchableOpacity>
         </View>
       );
     }
 
     return (
-      <View style={styles.emptyWrap}>
-        <Ionicons name="time-outline" size={48} color={colors.subText} />
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>No activity yet</Text>
-        <Text style={[styles.emptyText, { color: colors.subText }]}>
-          Submit an owner form or book as tenant using the same mobile number as your login ({userName ? `logged in as ${userName}` : 'your account'}).
+      <View style={myHistoryStyles.emptyWrap}>
+        <View style={myHistoryStyles.emptyIconCircle}>
+          <Ionicons name="time-outline" size={36} color={HISTORY_COLORS.accent} />
+        </View>
+        <Text style={myHistoryStyles.emptyTitle}>
+          {bookings.length > 0 && activityFilter !== 'all'
+            ? `No ${filterLabel.toLowerCase()} items`
+            : 'No activity yet'}
         </Text>
+        <Text style={myHistoryStyles.emptyText}>
+          {bookings.length > 0 && activityFilter !== 'all'
+            ? `You have no ${filterLabel.toLowerCase()} records. Try "All" or another filter.`
+            : `Submit an owner form or book as tenant using the same mobile number as your login${userName ? ` (${userName})` : ''}.`}
+        </Text>
+        {bookings.length > 0 && activityFilter !== 'all' ? (
+          <TouchableOpacity
+            style={[myHistoryStyles.actionBtn, { marginBottom: 10 }]}
+            onPress={() => setActivityFilter('all')}
+          >
+            <Text style={myHistoryStyles.actionBtnText}>Show all</Text>
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: colors.primary }]}
+          style={myHistoryStyles.actionBtn}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.actionBtnText}>Browse Listings</Text>
+          <Text style={myHistoryStyles.actionBtnText}>Browse Listings</Text>
         </TouchableOpacity>
       </View>
     );
   };
 
   return (
-    <View style={[categoryContentStyles.container, { backgroundColor: colors.background }]}>
-      <Header />
+    <View style={myHistoryStyles.screen}>
+      <StatusBar barStyle="light-content" backgroundColor={HISTORY_COLORS.headerBg} />
 
-      <View style={styles.content}>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>My History</Text>
-        {isLoggedIn && userName ? (
-          <Text style={[styles.pageSubtitle, { color: colors.subText }]}>
-            {userName} • {bookings.length} total ({stats.bookings} booked, {stats.listings} listed)
+      <View style={myHistoryStyles.headerSection}>
+        <View style={myHistoryStyles.headerTopRow}>
+          <View style={myHistoryStyles.headerTitleBlock}>
+            <Text style={myHistoryStyles.headerTitle}>My History</Text>
+            {isLoggedIn && userName ? (
+              <Text style={myHistoryStyles.headerSubtitle}>
+                {userName} • {bookings.length} total record{bookings.length !== 1 ? 's' : ''}
+              </Text>
+            ) : (
+              <Text style={myHistoryStyles.headerSubtitle}>
+                Your bookings and listings in one place
+              </Text>
+            )}
+          </View>
+
+          {isLoggedIn && !loading ? (
+            <TouchableOpacity
+              style={[
+                myHistoryStyles.filterIconBtn,
+                (filterMenuOpen || activityFilter !== 'all') && myHistoryStyles.filterIconBtnActive,
+              ]}
+              onPress={() => setFilterMenuOpen((open) => !open)}
+              activeOpacity={0.8}
+              accessibilityLabel="Filter history"
+            >
+              <Ionicons
+                name={filterMenuOpen ? 'close' : 'filter'}
+                size={22}
+                color={HISTORY_COLORS.white}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {isLoggedIn && !loading && filterMenuOpen ? (
+          <View style={myHistoryStyles.filterPanel}>
+            <Text style={myHistoryStyles.filterPanelTitle}>Show activity</Text>
+            <View style={myHistoryStyles.filterChipRow}>
+              {FILTER_OPTIONS.map((opt) => {
+                const count =
+                  opt.id === 'all'
+                    ? bookings.length
+                    : opt.id === 'booking'
+                      ? stats.bookings
+                      : stats.listings;
+                const active = activityFilter === opt.id;
+                return (
+                  <TouchableOpacity
+                    key={opt.id}
+                    style={[myHistoryStyles.filterChip, active && myHistoryStyles.filterChipActive]}
+                    onPress={() => {
+                      setActivityFilter(opt.id);
+                      setFilterMenuOpen(false);
+                    }}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        myHistoryStyles.filterChipText,
+                        active && myHistoryStyles.filterChipTextActive,
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                    <Text
+                      style={[
+                        myHistoryStyles.filterChipCount,
+                        active && myHistoryStyles.filterChipCountActive,
+                      ]}
+                    >
+                      {count}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        ) : null}
+
+        {isLoggedIn && !loading ? (
+          <View style={myHistoryStyles.statsRow}>
+            <View style={myHistoryStyles.statCard}>
+              <Text style={myHistoryStyles.statValue}>{stats.bookings}</Text>
+              <Text style={myHistoryStyles.statLabel}>Booked</Text>
+            </View>
+            <View style={myHistoryStyles.statCard}>
+              <Text style={myHistoryStyles.statValue}>{stats.listings}</Text>
+              <Text style={myHistoryStyles.statLabel}>Listed</Text>
+            </View>
+          </View>
+        ) : null}
+      </View>
+
+      <View style={myHistoryStyles.content}>
+        {isLoggedIn && !loading && activityFilter !== 'all' && bookings.length > 0 ? (
+          <Text style={myHistoryStyles.contentFilterHint}>
+            Showing {filteredBookings.length} {filterLabel.toLowerCase()} record
+            {filteredBookings.length !== 1 ? 's' : ''}
           </Text>
         ) : null}
 
         {loading ? (
-          <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 40 }} />
+          <ActivityIndicator
+            size="large"
+            color={HISTORY_COLORS.primary}
+            style={myHistoryStyles.loader}
+          />
         ) : (
           <FlatList
-            data={bookings}
-            keyExtractor={(item, index) => `${item.activityType}-${item.category}-${item.recordId || item.bookingId}-${index}`}
-            renderItem={({ item }) => <HistoryCard item={item} colors={colors} />}
-            contentContainerStyle={bookings.length === 0 ? styles.listEmpty : styles.listContent}
+            data={filteredBookings}
+            keyExtractor={(item, index) =>
+              `${item.activityType}-${item.category}-${item.recordId || item.bookingId}-${index}`
+            }
+            renderItem={({ item }) => <HistoryCard item={item} />}
+            contentContainerStyle={
+              filteredBookings.length === 0 ? myHistoryStyles.listEmpty : myHistoryStyles.listContent
+            }
             ListEmptyComponent={renderEmpty}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={() => loadHistory(true)} colors={[colors.primary]} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => loadHistory(true)}
+                colors={[HISTORY_COLORS.primary]}
+                tintColor={HISTORY_COLORS.primary}
+              />
             }
             showsVerticalScrollIndicator={false}
           />
@@ -251,131 +395,3 @@ export default function MyHistory() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  pageTitle: {
-    fontSize: 26,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  pageSubtitle: {
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  listContent: {
-    paddingBottom: 24,
-  },
-  listEmpty: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingBottom: 40,
-  },
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-    gap: 6,
-  },
-  badgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  bookingType: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  activityPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  activityPillText: {
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 6,
-  },
-  metaLine: {
-    fontSize: 12,
-    marginBottom: 10,
-  },
-  detailsBox: {
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: 12,
-  },
-  detailsTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  detailRow: {
-    fontSize: 13,
-    marginBottom: 4,
-    lineHeight: 18,
-  },
-  rentLine: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginTop: 6,
-  },
-  emptyWrap: {
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 40,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyText: {
-    fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 20,
-  },
-  actionBtn: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  actionBtnText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-});
