@@ -4,7 +4,6 @@ import {
     Text,
     ScrollView,
     ActivityIndicator,
-    StyleSheet,
     Image,
     TouchableOpacity
 } from 'react-native';
@@ -12,10 +11,17 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import ImageView from "react-native-image-viewing";
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import categoryContentStyles from '../../../styles/categoryContentStyles';
 import { getVehicleDetails } from './api';
+import {
+    tenantVehicleDetailsStyles as styles,
+    getTenantPageStyles,
+} from '../../../styles/tenantPageStyles';
+import TenantPageHeader from '../../../shared/components/TenantPageHeader';
+import { useTheme } from '../../../context/ThemeContext';
 
 const VehicleDetails = () => {
+    const { dark } = useTheme();
+    const tps = getTenantPageStyles(dark);
     const [vehicle, setVehicle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isImageViewVisible, setIsImageViewVisible] = useState(false);
@@ -46,7 +52,7 @@ const VehicleDetails = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#4A90E2" />
+                <ActivityIndicator size="large" color="#2563eb" />
             </View>
         );
     }
@@ -56,6 +62,10 @@ const VehicleDetails = () => {
     return (
         <View style={styles.mainContainer}>
             <Header />
+            <TenantPageHeader
+                title={vehicle?.vehicle_name || 'Vehicle Details'}
+                subtitle={`${vehicle?.area || 'N/A'}, ${vehicle?.city || 'N/A'}`}
+            />
             <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.detailsContainer}>
                     {/* Images Gallery */}
@@ -177,96 +187,17 @@ const VehicleDetails = () => {
                 </View>
             </ScrollView>
 
-            {/* Button Row */}
-            <View style={categoryContentStyles.buttonRow}>
-                <TouchableOpacity 
-                    style={[categoryContentStyles.button, categoryContentStyles.cancelButton]}
-                    onPress={() => navigation.goBack()}
-                >
-                    <Text style={categoryContentStyles.buttonText}>Back</Text>
+            <View style={[tps.bottomBar, { paddingHorizontal: 16, paddingBottom: 12 }]}>
+                <TouchableOpacity style={tps.btnOutline} onPress={() => navigation.goBack()}>
+                    <Text style={tps.btnOutlineText}>Back</Text>
                 </TouchableOpacity>
-                
-                <TouchableOpacity 
-                    style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
-                    onPress={handleProceed}
-                >
-                    <Text style={categoryContentStyles.buttonText}>Click OK to Proceed</Text>
+                <TouchableOpacity style={tps.btnPrimary} onPress={handleProceed}>
+                    <Text style={tps.btnText}>Click OK to Proceed</Text>
                 </TouchableOpacity>
             </View>
             <Footer />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    scrollContent: {
-        flex: 1,
-    },
-    scrollContentContainer: {
-        paddingBottom: 20,
-    },
-    detailsContainer: {
-        padding: 15,
-    },
-    vehicleName: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 5,
-    },
-    location: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 20,
-    },
-    infoBox: {
-        borderWidth: 1,
-        borderColor: '#4A90E2',
-        borderRadius: 8,
-        padding: 15,
-        marginBottom: 15,
-        backgroundColor: '#f9f9f9',
-    },
-    boxTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#4A90E2',
-        marginBottom: 12,
-        textAlign: 'center',
-    },
-    infoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 8,
-    },
-    infoLabel: {
-        fontSize: 14,
-        color: '#666',
-        fontWeight: '600',
-        flex: 1,
-    },
-    infoValue: {
-        fontSize: 14,
-        color: '#333',
-        fontWeight: 'bold',
-        flex: 1,
-        textAlign: 'right',
-    },
-    divider: {
-        height: 1,
-        backgroundColor: '#e0e0e0',
-        marginVertical: 0,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
-});
 
 export default VehicleDetails;

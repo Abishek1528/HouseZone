@@ -8,10 +8,12 @@ const OptionButtonGroup = ({
   colors = {},
   compact = false,
   singleRow = false,
+  layout = "default",
 }) => {
+  const isFilter = layout === "filter";
   const text = colors.text || "#111827";
-  const card = colors.card || "#f8fbff";
-  const border = colors.border || "#e2e8f0";
+  const card = isFilter ? (colors.card || "#ffffff") : (colors.card || "#f8fbff");
+  const border = isFilter ? "#dbeafe" : (colors.border || "#e2e8f0");
 
   if (!options.length) return null;
 
@@ -20,7 +22,8 @@ const OptionButtonGroup = ({
       style={[
         styles.container,
         compact && styles.containerCompact,
-        singleRow && styles.containerSingleRow,
+        singleRow && !isFilter && styles.containerSingleRow,
+        isFilter && styles.containerFilter,
       ]}
     >
       {options.map((option) => {
@@ -30,8 +33,9 @@ const OptionButtonGroup = ({
             key={`${option.label}-${option.value}`}
             style={[
               styles.optionButton,
-              compact && !singleRow && styles.optionButtonCompact,
-              singleRow && styles.optionButtonSingleRow,
+              compact && !singleRow && !isFilter && styles.optionButtonCompact,
+              singleRow && !isFilter && styles.optionButtonSingleRow,
+              isFilter && styles.optionButtonFilter,
               { backgroundColor: card, borderColor: border },
               isSelected && styles.optionButtonSelected,
             ]}
@@ -41,13 +45,14 @@ const OptionButtonGroup = ({
             <Text
               style={[
                 styles.optionText,
-                compact && !singleRow && styles.optionTextCompact,
-                singleRow && styles.optionTextSingleRow,
+                compact && !singleRow && !isFilter && styles.optionTextCompact,
+                singleRow && !isFilter && styles.optionTextSingleRow,
+                isFilter && styles.optionTextFilter,
                 { color: isSelected ? "#fff" : text },
               ]}
               numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.85}
+              adjustsFontSizeToFit={!isFilter}
+              minimumFontScale={isFilter ? 1 : 0.85}
             >
               {option.label}
             </Text>
@@ -79,6 +84,15 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 0,
     paddingVertical: 6,
+    width: "100%",
+  },
+  containerFilter: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 0,
     width: "100%",
   },
   optionButton: {
@@ -122,6 +136,19 @@ const styles = StyleSheet.create({
   },
   optionTextSingleRow: {
     fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  optionButtonFilter: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 22,
+    minWidth: 0,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  optionTextFilter: {
+    fontSize: 13,
     fontWeight: "700",
     textAlign: "center",
   },
