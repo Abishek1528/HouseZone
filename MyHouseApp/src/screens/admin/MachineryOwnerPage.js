@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AdminPageHeader from "../../shared/components/AdminPageHeader";
 import adminStyles from "../../styles/admin/adminStyles";
 import residentialOwnerStyles from "../../styles/admin/residentialOwnerStyles";
+import {
+  useAdminFocusProperty,
+  isAdminPropertyHighlighted,
+  MACHINERY_PROPERTY_ALT_KEYS,
+  adminListScrollToIndexFailed,
+} from "../../shared/admin/useAdminFocusProperty";
 import { getAllMachineryOwners } from "./api";
 
 export default function MachineryOwnerPage() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedOwners, setExpandedOwners] = useState({});
+  const listRef = useRef(null);
+
+  useAdminFocusProperty(owners, setExpandedOwners, "machineryId", MACHINERY_PROPERTY_ALT_KEYS, listRef);
 
   const loadOwners = async () => {
     try {
@@ -50,9 +61,10 @@ export default function MachineryOwnerPage() {
 
   const renderOwner = ({ item }) => {
     const isExpanded = expandedOwners[item.machineryId];
+    const highlighted = isAdminPropertyHighlighted(route, item, "machineryId", MACHINERY_PROPERTY_ALT_KEYS);
 
     return (
-      <View style={residentialOwnerStyles.ownerCard}>
+      <View style={[residentialOwnerStyles.ownerCard, highlighted && adminStyles.highlightCard]}>
         {/* Summary view */}
         <View style={residentialOwnerStyles.summaryContainer}>
           <View style={residentialOwnerStyles.summaryLeft}>
@@ -60,14 +72,14 @@ export default function MachineryOwnerPage() {
             <Text style={residentialOwnerStyles.summaryText}>Type: {item.type || "N/A"}</Text>
             <Text style={residentialOwnerStyles.summaryText}>Rent: ₹{item.chargePerDay || "N/A"}/day</Text>
           </View>
-          <TouchableOpacity 
-            style={residentialOwnerStyles.viewMoreButton}
-            onPress={() => toggleOwnerDetails(item.machineryId)}
-          >
-            <Text style={residentialOwnerStyles.viewMoreText}>
-              {isExpanded ? 'View Less' : 'View More'}
-            </Text>
-          </TouchableOpacity>
+          {!isExpanded ? (
+            <TouchableOpacity
+              style={residentialOwnerStyles.viewMoreButton}
+              onPress={() => toggleOwnerDetails(item.machineryId)}
+            >
+              <Text style={residentialOwnerStyles.viewMoreText}>View More</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
         
         {/* Detailed view (shown when expanded) */}
@@ -143,7 +155,14 @@ export default function MachineryOwnerPage() {
               </Text>
             </View>
 
-
+            <View style={residentialOwnerStyles.collapseButtonRow}>
+              <TouchableOpacity
+                style={residentialOwnerStyles.collapseButton}
+                onPress={() => toggleOwnerDetails(item.machineryId)}
+              >
+                <Text style={residentialOwnerStyles.collapseButtonText}>View Less</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </View>
@@ -152,8 +171,11 @@ export default function MachineryOwnerPage() {
 
   return (
     <View style={residentialOwnerStyles.container}>
+      <AdminPageHeader
+        title="Machinery Owners"
+        subtitle={route.params?.propertyId ? "Showing machinery from tenant submission" : "Manage machinery owner listings"}
+      />
       <View style={residentialOwnerStyles.contentContainer}>
-        <Text style={residentialOwnerStyles.title}>Machinery Owners</Text>
         
         {loading ? (
           <View style={residentialOwnerStyles.loadingContainer}>
@@ -165,10 +187,12 @@ export default function MachineryOwnerPage() {
           </View>
         ) : (
           <FlatList
+            ref={listRef}
             data={owners}
             renderItem={renderOwner}
             keyExtractor={(item, index) => item?.machineryId?.toString() || index.toString()}
             showsVerticalScrollIndicator={false}
+            onScrollToIndexFailed={adminListScrollToIndexFailed(listRef)}
           />
         )}
       </View>

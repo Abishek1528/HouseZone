@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, ActivityIndicator, Alert } from "react-native";
-import adminStyles from "../../styles/admin/adminStyles";
+import adminStyles, { ADMIN_COLORS } from "../../styles/admin/adminStyles";
+import AdminPageHeader from "../../shared/components/AdminPageHeader";
 
-// Use the same API configuration as other parts of the app
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export default function SignupPage() {
   const [signups, setSignups] = useState([]);
@@ -16,70 +16,52 @@ export default function SignupPage() {
   const fetchTodaysSignups = async () => {
     try {
       setLoading(true);
-      
       const response = await fetch(`${API_BASE_URL}/signups/today`);
-      
-      const contentType = response.headers.get('content-type');
+      const contentType = response.headers.get("content-type");
       let data;
-      
-      if (contentType && contentType.includes('application/json')) {
+      if (contentType && contentType.includes("application/json")) {
         data = await response.json();
       } else {
         const text = await response.text();
         throw new Error(text || `HTTP error! status: ${response.status}`);
       }
-      
       if (!response.ok) {
         throw new Error(data.message || `HTTP error! status: ${response.status}`);
       }
-      
-      setSignups(data);
-      setLoading(false);
+      setSignups(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching signups:", error);
       Alert.alert("Error", "Failed to fetch signup details: " + error.message);
+      setSignups([]);
+    } finally {
       setLoading(false);
-      setSignups([]); // Set empty array instead of mock data
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
+  const formatDate = (dateString) => new Date(dateString).toLocaleString();
 
   return (
-    <ScrollView contentContainerStyle={adminStyles.dashboardContainerCentered}>
-      <View style={adminStyles.dashboardContentContainer}>
-        <Text style={adminStyles.dashboardTitle}>Today's Signups</Text>
-        
+    <View style={adminStyles.screen}>
+      <AdminPageHeader title="Today's Signups" subtitle="New user registrations from today" />
+      <ScrollView style={adminStyles.body} contentContainerStyle={adminStyles.scrollContent}>
         {loading ? (
-          <ActivityIndicator size="large" color="#800080" style={{ marginVertical: 20 }} />
-        ) : signups.length === 0 ? (
-          <Text style={adminStyles.dashboardContent}>No signups found for today.</Text>
-        ) : (
-          <View style={{ width: '100%', paddingHorizontal: 20 }}>
-            {signups.map((signup) => (
-              <View key={signup.id} style={{
-                backgroundColor: '#f0f0f0',
-                padding: 15,
-                borderRadius: 8,
-                marginBottom: 10,
-                borderLeftWidth: 4,
-                borderLeftColor: '#800080'
-              }}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5 }}>{signup.name}</Text>
-                <Text style={{ fontSize: 16, marginBottom: 3 }}>Age: {signup.age}</Text>
-                <Text style={{ fontSize: 16, marginBottom: 3 }}>Email: {signup.email}</Text>
-                <Text style={{ fontSize: 16, marginBottom: 3 }}>Contact: {signup.contact_number}</Text>
-                <Text style={{ fontSize: 14, color: '#666' }}>Signed up: {formatDate(signup.created_at)}</Text>
-              </View>
-            ))}
+          <View style={adminStyles.loadingWrap}>
+            <ActivityIndicator size="large" color={ADMIN_COLORS.primary} />
           </View>
+        ) : signups.length === 0 ? (
+          <Text style={adminStyles.noDataText}>No signups found for today.</Text>
+        ) : (
+          signups.map((signup) => (
+            <View key={signup.id} style={adminStyles.signupCard}>
+              <Text style={adminStyles.signupName}>{signup.name}</Text>
+              <Text style={adminStyles.signupLine}>Age: {signup.age}</Text>
+              <Text style={adminStyles.signupLine}>Email: {signup.email}</Text>
+              <Text style={adminStyles.signupLine}>Contact: {signup.contact_number}</Text>
+              <Text style={adminStyles.signupMeta}>Signed up: {formatDate(signup.created_at)}</Text>
+            </View>
+          ))
         )}
-        
-   
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
