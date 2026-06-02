@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, FlatList, Image, Alert, TouchableOpacity, ScrollView } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AdminPageHeader from "../../shared/components/AdminPageHeader";
 import adminStyles from "../../styles/admin/adminStyles";
 import residentialOwnerStyles from "../../styles/admin/residentialOwnerStyles";
+import {
+  useAdminFocusProperty,
+  isAdminPropertyHighlighted,
+  adminListScrollToIndexFailed,
+} from "../../shared/admin/useAdminFocusProperty";
 import { getAllVehiclesOwners } from "./api";
 
 export default function VehiclesOwnerPage() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedVehicles, setExpandedVehicles] = useState({});
+  const listRef = useRef(null);
+
+  useAdminFocusProperty(rows, setExpandedVehicles, "vehicleId", [], listRef);
 
   const loadData = async () => {
     try {
@@ -49,9 +59,10 @@ export default function VehiclesOwnerPage() {
 
   const renderItem = ({ item }) => {
     const isExpanded = expandedVehicles[item.vehicleId];
-    
+    const highlighted = isAdminPropertyHighlighted(route, item, "vehicleId");
+
     return (
-      <View style={residentialOwnerStyles.ownerCard}>
+      <View style={[residentialOwnerStyles.ownerCard, highlighted && adminStyles.highlightCard]}>
         {/* Summary view */}
         <View style={residentialOwnerStyles.summaryContainer}>
           <View style={residentialOwnerStyles.summaryLeft}>
@@ -59,14 +70,14 @@ export default function VehiclesOwnerPage() {
             <Text style={residentialOwnerStyles.summaryText}>{item.name} ({item.type})</Text>
             <Text style={residentialOwnerStyles.summaryText}>AC: ₹{item.acChargePerDay || "N/A"}/day</Text>
           </View>
-          <TouchableOpacity 
-            style={residentialOwnerStyles.viewMoreButton}
-            onPress={() => toggleVehicleDetails(item.vehicleId)}
-          >
-            <Text style={residentialOwnerStyles.viewMoreText}>
-              {isExpanded ? 'View Less' : 'View More'}
-            </Text>
-          </TouchableOpacity>
+          {!isExpanded ? (
+            <TouchableOpacity
+              style={residentialOwnerStyles.viewMoreButton}
+              onPress={() => toggleVehicleDetails(item.vehicleId)}
+            >
+              <Text style={residentialOwnerStyles.viewMoreText}>View More</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
         
         {/* Detailed view (shown when expanded) */}
@@ -167,7 +178,14 @@ export default function VehiclesOwnerPage() {
               </Text>
             </View>
 
-
+            <View style={residentialOwnerStyles.collapseButtonRow}>
+              <TouchableOpacity
+                style={residentialOwnerStyles.collapseButton}
+                onPress={() => toggleVehicleDetails(item.vehicleId)}
+              >
+                <Text style={residentialOwnerStyles.collapseButtonText}>View Less</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </View>
@@ -176,8 +194,11 @@ export default function VehiclesOwnerPage() {
 
   return (
     <View style={residentialOwnerStyles.container}>
+      <AdminPageHeader
+        title="Vehicles Owners"
+        subtitle={route.params?.propertyId ? "Showing vehicle from tenant submission" : "Manage vehicle owner listings"}
+      />
       <View style={residentialOwnerStyles.contentContainer}>
-        <Text style={residentialOwnerStyles.title}>Vehicles Owners</Text>
         
         {loading ? (
           <View style={residentialOwnerStyles.loadingContainer}>
@@ -189,10 +210,12 @@ export default function VehiclesOwnerPage() {
           </View>
         ) : (
             <FlatList
+              ref={listRef}
               data={rows}
               renderItem={renderItem}
               keyExtractor={(item, index) => item?.vehicleId?.toString() || index.toString()}
               showsVerticalScrollIndicator={false}
+              onScrollToIndexFailed={adminListScrollToIndexFailed(listRef)}
             />
         )}
       </View>

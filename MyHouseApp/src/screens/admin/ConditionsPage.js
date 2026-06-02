@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import categoryContentStyles from "../../styles/categoryContentStyles";
+import adminStyles, { ADMIN_COLORS } from "../../styles/admin/adminStyles";
+import AdminPageHeader from "../../shared/components/AdminPageHeader";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
@@ -174,12 +176,15 @@ export default function ConditionsPage() {
   };
 
   return (
-    <View style={categoryContentStyles.container}>
+    <View style={[categoryContentStyles.container, adminStyles.screen]}>
       <Header />
-      
-      <View style={categoryContentStyles.content}>
-        <Text style={categoryContentStyles.pageTitle}>Conditions</Text>
-        <Text style={categoryContentStyles.pageText}>Please select the applicable conditions for the property</Text>
+      <AdminPageHeader
+        title="Property Conditions"
+        subtitle="Select rules that apply to this listing"
+      />
+      <View style={[categoryContentStyles.content, adminStyles.body]}>
+        <Text style={adminStyles.pageTitle}>Conditions</Text>
+        <Text style={adminStyles.dashboardContent}>Please select the applicable conditions for the property</Text>
         
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Condition 1 */}
@@ -253,7 +258,7 @@ export default function ConditionsPage() {
             <View style={{ flex: 1 }} />
             
             <TouchableOpacity
-              style={[categoryContentStyles.button, categoryContentStyles.primaryButton]}
+              style={[adminStyles.button, { flex: 1 }]}
               onPress={handleUpdateConditions}
             >
               <Text style={categoryContentStyles.buttonText}>Update</Text>

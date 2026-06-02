@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Alert, ActivityIndicator } from "react-native";
-import adminStyles from "../../styles/admin/adminStyles";
+import adminStyles, { ADMIN_COLORS } from "../../styles/admin/adminStyles";
+import AdminPageHeader from "../../shared/components/AdminPageHeader";
+import AdminTenantSubmissionCard from "../../shared/components/AdminTenantSubmissionCard";
 import { getVehicleTenantsWithItems } from "./api";
 
 export default function VehiclesTenantPage() {
@@ -25,75 +27,35 @@ export default function VehiclesTenantPage() {
   };
 
   return (
-    <View style={adminStyles.dashboardContainer}>
-      <ScrollView contentContainerStyle={adminStyles.dashboardContentContainer} style={{ width: '100%' }}>
-        <Text style={adminStyles.dashboardTitle}>Vehicle Tenant Submissions</Text>
-        
+    <View style={adminStyles.screen}>
+      <AdminPageHeader
+        title="Vehicle Tenants"
+        subtitle="Review tenant submissions and open the linked vehicle listing"
+      />
+      <ScrollView style={adminStyles.body} contentContainerStyle={adminStyles.scrollContent}>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 50 }} />
-        ) : (!Array.isArray(data) || data.length === 0) ? (
+          <View style={adminStyles.loadingWrap}>
+            <ActivityIndicator size="large" color={ADMIN_COLORS.primary} />
+          </View>
+        ) : !Array.isArray(data) || data.length === 0 ? (
           <Text style={adminStyles.noDataText}>No vehicle tenant submissions found</Text>
         ) : (
           data.map((item) => (
-            <View key={item?.tenantId || Math.random()} style={adminStyles.card}>
-              <View style={adminStyles.cardHeader}>
-                <Text style={adminStyles.cardTitle}>Tenant: {item?.tenantName || 'N/A'}</Text>
-                <Text style={adminStyles.cardSubtitle}>ID: {item?.tenantId || 'N/A'}</Text>
-              </View>
-              
-              <View style={adminStyles.cardSection}>
-                <Text style={adminStyles.sectionTitle}>👤 Tenant Details</Text>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Job:</Text>
-                  <Text style={adminStyles.detailValue}>{item?.job || 'N/A'}</Text>
-                </View>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Salary:</Text>
-                  <Text style={adminStyles.detailValue}>₹{item?.salary || 'N/A'}</Text>
-                </View>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Native:</Text>
-                  <Text style={adminStyles.detailValue}>{item?.nativePlace || 'N/A'}</Text>
-                </View>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Contact:</Text>
-                  <Text style={adminStyles.detailValue}>{item?.mobileNumber || 'N/A'}</Text>
-                </View>
-              </View>
-
-              <View style={adminStyles.cardSection}>
-                <Text style={adminStyles.sectionTitle}>🚗 Vehicle Details</Text>
-                {item?.propertyId ? (
-                  <>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Vehicle ID:</Text>
-                      <Text style={adminStyles.detailValue}>{item.propertyId}</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Name:</Text>
-                      <Text style={adminStyles.detailValue}>{item.itemName || 'N/A'}</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Model:</Text>
-                      <Text style={adminStyles.detailValue}>{item.model || 'N/A'}</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Type:</Text>
-                      <Text style={adminStyles.detailValue}>{item.itemType || 'N/A'}</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Daily Rent:</Text>
-                      <Text style={adminStyles.detailValue}>₹{item.rent || 'N/A'}</Text>
-                    </View>
-                  </>
-                ) : (
-                  <Text style={adminStyles.noPropertyText}>No vehicle associated</Text>
-                )}
-              </View>
-            </View>
+            <AdminTenantSubmissionCard
+              key={item?.tenantId ?? Math.random()}
+              item={item}
+              ownerCategory="vehicles"
+              propertySectionTitle="Vehicle Details"
+              propertyFields={[
+                { label: "Vehicle ID:", value: item?.propertyId },
+                { label: "Name:", value: item?.itemName },
+                { label: "Model:", value: item?.model },
+                { label: "Type:", value: item?.itemType },
+                { label: "Daily Rent:", value: item?.rent != null ? `₹${item.rent}` : "N/A" },
+              ]}
+            />
           ))
         )}
-        <View style={{ height: 100 }} />
       </ScrollView>
     </View>
   );

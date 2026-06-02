@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import adminStyles from "../../styles/admin/adminStyles";
+import { View, Text, ScrollView, Alert, ActivityIndicator } from "react-native";
+import adminStyles, { ADMIN_COLORS } from "../../styles/admin/adminStyles";
+import AdminPageHeader from "../../shared/components/AdminPageHeader";
+import AdminTenantSubmissionCard from "../../shared/components/AdminTenantSubmissionCard";
 import { getResidentialTenantsWithProperties } from "./api";
- 
 
 export default function ResidentialTenantPage() {
   const [data, setData] = useState([]);
@@ -26,71 +27,37 @@ export default function ResidentialTenantPage() {
   };
 
   return (
-    <View style={adminStyles.dashboardContainer}>
-      <ScrollView contentContainerStyle={adminStyles.dashboardContentContainer} style={{ width: '100%' }}>
-        <Text style={adminStyles.dashboardTitle}>Residential Tenant Submissions</Text>
-        
+    <View style={adminStyles.screen}>
+      <AdminPageHeader
+        title="Residential Tenants"
+        subtitle="Review tenant submissions and open the linked property"
+      />
+      <ScrollView style={adminStyles.body} contentContainerStyle={adminStyles.scrollContent}>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 50 }} />
-        ) : (!Array.isArray(data) || data.length === 0) ? (
+          <View style={adminStyles.loadingWrap}>
+            <ActivityIndicator size="large" color={ADMIN_COLORS.primary} />
+          </View>
+        ) : !Array.isArray(data) || data.length === 0 ? (
           <Text style={adminStyles.noDataText}>No tenant submissions found</Text>
         ) : (
           data.map((item) => (
-            <View key={item?.tenantId || Math.random()} style={adminStyles.card}>
-              <View style={adminStyles.cardHeader}>
-                <Text style={adminStyles.cardTitle}>Tenant: {item?.tenantName || 'N/A'}</Text>
-                <Text style={adminStyles.cardSubtitle}>ID: {item?.tenantId || 'N/A'}</Text>
-              </View>
-              
-              <View style={adminStyles.cardSection}>
-                <Text style={adminStyles.sectionTitle}>👤 Tenant Details</Text>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Job:</Text>
-                  <Text style={adminStyles.detailValue}>{item?.job || 'N/A'}</Text>
-                </View>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Salary:</Text>
-                  <Text style={adminStyles.detailValue}>₹{item?.salary || 'N/A'}</Text>
-                </View>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Native:</Text>
-                  <Text style={adminStyles.detailValue}>{item?.nativePlace || 'N/A'}</Text>
-                </View>
-                <View style={adminStyles.detailRow}>
-                  <Text style={adminStyles.detailLabel}>Contact:</Text>
-                  <Text style={adminStyles.detailValue}>{item?.mobileNumber || 'N/A'}</Text>
-                </View>
-              </View>
-
-              <View style={adminStyles.cardSection}>
-                <Text style={adminStyles.sectionTitle}>🏠 House Details</Text>
-                {item?.propertyId ? (
-                  <>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Property ID:</Text>
-                      <Text style={adminStyles.detailValue}>{item.propertyId}</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Address:</Text>
-                      <Text style={adminStyles.detailValue}>{item.doorNo}, {item.street}, {item.area}, {item.city}</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Bedrooms:</Text>
-                      <Text style={adminStyles.detailValue}>{item.bedrooms} BHK</Text>
-                    </View>
-                    <View style={adminStyles.detailRow}>
-                      <Text style={adminStyles.detailLabel}>Rent:</Text>
-                      <Text style={adminStyles.detailValue}>₹{item.rent || 'N/A'}</Text>
-                    </View>
-                  </>
-                ) : (
-                  <Text style={adminStyles.noPropertyText}>No property associated</Text>
-                )}
-              </View>
-            </View>
+            <AdminTenantSubmissionCard
+              key={item?.tenantId ?? Math.random()}
+              item={item}
+              ownerCategory="residential"
+              propertySectionTitle="House Details"
+              propertyFields={[
+                { label: "Property ID:", value: item?.propertyId },
+                {
+                  label: "Address:",
+                  value: [item?.doorNo, item?.street, item?.area, item?.city].filter(Boolean).join(", ") || "N/A",
+                },
+                { label: "Bedrooms:", value: item?.bedrooms ? `${item.bedrooms} BHK` : "N/A" },
+                { label: "Rent:", value: item?.rent != null ? `₹${item.rent}` : "N/A" },
+              ]}
+            />
           ))
         )}
-        <View style={{ height: 100 }} />
       </ScrollView>
     </View>
   );
