@@ -18,9 +18,10 @@ const Step2BusinessDetails = ({ formData, handleInputChange, colors, dark }) => 
 
   const propertyTypeOptions = [
     { label: "Shop", value: "shop" },
-    { label: "Office", value: "office" },
     { label: "Warehouse", value: "warehouse" },
+    { label: "Office", value: "office" },
     { label: "Showroom", value: "showroom" },
+    { label: "Admin", value: "admin" },
   ];
 
   const floorOptions = [

@@ -32,7 +32,6 @@ const PropertyCard = ({ property, onViewDetails, tps, dark }) => {
         </View>
       )}
       <View style={propertyListStyles.detailsContainer}>
-        <Text style={[propertyListStyles.location, { color: colors.text }]}>{property?.area || property?.city || 'Unknown'}</Text>
         <View style={tps.propertyInfo}>
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>{property?.property_type || 'N/A'}</Text>
           <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>₹{property?.lease_amount ? property.lease_amount : (property?.monthly_rent || 'N/A')}{property?.lease_amount ? '' : '/month'}</Text>
@@ -66,21 +65,12 @@ const SelectedFilterBox = ({ label, value, onRemove, tps }) => {
   );
 };
 
-const RENT_FILTER_OPTIONS = [
-  { label: "Any", value: "" },
-  { label: "2000-4000", value: "2000-4000" },
-  { label: "4000-6000", value: "4000-6000" },
-  { label: "6000-8000", value: "6000-8000" },
-  { label: "8000-10000", value: "8000-10000" },
-  { label: "10000-12000", value: "10000-12000" },
-];
-
 const TYPE_FILTER_OPTIONS = [
   { label: "Any", value: "" },
-  { label: "Shop", value: "Shop" },
-  { label: "Office", value: "Office" },
-  { label: "Godown", value: "Godown" },
-  { label: "Industry", value: "Industry" },
+  { label: "Shop", value: "shop" },
+  { label: "Warehouse", value: "warehouse" },
+  { label: "Office", value: "office" },
+  { label: "Showroom", value: "showroom" },
 ];
 
 const AREA_FILTER_OPTIONS = [
@@ -97,7 +87,6 @@ export default function PropertiesList() {
   const tps = getTenantPageStyles(dark);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [rentFilter, setRentFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -120,26 +109,14 @@ export default function PropertiesList() {
   // Apply filters when any filter changes
   useEffect(() => {
     const filters = {};
-    if (rentFilter) filters.rent = rentFilter;
     if (typeFilter) filters.propertyType = typeFilter;
     if (areaFilter) filters.area = areaFilter;
     
     loadProperties(filters);
-  }, [rentFilter, typeFilter, areaFilter]);
+  }, [typeFilter, areaFilter]);
 
   const handleViewDetails = (id) => {
     navigation.navigate('BusinessPropertyDetails', { propertyId: id });
-  };
-
-  const getRentLabel = (value) => {
-    switch(value) {
-      case '2000-4000': return '₹2000-4000';
-      case '4000-6000': return '₹4000-6000';
-      case '6000-8000': return '₹6000-8000';
-      case '8000-10000': return '₹8000-10000';
-      case '10000-12000': return '₹10000-12000';
-      default: return '';
-    }
   };
 
   return (
@@ -163,7 +140,6 @@ export default function PropertiesList() {
           <TenantFilterPanel
             colors={themeColors}
             sections={[
-              { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
               { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
               { key: "area", label: "Area", options: AREA_FILTER_OPTIONS, value: areaFilter, onSelect: setAreaFilter },
             ]}
@@ -172,7 +148,6 @@ export default function PropertiesList() {
 
         {/* Selected Filters Display */}
         <View style={propertyListStyles.selectedFiltersContainer}>
-          <SelectedFilterBox label="Rent" value={getRentLabel(rentFilter)} onRemove={() => setRentFilter('')} tps={tps} />
           <SelectedFilterBox label="Type" value={typeFilter} onRemove={() => setTypeFilter('')} tps={tps} />
           <SelectedFilterBox label="Area" value={areaFilter} onRemove={() => setAreaFilter('')} tps={tps} />
         </View>
