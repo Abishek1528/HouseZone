@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, FlatList, Alert, TouchableOpacity, Modal, TextInput, ScrollView, Image } from "react-native";
+import { View, Text, FlatList, Alert, TouchableOpacity, Modal, TextInput, ScrollView } from "react-native";
+import AdminImageGallery from "../../shared/components/AdminImageGallery";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AdminPageHeader from "../../shared/components/AdminPageHeader";
 import adminStyles from "../../styles/admin/adminStyles";
@@ -290,19 +291,7 @@ export default function ResidentialOwnerPage() {
               {Array.isArray(item.images) && item.images.filter(img => typeof img === 'string' && img.trim() !== '').length > 0 && (
                 <View style={residentialOwnerStyles.detailSection}>
                   <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
-                    {item.images
-                      .filter(img => typeof img === 'string' && img.trim() !== '')
-                      .map((img, idx) => (
-                        <Image 
-                          key={idx} 
-                          source={{ uri: img }} 
-                          style={{ width: 300, height: 200, borderRadius: 10, marginRight: 10 }} 
-                          resizeMode="cover" 
-                        />
-                      ))
-                    }
-                  </ScrollView>
+                  <AdminImageGallery images={item.images} />
                 </View>
               )}
               <View style={residentialOwnerStyles.detailSection}>

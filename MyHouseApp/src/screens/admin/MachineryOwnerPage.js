@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
+import AdminImageGallery from "../../shared/components/AdminImageGallery";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AdminPageHeader from "../../shared/components/AdminPageHeader";
 import adminStyles from "../../styles/admin/adminStyles";
@@ -89,18 +90,7 @@ export default function MachineryOwnerPage() {
             {Array.isArray(item.images) && item.images.filter(img => typeof img === 'string' && img.trim() !== '').length > 0 && (
               <View style={residentialOwnerStyles.detailSection}>
                 <Text style={residentialOwnerStyles.sectionTitle}>Images</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {item.images
-                    .filter(img => typeof img === 'string' && img.trim() !== '')
-                    .map((img, idx) => (
-                      <Image 
-                        key={idx} 
-                        source={{ uri: img }} 
-                        style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }} 
-                      />
-                    ))
-                  }
-                </ScrollView>
+                <AdminImageGallery images={item.images} thumbnailWidth={100} thumbnailHeight={100} />
               </View>
             )}
 

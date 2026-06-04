@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, ScrollView, Alert, TouchableOpacity, Image, Modal, Platform, Dimensions, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ImageView from "react-native-image-viewing";
 import Header from '../../../components/Header';
@@ -21,6 +21,20 @@ export default function PropertyDetails({ route }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
   const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+  const screen = Dimensions.get('window');
+
+  const resolveImageUri = (imgRaw) => {
+    if (!imgRaw || typeof imgRaw !== 'string') return null;
+    return imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
+  };
+
+  const galleryImages = useMemo(() => {
+    if (!Array.isArray(property?.images)) return [];
+    return property.images
+      .map(resolveImageUri)
+      .filter(Boolean)
+      .map((uri) => ({ uri }));
+  }, [property?.images, API_HOST]);
 
   useEffect(() => {
     if (propertyId) fetchDetails();
@@ -66,51 +80,38 @@ export default function PropertyDetails({ route }) {
       <Header />
       <TenantPageHeader
         title={property?.propertySpecs?.property_type || 'Business Property'}
-        subtitle={property?.addressDetails?.area || 'Review listing details'}
+        subtitle="Review listing details"
       />
+      <View style={{ flex: 1, paddingHorizontal: 16 }}>
       <ScrollView
         style={propertyDetailsStyles.scrollContainer}
-        contentContainerStyle={[propertyDetailsStyles.scrollContentContainer, { paddingHorizontal: 16 }]}
+        contentContainerStyle={propertyDetailsStyles.scrollContentContainer}
+        nestedScrollEnabled
       >
         
         {/* Images Gallery */}
-        {Array.isArray(property?.images) && property.images.length > 0 && (
+        {galleryImages.length > 0 && (
           <View style={{ marginVertical: 10 }}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {property.images.map((imgRaw, idx) => {
-                if (!imgRaw || typeof imgRaw !== 'string') return null;
-                const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
-                return (
-                  <TouchableOpacity 
-                    key={idx} 
+              {galleryImages.map((img, idx) => (
+                  <TouchableOpacity
+                    key={`${img.uri}-${idx}`}
                     style={{ marginRight: 10 }}
+                    activeOpacity={0.85}
                     onPress={() => {
                       setCurrentImageIndex(idx);
                       setIsImageViewVisible(true);
                     }}
                   >
-                    <View style={{ width: 200, height: 140, backgroundColor: '#eee', borderRadius: 8, overflow: 'hidden' }}>
+                    <View style={{ width: 200, height: 140, backgroundColor: dark ? '#333' : '#eee', borderRadius: 8, overflow: 'hidden' }}>
                       <Text style={{ position: 'absolute', zIndex: 1, backgroundColor: 'rgba(0,0,0,0.4)', color: '#fff', paddingHorizontal: 6, paddingVertical: 2, borderBottomRightRadius: 8 }}>
-                        {idx + 1}/{property.images.length}
+                        {idx + 1}/{galleryImages.length}
                       </Text>
-                      <Image source={{ uri: img }} style={{ width: 200, height: 140 }} />
+                      <Image source={img} style={{ width: 200, height: 140 }} resizeMode="cover" />
                     </View>
                   </TouchableOpacity>
-                );
-              })}
+              ))}
             </ScrollView>
-            
-            <ImageView
-              images={property.images
-                .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
-                .map(imgRaw => ({
-                  uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
-                }))
-              }
-              imageIndex={currentImageIndex}
-              visible={isImageViewVisible}
-              onRequestClose={() => setIsImageViewVisible(false)}
-            />
           </View>
         )}
 
@@ -118,41 +119,12 @@ export default function PropertyDetails({ route }) {
         <View style={tps.section}>
           <Text style={tps.sectionTitle}>Property Overview</Text>
           <View style={tps.firstDetailRow}>
-            <Text style={tps.label}>Location</Text>
-            <Text style={tps.value}>{property?.addressDetails?.area || property?.addressDetails?.city || 'Unknown'}</Text>
-          </View>
-          <View style={tps.detailRow}>
             <Text style={tps.label}>Owner</Text>
             <Text style={tps.value}>{property?.addressDetails?.name_of_person || 'N/A'}</Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Monthly Rent</Text>
             <Text style={tps.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
-          </View>
-        </View>
-
-        {/* Address & Location */}
-        <View style={tps.section}>
-          <Text style={tps.sectionTitle}>📍 Address & Location</Text>
-          <View style={tps.firstDetailRow}>
-            <Text style={tps.label}>Door Number</Text>
-            <Text style={tps.value}>{property?.addressDetails?.door_no || 'N/A'}</Text>
-          </View>
-          <View style={tps.detailRow}>
-            <Text style={tps.label}>Street</Text>
-            <Text style={tps.value}>{property?.addressDetails?.street || 'N/A'}</Text>
-          </View>
-          <View style={tps.detailRow}>
-            <Text style={tps.label}>Area</Text>
-            <Text style={tps.value}>{property?.addressDetails?.area || 'N/A'}</Text>
-          </View>
-          <View style={tps.detailRow}>
-            <Text style={tps.label}>City</Text>
-            <Text style={tps.value}>{property?.addressDetails?.city || 'N/A'}</Text>
-          </View>
-          <View style={tps.detailRow}>
-            <Text style={tps.label}>Pincode</Text>
-            <Text style={tps.value}>{property?.addressDetails?.pincode || 'N/A'}</Text>
           </View>
         </View>
 
@@ -207,6 +179,63 @@ export default function PropertyDetails({ route }) {
         </View>
 
       </ScrollView>
+      </View>
+
+      {galleryImages.length > 0 && Platform.OS === 'web' ? (
+        <Modal
+          visible={isImageViewVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setIsImageViewVisible(false)}
+        >
+          <View style={imageViewerStyles.backdrop}>
+            <TouchableOpacity
+              style={imageViewerStyles.closeBtn}
+              onPress={() => setIsImageViewVisible(false)}
+            >
+              <Text style={imageViewerStyles.closeText}>✕</Text>
+            </TouchableOpacity>
+            {galleryImages.length > 1 && currentImageIndex > 0 && (
+              <TouchableOpacity
+                style={[imageViewerStyles.navBtn, imageViewerStyles.navLeft]}
+                onPress={() => setCurrentImageIndex((i) => Math.max(0, i - 1))}
+              >
+                <Text style={imageViewerStyles.navText}>‹</Text>
+              </TouchableOpacity>
+            )}
+            {galleryImages.length > 1 && currentImageIndex < galleryImages.length - 1 && (
+              <TouchableOpacity
+                style={[imageViewerStyles.navBtn, imageViewerStyles.navRight]}
+                onPress={() => setCurrentImageIndex((i) => Math.min(galleryImages.length - 1, i + 1))}
+              >
+                <Text style={imageViewerStyles.navText}>›</Text>
+              </TouchableOpacity>
+            )}
+            <Image
+              source={galleryImages[Math.min(currentImageIndex, galleryImages.length - 1)]}
+              style={{ width: screen.width, height: screen.height * 0.85 }}
+              resizeMode="contain"
+            />
+            {galleryImages.length > 1 && (
+              <Text style={imageViewerStyles.counter}>
+                {Math.min(currentImageIndex, galleryImages.length - 1) + 1} / {galleryImages.length}
+              </Text>
+            )}
+          </View>
+        </Modal>
+      ) : galleryImages.length > 0 ? (
+        <ImageView
+          images={galleryImages}
+          imageIndex={Math.min(currentImageIndex, galleryImages.length - 1)}
+          visible={isImageViewVisible}
+          onRequestClose={() => setIsImageViewVisible(false)}
+          presentationStyle="overFullScreen"
+          animationType="fade"
+          swipeToCloseEnabled
+          doubleTapToZoomEnabled
+          backgroundColor="#000000"
+        />
+      ) : null}
 
       <View style={[tps.bottomBar, { paddingHorizontal: 16, paddingBottom: 12 }]}>
         <TouchableOpacity style={tps.btnOutline} onPress={() => navigation.goBack()}>
@@ -220,3 +249,43 @@ export default function PropertyDetails({ route }) {
     </View>
   );
 }
+
+const imageViewerStyles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: 48,
+    right: 24,
+    zIndex: 10,
+    padding: 8,
+  },
+  closeText: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '600',
+  },
+  navBtn: {
+    position: 'absolute',
+    top: '50%',
+    zIndex: 10,
+    padding: 16,
+  },
+  navLeft: { left: 8 },
+  navRight: { right: 8 },
+  navText: {
+    color: '#fff',
+    fontSize: 40,
+    fontWeight: '300',
+  },
+  counter: {
+    position: 'absolute',
+    bottom: 32,
+    color: '#fff',
+    fontSize: 14,
+  },
+});
