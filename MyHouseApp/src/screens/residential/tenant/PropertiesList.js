@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import { getAllProperties } from './api';
+import { getAllProperties, getResidentialAreas } from './api';
 import propertyListStyles from './propertyListStyles';
 import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
 import { getOwnerFormThemeColors } from '../../../styles/ownerFormStyles';
@@ -86,13 +86,6 @@ const BEDROOM_FILTER_OPTIONS = [
   { label: "3+ BHK", value: "4" },
 ];
 
-const AREA_FILTER_OPTIONS = [
-  { label: "Any", value: "" },
-  { label: "Area 1", value: "Area 1" },
-  { label: "Area 2", value: "Area 2" },
-  { label: "Area 3", value: "Area 3" },
-];
-
 export default function PropertiesList() {
   const navigation = useNavigation();
   const { dark } = useTheme();
@@ -103,6 +96,7 @@ export default function PropertiesList() {
   const [rentFilter, setRentFilter] = useState('');
   const [bedroomFilter, setBedroomFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
+  const [areaFilterOptions, setAreaFilterOptions] = useState([{ label: "Any", value: "" }]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const normalizePropertiesResponse = (payload) => {
@@ -121,8 +115,42 @@ export default function PropertiesList() {
   };
 
   useEffect(() => {
-    loadProperties();
+    loadAreaOptions();
   }, []);
+
+  const collectUniqueAreas = (...sources) => {
+    const names = new Set();
+    sources.forEach((source) => {
+      if (!Array.isArray(source)) return;
+      source.forEach((item) => {
+        const value = typeof item === 'string' ? item : item?.area;
+        if (value != null && String(value).trim()) {
+          names.add(String(value).trim());
+        }
+      });
+    });
+    return [...names].sort((a, b) => a.localeCompare(b));
+  };
+
+  const loadAreaOptions = async () => {
+    try {
+      const [areasResponse, propertiesResponse] = await Promise.all([
+        getResidentialAreas().catch(() => []),
+        getAllProperties().catch(() => []),
+      ]);
+
+      const uniqueAreas = collectUniqueAreas(
+        areasResponse,
+        normalizePropertiesResponse(propertiesResponse)
+      );
+      setAreaFilterOptions([
+        { label: "Any", value: "" },
+        ...uniqueAreas.map((area) => ({ label: area, value: area })),
+      ]);
+    } catch (error) {
+      console.error('Error loading residential areas:', error);
+    }
+  };
 
   const loadProperties = async (filters = {}) => {
     try {
@@ -239,7 +267,7 @@ export default function PropertiesList() {
               {
                 key: "area",
                 label: "Area",
-                options: AREA_FILTER_OPTIONS,
+                options: areaFilterOptions,
                 value: areaFilter,
                 onSelect: setAreaFilter,
               },

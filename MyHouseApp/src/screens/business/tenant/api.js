@@ -29,4 +29,8 @@ export const getPropertyDetails = async (id) => {
   return handleFetchRequest(`${API_BASE_URL}/business/properties/${id}`, { method: 'GET' });
 };
 
-export default { getAllProperties, getPropertyDetails };
+export const getBusinessAreas = async () => {
+  return handleFetchRequest(`${API_BASE_URL}/business/properties/areas`, { method: 'GET' });
+};
+
+export default { getAllProperties, getPropertyDetails, getBusinessAreas };

@@ -61,6 +61,21 @@ export const getAllProperties = async (filters = {}) => {
   }
 };
 
+// Get distinct residential areas for tenant filter
+export const getResidentialAreas = async () => {
+  try {
+    return await handleFetchRequest(`${API_BASE_URL}/residential/properties/areas`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching residential areas:', error);
+    throw new Error(`Failed to fetch residential areas: ${error.message || 'Network error'}`);
+  }
+};
+
 // Get detailed residential property information
 export const getPropertyDetails = async (id) => {
   try {

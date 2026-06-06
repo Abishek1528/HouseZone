@@ -57,8 +57,8 @@ router.get('/residential/properties', async (req, res) => {
     }
     
     if (area && area !== '') {
-      conditions.push('rd.roArea LIKE ?');
-      params.push(`%${area}%`);
+      conditions.push('rd.roArea = ?');
+      params.push(area);
     }
     
     // Add WHERE clause if there are conditions
@@ -132,6 +132,25 @@ router.post('/residential/tenant-details', async (req, res) => {
   }
 });
 
+
+// GET distinct areas from residential owner listings (for tenant filter)
+router.get('/residential/properties/areas', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      `SELECT DISTINCT rd.roArea as area
+       FROM resowndet rd
+       WHERE rd.roArea IS NOT NULL AND TRIM(rd.roArea) != ''
+       ORDER BY rd.roArea ASC`
+    );
+    const areas = rows
+      .map((row) => (row.area != null ? String(row.area).trim() : ''))
+      .filter(Boolean);
+    res.status(200).json(areas);
+  } catch (error) {
+    console.error('Error fetching residential property areas:', error);
+    res.status(500).json({ message: 'Error fetching residential property areas', error: error.message });
+  }
+});
 
 router.get('/residential/properties/:id', async (req, res) => {
   try {

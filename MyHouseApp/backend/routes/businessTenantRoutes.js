@@ -41,8 +41,8 @@ router.get('/business/properties', async (req, res) => {
     }
 
     if (area && area !== '') {
-      conditions.push(`bd.area LIKE ?`);
-      params.push(`%${area}%`);
+      conditions.push(`bd.area = ?`);
+      params.push(area);
     }
 
     if (propertyType && propertyType !== '') {
@@ -77,6 +77,25 @@ router.get('/business/properties', async (req, res) => {
   } catch (error) {
     console.error('Error fetching business properties:', error);
     res.status(500).json({ message: 'Error fetching business properties', error: error.message });
+  }
+});
+
+// GET distinct areas from business owner listings (for tenant filter)
+router.get('/business/properties/areas', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      `SELECT DISTINCT bd.area
+       FROM businessownerdet bd
+       WHERE bd.area IS NOT NULL AND TRIM(bd.area) != ''
+       ORDER BY bd.area ASC`
+    );
+    const areas = rows
+      .map((row) => (row.area != null ? String(row.area).trim() : ''))
+      .filter(Boolean);
+    res.status(200).json(areas);
+  } catch (error) {
+    console.error('Error fetching business property areas:', error);
+    res.status(500).json({ message: 'Error fetching business property areas', error: error.message });
   }
 });
 
