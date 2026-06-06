@@ -6,7 +6,7 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import categoryContentStyles from '../../../styles/categoryContentStyles';
 import propertyListStyles from '../../residential/tenant/propertyListStyles';
-import { getAllProperties } from './api';
+import { getAllProperties, getBusinessAreas } from './api';
 import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
 import { getOwnerFormThemeColors } from '../../../styles/ownerFormStyles';
 import TenantPageHeader from '../../../shared/components/TenantPageHeader';
@@ -73,13 +73,6 @@ const TYPE_FILTER_OPTIONS = [
   { label: "Showroom", value: "showroom" },
 ];
 
-const AREA_FILTER_OPTIONS = [
-  { label: "Any", value: "" },
-  { label: "Area 1", value: "Area 1" },
-  { label: "Area 2", value: "Area 2" },
-  { label: "Area 3", value: "Area 3" },
-];
-
 export default function PropertiesList() {
   const navigation = useNavigation();
   const { dark } = useTheme();
@@ -89,9 +82,43 @@ export default function PropertiesList() {
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
+  const [areaFilterOptions, setAreaFilterOptions] = useState([{ label: "Any", value: "" }]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-  useEffect(() => { loadProperties(); }, []);
+  useEffect(() => {
+    loadAreaOptions();
+  }, []);
+
+  const collectUniqueAreas = (...sources) => {
+    const names = new Set();
+    sources.forEach((source) => {
+      if (!Array.isArray(source)) return;
+      source.forEach((item) => {
+        const value = typeof item === 'string' ? item : item?.area;
+        if (value != null && String(value).trim()) {
+          names.add(String(value).trim());
+        }
+      });
+    });
+    return [...names].sort((a, b) => a.localeCompare(b));
+  };
+
+  const loadAreaOptions = async () => {
+    try {
+      const [areasResponse, propertiesResponse] = await Promise.all([
+        getBusinessAreas().catch(() => []),
+        getAllProperties().catch(() => []),
+      ]);
+
+      const uniqueAreas = collectUniqueAreas(areasResponse, propertiesResponse);
+      setAreaFilterOptions([
+        { label: "Any", value: "" },
+        ...uniqueAreas.map((area) => ({ label: area, value: area })),
+      ]);
+    } catch (error) {
+      console.error('Error loading business areas:', error);
+    }
+  };
 
   const loadProperties = async (filters = {}) => {
     try {
@@ -141,7 +168,7 @@ export default function PropertiesList() {
             colors={themeColors}
             sections={[
               { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
-              { key: "area", label: "Area", options: AREA_FILTER_OPTIONS, value: areaFilter, onSelect: setAreaFilter },
+              { key: "area", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter },
             ]}
           />
         )}
