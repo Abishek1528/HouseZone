@@ -66,6 +66,16 @@ export default function Home() {
   }, []);
 
   const handleCategoryPress = (category) => {
+    const directRoutes = {
+      JobSeeker: "JobSeeker",
+      JobGiver: "JobGiver",
+    };
+
+    if (directRoutes[category]) {
+      navigation.navigate(directRoutes[category]);
+      return;
+    }
+
     setSelectedCategory(category);
     setModalVisible(true);
   };
@@ -210,6 +220,44 @@ export default function Home() {
                 <MaterialCommunityIcons name="cog" size={42} color="#64748b" />
               </View>
               <Text style={homeContentStyles.btnText}>Machinery</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={homeContentStyles.row}>
+            <TouchableOpacity
+              style={homeContentStyles.button}
+              onPress={() => handleCategoryPress("JobSeeker")}
+            >
+              <View style={{
+                backgroundColor: '#F3E8FF',
+                width: 75,
+                height: 75,
+                borderRadius: 22,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 8,
+              }}>
+                <MaterialCommunityIcons name="account-search" size={42} color="#7c3aed" />
+              </View>
+              <Text style={homeContentStyles.btnText}>Job Seeker</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={homeContentStyles.button}
+              onPress={() => handleCategoryPress("JobGiver")}
+            >
+              <View style={{
+                backgroundColor: '#ECFDF5',
+                width: 75,
+                height: 75,
+                borderRadius: 22,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 8,
+              }}>
+                <MaterialCommunityIcons name="briefcase-plus" size={42} color="#059669" />
+              </View>
+              <Text style={homeContentStyles.btnText}>Job Givers</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
