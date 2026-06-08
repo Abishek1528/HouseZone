@@ -9,6 +9,8 @@ import Residential from '../screens/residential';
 import Business from '../screens/business';
 import Vehicles from '../screens/vehicles';
 import Machinery from '../screens/machinery';
+import JobSeeker from '../screens/jobSeeker';
+import JobGiver from '../screens/jobGiver';
 import AddHouse from '../screens/residential/index';
 import AddBusiness from '../screens/business/index';
 import AddMachinery from '../screens/machinery/index';
@@ -60,6 +62,8 @@ export default function AppNavigator() {
         <Stack.Screen name="AddVehicles" component={AddVehicles} />
         <Stack.Screen name="Machinery" component={Machinery} />
         <Stack.Screen name="AddMachinery" component={AddMachinery} />
+        <Stack.Screen name="JobSeeker" component={JobSeeker} />
+        <Stack.Screen name="JobGiver" component={JobGiver} />
         <Stack.Screen name="BusinessPropertiesList" component={BusinessPropertiesList} />
         <Stack.Screen name="PropertiesList" component={PropertiesList} />
         <Stack.Screen name="PropertyDetails" component={PropertyDetails} />
