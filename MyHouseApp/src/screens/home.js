@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Modal, Animated, Easing, StatusBar } from "react-native";
+import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Modal, Animated, Easing, StatusBar, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import homeContentStyles from '../styles/homeContentStyles';
@@ -144,9 +144,11 @@ export default function Home() {
         </Animated.View>
       </View>
 
-      <View style={homeContentStyles.middle}>
+      <ScrollView style={homeContentStyles.middle} showsVerticalScrollIndicator={false}>
         
-        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
+        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }], paddingBottom: 100 }}>
+          <Text style={homeContentStyles.sectionTitle}>Rental</Text>
+          
           <View style={homeContentStyles.row}>
             <TouchableOpacity 
               style={homeContentStyles.button}
@@ -223,6 +225,8 @@ export default function Home() {
             </TouchableOpacity>
           </View>
 
+          <Text style={homeContentStyles.sectionTitle}>Job</Text>
+
           <View style={homeContentStyles.row}>
             <TouchableOpacity
               style={homeContentStyles.button}
@@ -261,7 +265,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
         </Animated.View>
-      </View>
+      </ScrollView>
 
       <Modal
         animationType="slide"
