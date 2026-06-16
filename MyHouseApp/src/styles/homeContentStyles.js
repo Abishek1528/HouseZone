@@ -37,6 +37,13 @@ const homeContentStyles = StyleSheet.create({
     marginBottom: 22,
     alignItems: 'center',
   },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1e3a5f',
+    marginBottom: 16,
+    marginTop: 8,
+  },
   pageTitle: {
     fontSize: 26,
     fontWeight: '800',
