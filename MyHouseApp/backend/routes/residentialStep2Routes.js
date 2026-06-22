@@ -31,7 +31,7 @@ router.post('/residential/step2', async (req, res) => {
       bedrooms
     } = req.body;
 
-    // Insert residential step 2 details into existing resownho table
+    // Helper functions for safe parsing
     const safeParseFloat = (val) => {
       const parsed = parseFloat(val);
       return isNaN(parsed) ? 0 : parsed;
@@ -42,10 +42,29 @@ router.post('/residential/step2', async (req, res) => {
       return isNaN(parsed) ? 0 : parsed;
     };
 
+    // Convert floorNo to integer (extract number from string like "Ground" -> 0, "1st" ->1)
+    let floorNumber = 0;
+    if (floorNo) {
+      if (typeof floorNo === 'string') {
+        if (floorNo.toLowerCase().includes('ground')) {
+          floorNumber = 0;
+        } else {
+          const match = floorNo.match(/\d+/);
+          floorNumber = match ? parseInt(match[0]) : 0;
+        }
+      } else {
+        floorNumber = safeParseInt(floorNo);
+      }
+    }
+
+    // Convert parking strings to booleans
+    const parking2WheelerBool = parking2Wheeler === 'Yes' ? true : false;
+    const parking4WheelerBool = parking4Wheeler === 'Yes' ? true : false;
+
     console.log('Inserting into resownho with values:', {
       roNo, facingDirection, hallLength, hallBreadth, noOfBedrooms, kitchenLength, kitchenBreadth, 
       noOfBathrooms, bathroom1Type, bathroom2Type, bathroom3Type, bathroom1Access, 
-      bathroom2Access, bathroom3Access, floorNo, parking2Wheeler, parking4Wheeler
+      bathroom2Access, bathroom3Access, floorNumber, parking2WheelerBool, parking4WheelerBool
     });
 
     // Use INSERT ... ON DUPLICATE KEY UPDATE for resownho
@@ -88,9 +107,9 @@ router.post('/residential/step2', async (req, res) => {
         bathroom1Access || null,
         bathroom2Access || null,
         bathroom3Access || null,
-        floorNo || 'Ground',
-        parking2Wheeler || 'No',
-        parking4Wheeler || 'No'
+        floorNumber,
+        parking2WheelerBool,
+        parking4WheelerBool
       ]
     );
 

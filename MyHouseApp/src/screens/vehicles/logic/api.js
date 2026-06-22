@@ -49,8 +49,7 @@ export const uploadVehiclesImages = async (voNo, imageUris = []) => {
     const response = await fetch(`${API_BASE_URL}/vehicles/images`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data'
+        'Accept': 'application/json'
       },
       body: form
     });

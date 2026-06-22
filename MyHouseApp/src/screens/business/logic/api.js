@@ -55,8 +55,7 @@ export const uploadBusinessImages = async (boNo, imageUris = []) => {
     const response = await fetch(`${API_BASE_URL}/business/images`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data'
+        'Accept': 'application/json'
       },
       body: form
     });
