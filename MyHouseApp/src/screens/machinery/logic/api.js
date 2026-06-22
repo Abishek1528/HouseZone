@@ -54,8 +54,7 @@ export const uploadMachineryImages = async (moNo, imageUris) => {
 
   return handleFetchRequest(`${API_BASE_URL}/machinery/images`, {
     method: 'POST',
-    body: formData,
-    headers: { 'Content-Type': 'multipart/form-data' },
+    body: formData
   });
 };
 

@@ -115,8 +115,7 @@ export const uploadResidentialImages = async (roNo, imageUris = []) => {
     const response = await fetch(`${API_BASE_URL}/residential/images`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data'
+        'Accept': 'application/json'
       },
       body: form
     });

@@ -39,7 +39,7 @@ router.get('/residential/owners', async (req, res) => {
         rh.bathroom3_access as bathroom3Access,
         rh.floor_number as floorNumber,
         rh.parking_2wheeler as parking2Wheeler,
-        rh.parking_4Wheeler as parking4Wheeler,
+        rh.parking_4wheeler as parking4Wheeler,
         rp.advance_amount as advanceAmount,
         rp.monthly_rent as monthlyRent,
         rp.lease_amount as leaseAmount,
