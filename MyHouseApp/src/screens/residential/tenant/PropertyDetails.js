@@ -166,6 +166,9 @@ export default function PropertyDetails() {
   };
 
   const propertyImages = getPropertyImages();
+  const finalImages = propertyImages.length > 0 
+    ? propertyImages 
+    : ['https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=residential%20house%20or%20apartment%20property%20listing%20placeholder%20image&image_size=square'];
 
   return (
     <View style={tps.screen}>
@@ -181,10 +184,10 @@ export default function PropertyDetails() {
           nestedScrollEnabled={true}
         >
           
-          {propertyImages.length > 0 && (
+          {finalImages.length > 0 && (
             <View style={{ marginVertical: 10 }}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {propertyImages.map((imgRaw, idx) => {
+                {finalImages.map((imgRaw, idx) => {
                   const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
                   return (
                   <TouchableOpacity 
@@ -197,7 +200,7 @@ export default function PropertyDetails() {
                   >
                     <View style={{ width: 200, height: 140, backgroundColor: dark ? '#333' : '#eee', borderRadius: 8, overflow: 'hidden' }}>
                       <Text style={{ position: 'absolute', zIndex: 1, backgroundColor: 'rgba(0,0,0,0.4)', color: '#fff', paddingHorizontal: 6, paddingVertical: 2, borderBottomRightRadius: 8 }}>
-                        {idx + 1}/{propertyImages.length}
+                        {idx + 1}/{finalImages.length}
                       </Text>
                       <Image source={{ uri: img }} style={{ width: 200, height: 140 }} />
                     </View>
@@ -207,11 +210,11 @@ export default function PropertyDetails() {
               </ScrollView>
               
               <ImageView
-                images={propertyImages.map(imgRaw => ({
+                images={finalImages.map(imgRaw => ({
                     uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
                   }))
                 }
-                imageIndex={Math.min(currentImageIndex, Math.max(propertyImages.length - 1, 0))}
+                imageIndex={Math.min(currentImageIndex, Math.max(finalImages.length - 1, 0))}
                 visible={isImageViewVisible}
                 onRequestClose={() => setIsImageViewVisible(false)}
               />

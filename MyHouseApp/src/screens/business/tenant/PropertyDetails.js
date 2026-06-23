@@ -29,11 +29,19 @@ export default function PropertyDetails({ route }) {
   };
 
   const galleryImages = useMemo(() => {
-    if (!Array.isArray(property?.images)) return [];
-    return property.images
+    const images = property?.images ?? [];
+    const resolvedImages = (Array.isArray(images) ? images : [])
       .map(resolveImageUri)
       .filter(Boolean)
       .map((uri) => ({ uri }));
+    
+    if (resolvedImages.length === 0) {
+      return [{ 
+        uri: 'https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=commercial%20real%20estate%20property%20listing%20placeholder%20image&image_size=square' 
+      }];
+    }
+    
+    return resolvedImages;
   }, [property?.images, API_HOST]);
 
   useEffect(() => {
@@ -120,11 +128,23 @@ export default function PropertyDetails({ route }) {
           <Text style={tps.sectionTitle}>Property Overview</Text>
           <View style={tps.firstDetailRow}>
             <Text style={tps.label}>Owner</Text>
-            <Text style={tps.value}>{property?.addressDetails?.name_of_person || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.addressDetails?.name_of_person ||
+               property?.addressDetails?.nameOfPerson ||
+               property?.name_of_person ||
+               property?.nameOfPerson ||
+               'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Monthly Rent</Text>
-            <Text style={tps.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
+            <Text style={tps.value}>
+              ₹{property?.paymentInfo?.monthly_rent ||
+                property?.paymentInfo?.monthlyRent ||
+                property?.monthly_rent ||
+                property?.monthlyRent ||
+                'N/A'}
+            </Text>
           </View>
         </View>
 
@@ -133,31 +153,68 @@ export default function PropertyDetails({ route }) {
           <Text style={tps.sectionTitle}>🏢 Property Specifications</Text>
           <View style={tps.firstDetailRow}>
             <Text style={tps.label}>Door Facing</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.door_facing || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.door_facing ||
+               property?.propertySpecs?.doorFacing ||
+               property?.door_facing ||
+               property?.doorFacing ||
+               'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Property Type</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.property_type || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.property_type ||
+               property?.propertySpecs?.propertyType ||
+               property?.property_type ||
+               property?.propertyType ||
+               'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Total Area (sq ft)</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.totalArea || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.totalArea || property?.totalArea || 'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Length (ft)</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.length_feet || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.length_feet ||
+               property?.propertySpecs?.lengthFeet ||
+               property?.length_feet ||
+               property?.lengthFeet ||
+               'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Breadth (ft)</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.breadth_feet || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.breadth_feet ||
+               property?.propertySpecs?.breadthFeet ||
+               property?.breadth_feet ||
+               property?.breadthFeet ||
+               'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Restroom Available</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.restroom_available ? 'Yes' : 'No'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.restroom_available ||
+               property?.propertySpecs?.restroomAvailable ||
+               property?.restroom_available ||
+               property?.restroomAvailable ? 'Yes' : 'No'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Floor Number</Text>
-            <Text style={tps.value}>{property?.propertySpecs?.floor_number || 'N/A'}</Text>
+            <Text style={tps.value}>
+              {property?.propertySpecs?.floor_number ||
+               property?.propertySpecs?.floorNumber ||
+               property?.floor_number ||
+               property?.floorNumber ||
+               'N/A'}
+            </Text>
           </View>
         </View>
 
@@ -166,15 +223,33 @@ export default function PropertyDetails({ route }) {
           <Text style={tps.sectionTitle}>💰 Payment Information</Text>
           <View style={tps.firstDetailRow}>
             <Text style={tps.label}>Advance Amount</Text>
-            <Text style={tps.value}>₹{property?.paymentInfo?.advance_amount || 'N/A'}</Text>
+            <Text style={tps.value}>
+              ₹{property?.paymentInfo?.advance_amount ||
+                property?.paymentInfo?.advanceAmount ||
+                property?.advance_amount ||
+                property?.advanceAmount ||
+                'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Monthly Rent</Text>
-            <Text style={tps.value}>₹{property?.paymentInfo?.monthly_rent || 'N/A'}</Text>
+            <Text style={tps.value}>
+              ₹{property?.paymentInfo?.monthly_rent ||
+                property?.paymentInfo?.monthlyRent ||
+                property?.monthly_rent ||
+                property?.monthlyRent ||
+                'N/A'}
+            </Text>
           </View>
           <View style={tps.detailRow}>
             <Text style={tps.label}>Lease Amount</Text>
-            <Text style={tps.value}>₹{property?.paymentInfo?.lease_amount || 'N/A'}</Text>
+            <Text style={tps.value}>
+              ₹{property?.paymentInfo?.lease_amount ||
+                property?.paymentInfo?.leaseAmount ||
+                property?.lease_amount ||
+                property?.leaseAmount ||
+                'N/A'}
+            </Text>
           </View>
         </View>
 

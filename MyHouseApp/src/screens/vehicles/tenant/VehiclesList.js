@@ -139,23 +139,14 @@ const VehiclesList = () => {
         const firstImageRaw = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null;
         const firstImage = (typeof firstImageRaw === 'string' && firstImageRaw) 
             ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`) 
-            : null;
+            : 'https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=car%20or%20vehicle%20rental%20property%20listing%20placeholder%20image&image_size=square';
         return (
             <View style={tps.card}>
-                {firstImage ? (
-                    <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
-                ) : (
-                    <View style={propertyListStyles.imagePlaceholder}>
-                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                            <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#2563eb' }}>
-                                {item.type ? item.type.toUpperCase() : 'VEHICLE'}
-                            </Text>
-                            <Text style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
-                                {item.model || 'Model N/A'}
-                            </Text>
-                        </View>
-                    </View>
-                )}
+                <Image 
+                    source={{ uri: firstImage }} 
+                    style={propertyListStyles.imagePlaceholder} 
+                    resizeMode="cover"
+                />
 
                 <View style={propertyListStyles.detailsContainer}>
                     <Text style={propertyListStyles.location}>{item.area || item.city || 'Unknown'}</Text>

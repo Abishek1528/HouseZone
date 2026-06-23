@@ -64,6 +64,8 @@ export default function MachineryListPage() {
   const [typeFilter, setTypeFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const baseHost = API_BASE_URL.replace(/\/api$/, '');
 
   // Helper to normalize image URLs
   const normalizeImageUrl = (url) => {
@@ -71,9 +73,6 @@ export default function MachineryListPage() {
     if (url.startsWith('http')) return url;
     
     // If it's just a filename, prepend the base upload URL
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-    const baseHost = API_BASE_URL.replace(/\/api$/, '');
-    
     // Handle potential non-string values safely
     const filename = String(url).split('/').pop();
     return `${baseHost}/uploads/machinery/${filename}`;
@@ -125,7 +124,9 @@ export default function MachineryListPage() {
   };
 
   const renderProperty = ({ item }) => {
-    const firstImage = item.images && item.images.length > 0 ? normalizeImageUrl(item.images[0]) : null;
+    const firstImage = (item.images && item.images.length > 0) 
+      ? normalizeImageUrl(item.images[0]) 
+      : 'https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=construction%20machinery%20rental%20property%20listing%20placeholder%20image&image_size=square';
 
     return (
       <View style={[machineryListStyles.card, tps.card]}>
@@ -134,13 +135,7 @@ export default function MachineryListPage() {
           style={machineryListStyles.imageContainer}
           onPress={() => handleViewDetails(item.id)}
         >
-          {firstImage ? (
-            <Image source={{ uri: firstImage }} style={machineryListStyles.propertyImage} />
-          ) : (
-            <View style={machineryListStyles.imagePlaceholder}>
-              <Text style={machineryListStyles.imageText}>No Image</Text>
-            </View>
-          )}
+          <Image source={{ uri: firstImage }} style={machineryListStyles.propertyImage} />
         </TouchableOpacity>
 
         {/* Right Side - Details Container */}

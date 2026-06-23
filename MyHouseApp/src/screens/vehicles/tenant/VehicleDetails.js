@@ -29,6 +29,8 @@ const VehicleDetails = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { id } = route.params;
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const API_HOST = API_BASE_URL.replace(/\/api$/, '');
 
     useEffect(() => {
         fetchDetails();
@@ -69,46 +71,40 @@ const VehicleDetails = () => {
             <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.detailsContainer}>
                     {/* Images Gallery */}
-                    {Array.isArray(vehicle?.vehicle_images) && vehicle.vehicle_images.length > 0 && (
-                        <View>
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
-                                {vehicle.vehicle_images.map((imgRaw, idx) => {
-                                    if (!imgRaw || typeof imgRaw !== 'string') return null;
-                                    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-                                    const API_HOST = API_BASE_URL.replace(/\/api$/, '');
+                    <View>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
+                            {((Array.isArray(vehicle?.vehicle_images) && vehicle.vehicle_images.length > 0) ? vehicle.vehicle_images : ['https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=car%20or%20vehicle%20rental%20property%20listing%20placeholder%20image&image_size=square']).map((imgRaw, idx) => {
+                                const img = (typeof imgRaw === 'string' && imgRaw)
+                                    ? (imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`)
+                                    : 'https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=car%20or%20vehicle%20rental%20property%20listing%20placeholder%20image&image_size=square';
+                                return (
+                                    <TouchableOpacity 
+                                        key={idx} 
+                                        style={{ marginRight: 10 }}
+                                        onPress={() => {
+                                            setCurrentImageIndex(idx);
+                                            setIsImageViewVisible(true);
+                                        }}
+                                    >
+                                        <Image source={{ uri: img }} style={{ width: 220, height: 140, borderRadius: 8 }} />
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </ScrollView>
+                        
+                        <ImageView
+                            images={((Array.isArray(vehicle?.vehicle_images) && vehicle.vehicle_images.length > 0) ? vehicle.vehicle_images : ['https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=car%20or%20vehicle%20rental%20property%20listing%20placeholder%20image&image_size=square'])
+                                .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
+                                .map(imgRaw => {
                                     const img = imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`;
-                                    return (
-                                        <TouchableOpacity 
-                                            key={idx} 
-                                            style={{ marginRight: 10 }}
-                                            onPress={() => {
-                                                setCurrentImageIndex(idx);
-                                                setIsImageViewVisible(true);
-                                            }}
-                                        >
-                                            <Image source={{ uri: img }} style={{ width: 220, height: 140, borderRadius: 8 }} />
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </ScrollView>
-                            
-                            <ImageView
-                                images={vehicle.vehicle_images
-                                    .filter(imgRaw => typeof imgRaw === 'string' && imgRaw)
-                                    .map(imgRaw => {
-                                        const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-                                        const API_HOST = API_BASE_URL.replace(/\/api$/, '');
-                                        return {
-                                            uri: imgRaw.startsWith('http') ? imgRaw : `${API_HOST}${imgRaw}`
-                                        };
-                                    })
-                                }
-                                imageIndex={currentImageIndex}
-                                visible={isImageViewVisible}
-                                onRequestClose={() => setIsImageViewVisible(false)}
-                            />
-                        </View>
-                    )}
+                                    return { uri: img };
+                                })
+                            }
+                            imageIndex={currentImageIndex}
+                            visible={isImageViewVisible}
+                            onRequestClose={() => setIsImageViewVisible(false)}
+                        />
+                    </View>
                     {/* Vehicle Name and Location */}
                     <Text style={styles.vehicleName}>{vehicle?.vehicle_name || 'Vehicle'} {vehicle?.vehicle_model || ''}</Text>
                     <Text style={styles.location}>{vehicle?.area || 'N/A'}, {vehicle?.city || 'N/A'}</Text>
