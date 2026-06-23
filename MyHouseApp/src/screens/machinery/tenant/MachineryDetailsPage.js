@@ -22,14 +22,14 @@ export default function MachineryDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [isImageViewVisible, setIsImageViewVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const baseHost = API_BASE_URL.replace(/\/api$/, '');
 
   const normalizeImageUrl = (url) => {
     if (!url) return null;
     if (typeof url !== 'string') return null;
     if (url.startsWith('http')) return url;
 
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
-    const baseHost = API_BASE_URL.replace('/api', '');
     return `${baseHost}/uploads/machinery/${url.split('/').pop()}`;
   };
 
@@ -82,38 +82,38 @@ export default function MachineryDetailsPage() {
         subtitle="Review specifications and pricing"
       />
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {Array.isArray(details?.images) && details.images.length > 0 && (
-          <View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
-              {details.images.map((uri, index) => {
-                if (!uri || typeof uri !== 'string') return null;
-                const normalizedUri = normalizeImageUrl(uri);
-                if (!normalizedUri) return null;
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      setCurrentImageIndex(index);
-                      setIsImageViewVisible(true);
-                    }}
-                  >
-                    <Image source={{ uri: normalizedUri }} style={styles.image} />
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+        <View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollView}>
+            {((Array.isArray(details?.images) && details.images.length > 0) ? details.images : ['https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=construction%20machinery%20rental%20property%20listing%20placeholder%20image&image_size=square']).map((uri, index) => {
+              const normalizedUri = uri.startsWith('http') ? uri : normalizeImageUrl(uri);
+              if (!normalizedUri) return null;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    setCurrentImageIndex(index);
+                    setIsImageViewVisible(true);
+                  }}
+                >
+                  <Image source={{ uri: normalizedUri }} style={styles.image} />
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
 
-            <ImageView
-              images={details.images
-                .filter(uri => typeof uri === 'string' && uri)
-                .map(uri => ({ uri: normalizeImageUrl(uri) }))
-              }
-              imageIndex={currentImageIndex}
-              visible={isImageViewVisible}
-              onRequestClose={() => setIsImageViewVisible(false)}
-            />
-          </View>
-        )}
+          <ImageView
+            images={((Array.isArray(details?.images) && details.images.length > 0) ? details.images : ['https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=construction%20machinery%20rental%20property%20listing%20placeholder%20image&image_size=square'])
+              .filter(uri => typeof uri === 'string' && uri)
+              .map(uri => {
+                const normalizedUri = uri.startsWith('http') ? uri : normalizeImageUrl(uri);
+                return { uri: normalizedUri };
+              })
+            }
+            imageIndex={currentImageIndex}
+            visible={isImageViewVisible}
+            onRequestClose={() => setIsImageViewVisible(false)}
+          />
+        </View>
 
         <View style={tps.section}>
           <Text style={tps.sectionTitle}>Location</Text>

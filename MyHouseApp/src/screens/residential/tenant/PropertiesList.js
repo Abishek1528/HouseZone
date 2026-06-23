@@ -21,17 +21,15 @@ const PropertyCard = ({ property, onViewDetails, tps, dark }) => {
   const firstImageRaw = Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : null;
   const firstImage = (typeof firstImageRaw === 'string' && firstImageRaw)
     ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`)
-    : null;
+    : 'https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=residential%20house%20or%20apartment%20property%20listing%20placeholder%20image&image_size=square';
   
   return (
     <View style={tps.card}>
-      {firstImage ? (
-        <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
-      ) : (
-        <View style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0' }]}>
-          <Text style={[propertyListStyles.imageText, { color: colors.subText }]}>Property Image</Text>
-        </View>
-      )}
+      <Image 
+        source={{ uri: firstImage }} 
+        style={propertyListStyles.imagePlaceholder} 
+        resizeMode="cover"
+      />
       
       {/* Right side - Property details */}
       <View style={propertyListStyles.detailsContainer}>

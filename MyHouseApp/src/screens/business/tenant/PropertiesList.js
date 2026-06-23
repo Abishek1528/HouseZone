@@ -21,20 +21,25 @@ const PropertyCard = ({ property, onViewDetails, tps, dark }) => {
   const firstImageRaw = Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : null;
   const firstImage = (typeof firstImageRaw === 'string' && firstImageRaw)
     ? (firstImageRaw.startsWith('http') ? firstImageRaw : `${API_HOST}${firstImageRaw}`)
-    : null;
+    : 'https://coresg-normal.trae.ai/api/ide/v1/text-to-image?prompt=commercial%20real%20estate%20office%20space%20placeholder%20image&image_size=square';
+  
+  const displayPropertyType = property.propertyType || property.property_type || 'N/A';
+  const displayRent = property.leaseAmount || property.lease_amount || property.monthlyRent || property.monthly_rent || 'N/A';
+  const rentLabel = (property.leaseAmount || property.lease_amount) ? '' : '/month';
+  
   return (
     <View style={tps.card}>
-      {firstImage ? (
-        <Image source={{ uri: firstImage }} style={propertyListStyles.imagePlaceholder} />
-      ) : (
-        <View style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0' }]}>
-          <Text style={[propertyListStyles.imageText, { color: colors.subText }]}>Image</Text>
-        </View>
-      )}
+      <Image 
+        source={{ uri: firstImage }} 
+        style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0' }]} 
+        resizeMode="cover"
+      />
       <View style={propertyListStyles.detailsContainer}>
         <View style={tps.propertyInfo}>
-          <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>{property?.property_type || 'N/A'}</Text>
-          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>₹{property?.lease_amount ? property.lease_amount : (property?.monthly_rent || 'N/A')}{property?.lease_amount ? '' : '/month'}</Text>
+          <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>{displayPropertyType}</Text>
+          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
+            ₹{displayRent}{rentLabel}
+          </Text>
         </View>
         <TouchableOpacity
           style={[propertyListStyles.viewMoreButton, { borderTopColor: colors.border }]}

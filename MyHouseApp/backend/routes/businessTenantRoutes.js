@@ -19,8 +19,11 @@ router.get('/business/properties', async (req, res) => {
     let query = `SELECT
       bd.id,
       bd.area,
+      bp.property_type as propertyType,
       bp.property_type,
+      br.monthly_rent as monthlyRent,
       br.monthly_rent,
+      br.lease_amount as leaseAmount,
       br.lease_amount
     FROM businessownerdet bd
     LEFT JOIN businessownerpro bp ON bd.id = bp.businessownerdet_id
