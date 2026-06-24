@@ -1,22 +1,23 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 const footerStyles = StyleSheet.create({
   footer: {
-    height: 70,
+    height: 60,
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
     borderTopWidth: 1,
     borderColor: "#ddd",
     backgroundColor: "#f4f4f4",
+    paddingBottom: Platform.OS === 'ios' ? 10 : 0,
   },
   footerItem: {
     alignItems: "center",
   },
   footerLabel: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#000",
-    marginBottom: 10,
+    marginTop: 2,
   },
 });
 

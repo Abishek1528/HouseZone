@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import footerStyles from './styles/footerStyles';
@@ -19,38 +19,40 @@ export default function Footer() {
   };
 
   return (
-    <View style={[footerStyles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
-      <TouchableOpacity 
-        style={footerStyles.footerItem}
-        onPress={() => handleNavigation("Home")}
-      >
-        <Ionicons name="home-outline" size={24} color={colors.text} />
-        <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Home</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={{ backgroundColor: colors.card }}>
+      <View style={[footerStyles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+        <TouchableOpacity 
+          style={footerStyles.footerItem}
+          onPress={() => handleNavigation("Home")}
+        >
+          <Ionicons name="home-outline" size={22} color={colors.text} />
+          <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Home</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={footerStyles.footerItem}
-        onPress={() => handleNavigation("MyHistory")}
-      >
-        <Ionicons name="time-outline" size={24} color={colors.text} />
-        <Text style={[footerStyles.footerLabel, { color: colors.text }]}>My History</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={footerStyles.footerItem}
+          onPress={() => handleNavigation("MyHistory")}
+        >
+          <Ionicons name="time-outline" size={22} color={colors.text} />
+          <Text style={[footerStyles.footerLabel, { color: colors.text }]}>My History</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={footerStyles.footerItem}
-        onPress={() => handleNavigation("Settings")}
-      >
-        <Ionicons name="settings-outline" size={24} color={colors.text} />
-        <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Settings</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={footerStyles.footerItem}
+          onPress={() => handleNavigation("Settings")}
+        >
+          <Ionicons name="settings-outline" size={22} color={colors.text} />
+          <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Settings</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={footerStyles.footerItem}
-        onPress={() => handleNavigation("Profile")}
-      >
-        <Ionicons name="person-outline" size={24} color={colors.text} />
-        <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Profile</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity 
+          style={footerStyles.footerItem}
+          onPress={() => handleNavigation("Profile")}
+        >
+          <Ionicons name="person-outline" size={22} color={colors.text} />
+          <Text style={[footerStyles.footerLabel, { color: colors.text }]}>Profile</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
