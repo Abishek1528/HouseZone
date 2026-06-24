@@ -144,9 +144,9 @@ export default function Home() {
         </Animated.View>
       </View>
 
-      <ScrollView style={homeContentStyles.middle} showsVerticalScrollIndicator={false}>
+      <View style={homeContentStyles.middle}>
         
-        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }], paddingBottom: 100 }}>
+        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }], paddingBottom: 10 }}>
           <Text style={homeContentStyles.sectionTitle}>Rental</Text>
           
           <View style={homeContentStyles.row}>
@@ -156,14 +156,14 @@ export default function Home() {
             >
               <View style={{ 
                 backgroundColor: '#E8F0FE', 
-                width: 75, 
-                height: 75, 
-                borderRadius: 22, 
+                width: 55, 
+                height: 55, 
+                borderRadius: 16, 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="home-city" size={42} color="#1e3a5f" />
+                <MaterialCommunityIcons name="home-city" size={32} color="#1e3a5f" />
               </View>
               <Text style={homeContentStyles.btnText}>Residential</Text>
             </TouchableOpacity>
@@ -174,14 +174,14 @@ export default function Home() {
             >
               <View style={{ 
                 backgroundColor: '#E3F2FD', 
-                width: 75, 
-                height: 75, 
-                borderRadius: 22, 
+                width: 55, 
+                height: 55, 
+                borderRadius: 16, 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="office-building" size={42} color="#4A90E2" />
+                <MaterialCommunityIcons name="office-building" size={32} color="#4A90E2" />
               </View>
               <Text style={homeContentStyles.btnText}>Business</Text>
             </TouchableOpacity>
@@ -194,14 +194,14 @@ export default function Home() {
             >
               <View style={{ 
                 backgroundColor: '#E6F0F8', 
-                width: 75, 
-                height: 75, 
-                borderRadius: 22, 
+                width: 55, 
+                height: 55, 
+                borderRadius: 16, 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="car" size={42} color="#2563eb" />
+                <MaterialCommunityIcons name="car" size={32} color="#2563eb" />
               </View>
               <Text style={homeContentStyles.btnText}>Vehicles</Text>
             </TouchableOpacity>
@@ -212,14 +212,14 @@ export default function Home() {
             >
               <View style={{ 
                 backgroundColor: '#EEF2F8', 
-                width: 75, 
-                height: 75, 
-                borderRadius: 22, 
+                width: 55, 
+                height: 55, 
+                borderRadius: 16, 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="cog" size={42} color="#64748b" />
+                <MaterialCommunityIcons name="cog" size={32} color="#64748b" />
               </View>
               <Text style={homeContentStyles.btnText}>Machinery</Text>
             </TouchableOpacity>
@@ -234,14 +234,14 @@ export default function Home() {
             >
               <View style={{
                 backgroundColor: '#F3E8FF',
-                width: 75,
-                height: 75,
-                borderRadius: 22,
+                width: 55,
+                height: 55,
+                borderRadius: 16,
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="account-search" size={42} color="#7c3aed" />
+                <MaterialCommunityIcons name="account-search" size={32} color="#7c3aed" />
               </View>
               <Text style={homeContentStyles.btnText}>Job Seeker</Text>
             </TouchableOpacity>
@@ -252,20 +252,20 @@ export default function Home() {
             >
               <View style={{
                 backgroundColor: '#ECFDF5',
-                width: 75,
-                height: 75,
-                borderRadius: 22,
+                width: 55,
+                height: 55,
+                borderRadius: 16,
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="briefcase-plus" size={42} color="#059669" />
+                <MaterialCommunityIcons name="briefcase-plus" size={32} color="#059669" />
               </View>
               <Text style={homeContentStyles.btnText}>Job Givers</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
-      </ScrollView>
+      </View>
 
       <Modal
         animationType="slide"
