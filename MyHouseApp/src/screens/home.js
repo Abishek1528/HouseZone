@@ -139,8 +139,8 @@ export default function Home() {
           <Text style={homeContentStyles.headerTitle}>HouseZone</Text>
           <Text style={homeContentStyles.headerSubtitle}>Choose a category to get started</Text>
         </Animated.View>
-        <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }], marginTop: 20 }}>
-          <Text style={{ fontSize: 26, fontWeight: '800', color: '#fff' }}>Explore Categories</Text>
+        <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }], marginTop: 10 }}>
+          <Text style={{ fontSize: 20, fontWeight: '800', color: '#fff' }}>Explore Categories</Text>
         </Animated.View>
       </View>
 
@@ -151,11 +151,15 @@ export default function Home() {
           
           <View style={homeContentStyles.row}>
             <TouchableOpacity 
-              style={homeContentStyles.button}
+              style={[homeContentStyles.button, { 
+                backgroundColor: '#FFF5F5', 
+                borderColor: '#FCA5A5', 
+                borderWidth: 2 
+              }]}
               onPress={() => handleCategoryPress("Residential")}
             >
               <View style={{ 
-                backgroundColor: '#E8F0FE', 
+                backgroundColor: '#FCA5A5', 
                 width: 55, 
                 height: 55, 
                 borderRadius: 16, 
@@ -163,17 +167,21 @@ export default function Home() {
                 alignItems: 'center',
                 marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="home-city" size={32} color="#1e3a5f" />
+                <MaterialCommunityIcons name="home-city" size={32} color="#7F1D1D" />
               </View>
-              <Text style={homeContentStyles.btnText}>Residential</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#7F1D1D', fontWeight: '800' }]}>Residential</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={homeContentStyles.button}
+              style={[homeContentStyles.button, { 
+                backgroundColor: '#EFF6FF', 
+                borderColor: '#93C5FD', 
+                borderWidth: 2 
+              }]}
               onPress={() => handleCategoryPress("Business")}
             >
               <View style={{ 
-                backgroundColor: '#E3F2FD', 
+                backgroundColor: '#93C5FD', 
                 width: 55, 
                 height: 55, 
                 borderRadius: 16, 
@@ -181,19 +189,23 @@ export default function Home() {
                 alignItems: 'center',
                 marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="office-building" size={32} color="#4A90E2" />
+                <MaterialCommunityIcons name="office-building" size={32} color="#1E40AF" />
               </View>
-              <Text style={homeContentStyles.btnText}>Business</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#1E40AF', fontWeight: '800' }]}>Business</Text>
             </TouchableOpacity>
           </View>
 
           <View style={homeContentStyles.row}>
             <TouchableOpacity 
-              style={homeContentStyles.button}
+              style={[homeContentStyles.button, { 
+                backgroundColor: '#F0FDF4', 
+                borderColor: '#86EFAC', 
+                borderWidth: 2 
+              }]}
               onPress={() => handleCategoryPress("Vehicles")}
             >
               <View style={{ 
-                backgroundColor: '#E6F0F8', 
+                backgroundColor: '#86EFAC', 
                 width: 55, 
                 height: 55, 
                 borderRadius: 16, 
@@ -201,17 +213,21 @@ export default function Home() {
                 alignItems: 'center',
                 marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="car" size={32} color="#2563eb" />
+                <MaterialCommunityIcons name="car" size={32} color="#166534" />
               </View>
-              <Text style={homeContentStyles.btnText}>Vehicles</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#166534', fontWeight: '800' }]}>Vehicles</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={homeContentStyles.button}
+              style={[homeContentStyles.button, { 
+                backgroundColor: '#FFF7ED', 
+                borderColor: '#FDBA74', 
+                borderWidth: 2 
+              }]}
               onPress={() => handleCategoryPress("Machinery")}
             >
               <View style={{ 
-                backgroundColor: '#EEF2F8', 
+                backgroundColor: '#FDBA74', 
                 width: 55, 
                 height: 55, 
                 borderRadius: 16, 
@@ -219,9 +235,9 @@ export default function Home() {
                 alignItems: 'center',
                 marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="cog" size={32} color="#64748b" />
+                <MaterialCommunityIcons name="cog" size={32} color="#92400E" />
               </View>
-              <Text style={homeContentStyles.btnText}>Machinery</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#92400E', fontWeight: '800' }]}>Machinery</Text>
             </TouchableOpacity>
           </View>
 
@@ -229,11 +245,15 @@ export default function Home() {
 
           <View style={homeContentStyles.row}>
             <TouchableOpacity
-              style={homeContentStyles.button}
+              style={[homeContentStyles.button, { 
+                backgroundColor: '#FAF5FF', 
+                borderColor: '#D8B4FE', 
+                borderWidth: 2 
+              }]}
               onPress={() => handleCategoryPress("JobSeeker")}
             >
               <View style={{
-                backgroundColor: '#F3E8FF',
+                backgroundColor: '#D8B4FE',
                 width: 55,
                 height: 55,
                 borderRadius: 16,
@@ -241,17 +261,21 @@ export default function Home() {
                 alignItems: 'center',
                 marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="account-search" size={32} color="#7c3aed" />
+                <MaterialCommunityIcons name="account-search" size={32} color="#6B21A8" />
               </View>
-              <Text style={homeContentStyles.btnText}>Job Seeker</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#6B21A8', fontWeight: '800' }]}>Job Seeker</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={homeContentStyles.button}
+              style={[homeContentStyles.button, { 
+                backgroundColor: '#ECFEFF', 
+                borderColor: '#99F6E4', 
+                borderWidth: 2 
+              }]}
               onPress={() => handleCategoryPress("JobGiver")}
             >
               <View style={{
-                backgroundColor: '#ECFDF5',
+                backgroundColor: '#99F6E4',
                 width: 55,
                 height: 55,
                 borderRadius: 16,
@@ -259,9 +283,9 @@ export default function Home() {
                 alignItems: 'center',
                 marginBottom: 6,
               }}>
-                <MaterialCommunityIcons name="briefcase-plus" size={32} color="#059669" />
+                <MaterialCommunityIcons name="briefcase-plus" size={32} color="#0F766E" />
               </View>
-              <Text style={homeContentStyles.btnText}>Job Givers</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#0F766E', fontWeight: '800' }]}>Job Giver</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

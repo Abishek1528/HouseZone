@@ -314,7 +314,7 @@ export default function PropertyDetails() {
                     <Text style={tps.label}>Parking (2-Wheeler):</Text>
                     <Text style={tps.value}>
                       {(property.houseDetails.parking2Wheeler !== undefined && property.houseDetails.parking2Wheeler !== null) 
-                        ? property.houseDetails.parking2Wheeler 
+                        ? (property.houseDetails.parking2Wheeler ? 'Yes' : 'No') 
                         : 'N/A'}
                     </Text>
                   </View>
@@ -322,7 +322,7 @@ export default function PropertyDetails() {
                     <Text style={tps.label}>Parking (4-Wheeler):</Text>
                     <Text style={tps.value}>
                       {(property.houseDetails.parking4Wheeler !== undefined && property.houseDetails.parking4Wheeler !== null) 
-                        ? property.houseDetails.parking4Wheeler 
+                        ? (property.houseDetails.parking4Wheeler ? 'Yes' : 'No') 
                         : 'N/A'}
                     </Text>
                   </View>
