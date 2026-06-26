@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
+import OwnerFormField from "../../shared/components/OwnerFormField";
 
 const PHOTO_FIELDS = [
-  { key: "shopPhoto", label: "Shop Photo *", required: true },
-  { key: "ownerPhoto", label: "Owner Photo", required: false },
-  { key: "shopBoardPhoto", label: "Shop Board Photo", required: false },
+  { key: "shopPhoto1", label: "Shop Photo 1 *", required: true },
+  { key: "shopPhoto2", label: "Shop Photo 2", required: false },
+  { key: "shopPhoto3", label: "Shop Photo 3", required: false },
 ];
 
 const Step3ShopPhotos = ({ formData, handleInputChange, colors, dark }) => {
@@ -94,11 +95,29 @@ const Step3ShopPhotos = ({ formData, handleInputChange, colors, dark }) => {
 
   return (
     <OwnerFormCard
-      title="Shop Photos"
-      subtitle="Help job seekers find your local shop"
+      title="Page 3"
+      subtitle="Salary, skills & photos"
       colors={colors}
       dark={dark}
     >
+      <OwnerFormField
+        label="Salary Offering Per Month (₹) *"
+        value={formData.salaryOffering}
+        onChangeText={(value) => handleInputChange("salaryOffering", value.replace(/\D/g, ""))}
+        keyboardType="numeric"
+        colors={colors}
+        dark={dark}
+      />
+      <OwnerFormField
+        label="Other Skills"
+        value={formData.otherSkills}
+        onChangeText={(value) => handleInputChange("otherSkills", value)}
+        placeholder="Any other skills required..."
+        multiline
+        colors={colors}
+        dark={dark}
+      />
+      <Text style={[ofs.sectionBlockTitle, { marginTop: 10, marginBottom: 4 }]}>Photos of Shop</Text>
       {PHOTO_FIELDS.map(renderPhotoSlot)}
     </OwnerFormCard>
   );

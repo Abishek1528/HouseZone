@@ -24,58 +24,38 @@ import Step3ShopPhotos from "./Step3ShopPhotos";
 const MAX_STEPS = 3;
 
 const validateStep1 = (formData) => {
-  const required = ["shopName", "ownerName", "contactNo", "shopType", "area", "city", "pincode"];
+  const required = ["name", "shopName", "shopType", "area", "city", "contact"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
-      Alert.alert("Validation Error", `Please fill in all required shop details in Step 1.`);
+      Alert.alert("Validation Error", `Please fill in all required fields in Page 1.`);
       return false;
     }
   }
-  if (!/^\d{6}$/.test(formData.pincode)) {
-    Alert.alert("Validation Error", "Please enter a valid 6-digit pincode.");
-    return false;
-  }
-  if (!/^\d{10}$/.test(formData.contactNo)) {
+  if (!/^\d{10}$/.test(formData.contact)) {
     Alert.alert("Validation Error", "Please enter a valid 10-digit contact number.");
-    return false;
-  }
-  if (formData.alternateContactNo && !/^\d{10}$/.test(formData.alternateContactNo)) {
-    Alert.alert("Validation Error", "Alternate contact must be a 10-digit number.");
     return false;
   }
   return true;
 };
 
 const validateStep2 = (formData) => {
-  const required = [
-    "jobTitle",
-    "numberOfWorkersNeeded",
-    "workStartTime",
-    "workEndTime",
-    "salaryOffered",
-    "experienceNeeded",
-    "educationNeeded",
-    "agePreference",
-    "genderPreference",
-    "foodProvided",
-    "accommodationProvided",
-  ];
+  const required = ["age", "gender", "education", "experienceYear", "experienceField", "workStartTime", "workEndTime"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
-      Alert.alert("Validation Error", `Please fill in all required job details in Step 2.`);
+      Alert.alert("Validation Error", `Please fill in all required fields in Page 2.`);
       return false;
     }
-  }
-  if (parseInt(formData.numberOfWorkersNeeded, 10) < 1) {
-    Alert.alert("Validation Error", "Workers needed must be at least 1.");
-    return false;
   }
   return true;
 };
 
 const validateStep3 = (formData) => {
-  if (!formData.shopPhoto) {
-    Alert.alert("Validation Error", "Please upload a shop photo in Step 3.");
+  if (!String(formData.salaryOffering || "").trim()) {
+    Alert.alert("Validation Error", "Please enter salary offering per month.");
+    return false;
+  }
+  if (!formData.shopPhoto1) {
+    Alert.alert("Validation Error", "Please upload at least one shop photo.");
     return false;
   }
   return true;
@@ -99,9 +79,9 @@ export default function AddJobGiver() {
         const accountContact = user?.contact || user?.contact_number;
         setFormData((prev) => ({
           ...prev,
-          ownerName: prev.ownerName || user?.name || "",
-          contactNo:
-            prev.contactNo ||
+          name: prev.name || user?.name || "",
+          contact:
+            prev.contact ||
             (accountContact ? sanitizePhoneInput(String(accountContact)) : ""),
         }));
       } catch (error) {
@@ -179,7 +159,7 @@ export default function AddJobGiver() {
     >
       <StatusBar barStyle="light-content" backgroundColor="#0f213d" />
 
-      <OwnerFormHeader title="Post a Job" step={step} maxSteps={MAX_STEPS} dark={dark} />
+      <OwnerFormHeader title="Job Giver" step={step} maxSteps={MAX_STEPS} dark={dark} />
 
       <ScrollView
         style={{ flex: 1 }}

@@ -51,11 +51,15 @@ export default function PropertyDetails({ route }) {
   const fetchDetails = async () => {
     try {
       setLoading(true);
+      console.log('Fetching business property details for ID:', propertyId);
+      console.log('API URL:', process.env.EXPO_PUBLIC_API_URL);
       const data = await getPropertyDetails(propertyId);
+      console.log('Business property details data received:', data);
       setProperty(data || null);
     } catch (error) {
       console.error('Error fetching business property details:', error);
-      Alert.alert('Error', 'Failed to load property details');
+      console.error('Error details:', error.message, error.stack);
+      Alert.alert('Error', `Failed to load property details: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }

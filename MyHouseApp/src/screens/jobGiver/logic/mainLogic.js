@@ -1,32 +1,27 @@
 export const initialFormData = {
-  // Step 1 — Shop & owner details
+  // Page 1 — Personal Info
+  name: "",
   shopName: "",
-  ownerName: "",
-  contactNo: "",
-  alternateContactNo: "",
   shopType: "",
   area: "",
   city: "",
   landmark: "",
-  pincode: "",
+  contact: "",
 
-  // Step 2 — Job details
-  jobTitle: "",
-  numberOfWorkersNeeded: "",
+  // Page 2 — Job Details
+  age: "",
+  gender: "",
+  education: "",
+  experienceYear: "",
+  experienceField: "",
   workStartTime: "",
   workEndTime: "",
   workTimings: "",
-  salaryOffered: "",
-  experienceNeeded: "",
-  educationNeeded: "",
-  agePreference: "",
-  genderPreference: "",
-  foodProvided: "",
-  accommodationProvided: "",
-  jobDescription: "",
 
-  // Step 3 — Shop photos
-  shopPhoto: "",
-  ownerPhoto: "",
-  shopBoardPhoto: "",
+  // Page 3 — Salary, skills & photos
+  salaryOffering: "",
+  otherSkills: "",
+  shopPhoto1: "",
+  shopPhoto2: "",
+  shopPhoto3: "",
 };

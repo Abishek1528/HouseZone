@@ -132,13 +132,49 @@ export default function Login() {
     >
       <StatusBar barStyle="light-content" backgroundColor="#1e3a5f" />
       
+      <View style={loginStyles.headerSection}>
+        <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
+          <Text style={loginStyles.headerTitle}>Hello</Text>
+          <Text style={loginStyles.headerSubtitle}>Welcome Back!</Text>
+          <View style={{ marginTop: 30 }}>
+            <Text style={{ 
+              fontSize: 28, 
+              fontWeight: '900', 
+              color: '#fff', 
+              marginBottom: 10,
+              letterSpacing: -0.5,
+            }}>
+              Rent Smarter. Live Easier.
+            </Text>
+            <View style={{ 
+              backgroundColor: 'rgba(255,255,255,0.1)', 
+              padding: 15, 
+              borderRadius: 15,
+              borderLeftWidth: 4,
+              borderLeftColor: '#fff',
+            }}>
+              <Text style={{ 
+                fontSize: 16, 
+                color: '#e2e8f0', 
+                lineHeight: 26,
+                fontWeight: '500',
+              }}>
+                Login to continue exploring rentals near you.
+              </Text>
+            </View>
+          </View>
+        </Animated.View>
+      </View>
+      
       <ScrollView 
         style={{ flex: 1 }} 
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
       >
-        <View style={loginStyles.contentSection}>
+        <Animated.View 
+          style={[loginStyles.contentSection, { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }]}
+        >
         <View style={loginStyles.formCard}>
           <Text style={loginStyles.formCardTitle}>Login Account</Text>
           
@@ -210,47 +246,7 @@ export default function Login() {
             <Text style={loginStyles.signupLinkText}>Create New Account</Text>
           </TouchableOpacity>
         </View>
-      </View>
-
-      <View style={loginStyles.headerSection}>
-        <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
-          <Text style={{ 
-            fontSize: 28, 
-            fontWeight: '900', 
-            color: '#fff', 
-            marginBottom: 3,
-            letterSpacing: -0.5,
-            marginTop: 10,
-          }}>
-            Welcome back to
-          </Text>
-          <Text style={{ 
-            fontSize: 28, 
-            fontWeight: '900', 
-            color: '#fff', 
-            marginBottom: 20,
-            letterSpacing: -0.5,
-          }}>
-            HouseZone.
-          </Text>
-          <View style={{ 
-            backgroundColor: 'rgba(255,255,255,0.1)', 
-            padding: 15, 
-            borderRadius: 15,
-            borderLeftWidth: 4,
-            borderLeftColor: '#fff',
-          }}>
-            <Text style={{ 
-              fontSize: 16, 
-              color: '#e2e8f0', 
-              lineHeight: 26,
-              fontWeight: '500',
-            }}>
-              A unified platform for all your rental needs. Safe. Simple. Seamless.
-            </Text>
-          </View>
-        </Animated.View>
-      </View>
+      </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

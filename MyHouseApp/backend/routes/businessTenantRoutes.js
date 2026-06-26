@@ -13,10 +13,10 @@ const businessUploadsDir = path.join(__dirname, '../uploads', 'business');
 // GET all business properties for tenant view
 router.get('/business/properties', async (req, res) => {
   try {
-    const dbName = process.env.DB_NAME || 'cdmrental';
     const { rent, area, propertyType } = req.query;
+    console.log('Fetching business properties with filters:', { rent, area, propertyType });
 
-    let query = `SELECT
+    let query = `SELECT 
       bd.id,
       bd.area,
       bp.property_type as propertyType,
@@ -105,11 +105,11 @@ router.get('/business/properties/areas', async (req, res) => {
 // GET detailed business property information
 router.get('/business/properties/:id', async (req, res) => {
   try {
-    const dbName = process.env.DB_NAME || 'cdmrental';
     const { id } = req.params;
+    console.log('Fetching business property details for id:', id);
 
     const [rows] = await pool.execute(
-      `SELECT
+      `SELECT 
         bd.id,
         bd.name_of_person,
         bd.door_no,
@@ -120,9 +120,9 @@ router.get('/business/properties/:id', async (req, res) => {
         bd.contact_no,
         bp.door_facing,
         bp.property_type,
-        bp.length_feet,
-        bp.breadth_feet,
-        bp.restroom_available,
+        bp.hall_length AS length_feet,
+        bp.hall_breadth AS breadth_feet,
+        bp.washroom_available AS restroom_available,
         bp.floor_number,
         br.advance_amount,
         br.monthly_rent,
@@ -133,6 +133,8 @@ router.get('/business/properties/:id', async (req, res) => {
       WHERE bd.id = ?`,
       [id]
     );
+
+    console.log('Database query result:', rows);
 
     if (rows.length === 0) return res.status(404).json({ message: 'Property not found' });
 
@@ -179,6 +181,7 @@ router.get('/business/properties/:id', async (req, res) => {
       .filter(fn => fn.startsWith(prefix))
       .map(fn => `${origin}/uploads/business/${fn}`);
 
+    console.log('Returning structured data:', structuredData);
     res.status(200).json(structuredData);
   } catch (error) {
     console.error('Error fetching business property details:', error);
