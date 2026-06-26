@@ -12,11 +12,6 @@ const genderOptions = [
   { label: "Any", value: "any" },
 ];
 
-const yesNoOptions = [
-  { label: "Yes", value: "yes" },
-  { label: "No", value: "no" },
-];
-
 const educationOptions = [
   { label: "Any", value: "any" },
   { label: "10th", value: "10th" },
@@ -25,16 +20,11 @@ const educationOptions = [
   { label: "PG", value: "pg" },
 ];
 
-const experienceOptions = [
+const experienceYearOptions = [
   { label: "Fresh", value: "fresh" },
   { label: "1 Year", value: "1year" },
-  { label: "2+ Years", value: "2plus" },
-];
-
-const ageOptions = [
-  { label: "18-25", value: "18-25" },
-  { label: "25-40", value: "25-40" },
-  { label: "40-50", value: "40-50" },
+  { label: "2 Years", value: "2years" },
+  { label: "3+ Years", value: "3plus" },
 ];
 
 const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
@@ -57,119 +47,64 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
   return (
     <OwnerFormCard
       title="Job Details"
-      subtitle="What work you need in your shop"
+      subtitle="Page 2"
       colors={colors}
       dark={dark}
     >
       <OwnerFormField
-        label="Job Title *"
-        value={formData.jobTitle}
-        onChangeText={(value) => handleInputChange("jobTitle", value)}
-        placeholder="Salesman, helper, cashier..."
-        colors={colors}
-        dark={dark}
-      />
-      <OwnerFormField
-        label="Workers Needed *"
-        value={formData.numberOfWorkersNeeded}
-        onChangeText={(value) => handleInputChange("numberOfWorkersNeeded", value.replace(/\D/g, ""))}
+        label="Age *"
+        value={formData.age}
+        onChangeText={(value) => handleInputChange("age", value.replace(/\D/g, ""))}
         keyboardType="numeric"
         colors={colors}
         dark={dark}
       />
-
-      <Text style={[ofs.sectionBlockTitle, { marginBottom: 4 }]}>Work Timings *</Text>
-      <Text style={[ofs.subtitle, { textAlign: "left", marginBottom: 10 }]}>
-        Choose start and end time using the clock.
-      </Text>
+      <OptionSelectField
+        label="Gender *"
+        options={genderOptions}
+        selectedValue={formData.gender || ""}
+        onSelect={(value) => handleInputChange("gender", value)}
+        colors={colors}
+        dark={dark}
+        collapsible
+      />
+      <OptionSelectField
+        label="Education *"
+        options={educationOptions}
+        selectedValue={formData.education || ""}
+        onSelect={(value) => handleInputChange("education", value)}
+        colors={colors}
+        dark={dark}
+        collapsible
+      />
+      <OptionSelectField
+        label="Experience Year *"
+        options={experienceYearOptions}
+        selectedValue={formData.experienceYear || ""}
+        onSelect={(value) => handleInputChange("experienceYear", value)}
+        colors={colors}
+        dark={dark}
+        collapsible
+      />
+      <OwnerFormField
+        label="Experience Field *"
+        value={formData.experienceField}
+        onChangeText={(value) => handleInputChange("experienceField", value)}
+        placeholder="Sales, cashier, etc."
+        colors={colors}
+        dark={dark}
+      />
       <TimeSelectField
-        label="Start Time *"
+        label="Working Time Start *"
         value={formData.workStartTime}
         onChange={updateWorkStart}
         colors={colors}
         dark={dark}
       />
       <TimeSelectField
-        label="End Time *"
+        label="Working Time End *"
         value={formData.workEndTime}
         onChange={updateWorkEnd}
-        colors={colors}
-        dark={dark}
-      />
-      {formData.workStartTime && formData.workEndTime ? (
-        <Text style={[ofs.subtitle, { textAlign: "left", marginBottom: 8 }]}>
-          Timings: {formData.workStartTime} - {formData.workEndTime}
-        </Text>
-      ) : null}
-
-      <OwnerFormField
-        label="Salary Offered Per Month (₹) *"
-        value={formData.salaryOffered}
-        onChangeText={(value) => handleInputChange("salaryOffered", value.replace(/\D/g, ""))}
-        keyboardType="numeric"
-        colors={colors}
-        dark={dark}
-      />
-      <OptionSelectField
-        label="Experience Needed *"
-        options={experienceOptions}
-        selectedValue={formData.experienceNeeded || ""}
-        onSelect={(value) => handleInputChange("experienceNeeded", value)}
-        colors={colors}
-        dark={dark}
-        collapsible
-      />
-      <OptionSelectField
-        label="Education Needed *"
-        options={educationOptions}
-        selectedValue={formData.educationNeeded || ""}
-        onSelect={(value) => handleInputChange("educationNeeded", value)}
-        colors={colors}
-        dark={dark}
-        collapsible
-      />
-      <OptionSelectField
-        label="Age Preference *"
-        options={ageOptions}
-        selectedValue={formData.agePreference || ""}
-        onSelect={(value) => handleInputChange("agePreference", value)}
-        colors={colors}
-        dark={dark}
-        collapsible
-      />
-      <OptionSelectField
-        label="Gender Preference *"
-        options={genderOptions}
-        selectedValue={formData.genderPreference || ""}
-        onSelect={(value) => handleInputChange("genderPreference", value)}
-        colors={colors}
-        dark={dark}
-        collapsible
-      />
-      <OptionSelectField
-        label="Food Provided *"
-        options={yesNoOptions}
-        selectedValue={formData.foodProvided || ""}
-        onSelect={(value) => handleInputChange("foodProvided", value)}
-        colors={colors}
-        dark={dark}
-        collapsible
-      />
-      <OptionSelectField
-        label="Accommodation Provided *"
-        options={yesNoOptions}
-        selectedValue={formData.accommodationProvided || ""}
-        onSelect={(value) => handleInputChange("accommodationProvided", value)}
-        colors={colors}
-        dark={dark}
-        collapsible
-      />
-      <OwnerFormField
-        label="Job Description"
-        value={formData.jobDescription}
-        onChangeText={(value) => handleInputChange("jobDescription", value)}
-        placeholder="Daily work, shop duties..."
-        multiline
         colors={colors}
         dark={dark}
       />

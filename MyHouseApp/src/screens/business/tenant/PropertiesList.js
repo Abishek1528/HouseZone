@@ -148,6 +148,7 @@ export default function PropertiesList() {
   }, [typeFilter, areaFilter]);
 
   const handleViewDetails = (id) => {
+    console.log('View Details clicked for property with id:', id);
     navigation.navigate('BusinessPropertyDetails', { propertyId: id });
   };
 

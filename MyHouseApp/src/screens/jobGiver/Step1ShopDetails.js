@@ -17,40 +17,22 @@ const shopTypeOptions = [
 
 const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
   <OwnerFormCard
-    title="Shop & Owner Details"
-    subtitle="Local shop information and contact"
+    title="Personal Info"
+    subtitle="Page 1"
     colors={colors}
     dark={dark}
   >
     <OwnerFormField
+      label="Name *"
+      value={formData.name}
+      onChangeText={(value) => handleInputChange("name", value)}
+      colors={colors}
+      dark={dark}
+    />
+    <OwnerFormField
       label="Shop Name *"
       value={formData.shopName}
       onChangeText={(value) => handleInputChange("shopName", value)}
-      colors={colors}
-      dark={dark}
-    />
-    <OwnerFormField
-      label="Owner Name *"
-      value={formData.ownerName}
-      onChangeText={(value) => handleInputChange("ownerName", value)}
-      colors={colors}
-      dark={dark}
-    />
-    <OwnerFormField
-      label="Contact No *"
-      value={formData.contactNo}
-      onChangeText={(value) => handleInputChange("contactNo", sanitizePhoneInput(value))}
-      keyboardType="phone-pad"
-      maxLength={10}
-      colors={colors}
-      dark={dark}
-    />
-    <OwnerFormField
-      label="Alternate Contact No"
-      value={formData.alternateContactNo}
-      onChangeText={(value) => handleInputChange("alternateContactNo", sanitizePhoneInput(value))}
-      keyboardType="phone-pad"
-      maxLength={10}
       colors={colors}
       dark={dark}
     />
@@ -71,7 +53,7 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
       dark={dark}
     />
     <OwnerFormField
-      label="City / Town *"
+      label="City *"
       value={formData.city}
       onChangeText={(value) => handleInputChange("city", value)}
       colors={colors}
@@ -86,11 +68,11 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
       dark={dark}
     />
     <OwnerFormField
-      label="Pincode *"
-      value={formData.pincode}
-      onChangeText={(value) => handleInputChange("pincode", value.replace(/\D/g, "").slice(0, 6))}
-      keyboardType="numeric"
-      maxLength={6}
+      label="Contact *"
+      value={formData.contact}
+      onChangeText={(value) => handleInputChange("contact", sanitizePhoneInput(value))}
+      keyboardType="phone-pad"
+      maxLength={10}
       colors={colors}
       dark={dark}
     />
