@@ -35,14 +35,29 @@ const upload = multer({ storage });
 // Save job giver step 1 (personal info)
 router.post('/jobgiver/step1', async (req, res) => {
   try {
+    console.log('Step 1 req.body:', req.body);
     const { name, shopName, shopType, area, city, landmark, contact } = req.body;
 
+    // Convert undefined to null
+    const values = [
+      name,
+      shopName,
+      shopType,
+      area,
+      city,
+      landmark !== undefined ? landmark : null,
+      contact
+    ];
+
+    console.log('Inserting into jobgiverdet with values:', values);
     const sql = `INSERT INTO jobgiverdet (name, shop_name, shop_type, area, city, landmark, contact) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    const [result] = await pool.execute(sql, [name, shopName, shopType, area, city, landmark, contact]);
+    const [result] = await pool.execute(sql, values);
+    console.log('Insert result:', result);
 
     res.status(201).json({ jobGiverId: result.insertId, message: 'Job giver step 1 saved successfully' });
   } catch (error) {
     console.error('Error saving job giver step 1:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ message: 'Error saving job giver step 1', error: error.message });
   }
 });
@@ -50,14 +65,17 @@ router.post('/jobgiver/step1', async (req, res) => {
 // Save job giver step 2 (job details)
 router.post('/jobgiver/step2', async (req, res) => {
   try {
+    console.log('Step 2 req.body:', req.body);
     const { jobGiverId, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd } = req.body;
 
+    console.log('Inserting into jobgiverjob with values:', [jobGiverId, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
     const sql = `INSERT INTO jobgiverjob (jobgiverdet_id, age, gender, education, experience_year, experience_field, working_time_start, working_time_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     await pool.execute(sql, [jobGiverId, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
 
     res.status(201).json({ message: 'Job giver step 2 saved successfully' });
   } catch (error) {
     console.error('Error saving job giver step 2:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ message: 'Error saving job giver step 2', error: error.message });
   }
 });
@@ -65,8 +83,10 @@ router.post('/jobgiver/step2', async (req, res) => {
 // Save job giver step 3 (salary, skills, photos)
 router.post('/jobgiver/step3', upload.fields([{ name: 'shopPhoto1' }, { name: 'shopPhoto2' }, { name: 'shopPhoto3' }]), async (req, res) => {
   try {
+    console.log('Step 3 req.body:', req.body);
+    console.log('Step 3 req.files:', req.files);
     const { jobGiverId, salaryOffering, otherSkills } = req.body;
-    const files = req.files;
+    const files = req.files || {};
 
     let shopPhoto1Path = null;
     let shopPhoto2Path = null;
@@ -82,13 +102,53 @@ router.post('/jobgiver/step3', upload.fields([{ name: 'shopPhoto1' }, { name: 's
       shopPhoto3Path = files.shopPhoto3[0].filename;
     }
 
+    // Convert undefined to null
+    const values = [
+      jobGiverId,
+      salaryOffering,
+      otherSkills !== undefined ? otherSkills : null,
+      shopPhoto1Path,
+      shopPhoto2Path,
+      shopPhoto3Path
+    ];
+
+    console.log('Inserting into jobgiversalary with values:', values);
     const sql = `INSERT INTO jobgiversalary (jobgiverdet_id, salary_offering, other_skills, shop_photo1, shop_photo2, shop_photo3) VALUES (?, ?, ?, ?, ?, ?)`;
-    await pool.execute(sql, [jobGiverId, salaryOffering, otherSkills, shopPhoto1Path, shopPhoto2Path, shopPhoto3Path]);
+    await pool.execute(sql, values);
 
     res.status(201).json({ message: 'Job giver step 3 saved successfully' });
   } catch (error) {
     console.error('Error saving job giver step 3:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ message: 'Error saving job giver step 3', error: error.message });
+  }
+});
+
+// Debug route: check jobgiver tables
+router.get('/jobgiver/debug/columns', async (req, res) => {
+  try {
+    const dbName = process.env.DB_NAME || 'defaultdb';
+    const tables = [
+      'jobgiverdet',
+      'jobgiverjob',
+      'jobgiversalary'
+    ];
+
+    const result = {};
+
+    for (const tbl of tables) {
+      const [cols] = await pool.execute(
+        `SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? ORDER BY ORDINAL_POSITION`,
+        [dbName, tbl]
+      );
+
+      result[tbl] = cols.map(c => ({ column: c.COLUMN_NAME, type: c.DATA_TYPE }));
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching jobgiver debug columns:', error);
+    res.status(500).json({ message: 'Error fetching columns', error: error.message });
   }
 });
 
