@@ -26,6 +26,8 @@ import VehiclesList from '../screens/vehicles/tenant/VehiclesList';
 import VehicleDetails from '../screens/vehicles/tenant/VehicleDetails';
 import MachineryListPage from '../screens/machinery/tenant/MachineryListPage';
 import MachineryDetailsPage from '../screens/machinery/tenant/MachineryDetailsPage';
+import JobDetails from '../screens/jobSeeker/JobDetails';
+import JobSeekerForm from '../screens/jobSeeker/JobSeekerForm';
 import Profile from '../screens/Profile';
 import MyHistory from '../screens/MyHistory';
 import Settings from '../screens/Settings';
@@ -64,6 +66,8 @@ export default function AppNavigator() {
         <Stack.Screen name="Machinery" component={Machinery} />
         <Stack.Screen name="AddMachinery" component={AddMachinery} />
         <Stack.Screen name="JobSeeker" component={JobSeeker} />
+        <Stack.Screen name="JobDetails" component={JobDetails} />
+        <Stack.Screen name="JobSeekerForm" component={JobSeekerForm} />
         <Stack.Screen name="JobGiver" component={JobGiver} />
         <Stack.Screen name="AddJobGiver" component={AddJobGiver} />
         <Stack.Screen name="BusinessPropertiesList" component={BusinessPropertiesList} />

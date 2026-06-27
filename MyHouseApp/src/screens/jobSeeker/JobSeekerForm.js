@@ -17,52 +17,43 @@ import OwnerFormHeader from "../../shared/components/OwnerFormHeader";
 import { useTheme } from "../../context/ThemeContext";
 import { sanitizePhoneInput } from "../../shared/utils/phoneInput";
 import { initialFormData } from "./logic/mainLogic";
-import { saveJobGiverStep1, saveJobGiverStep2, saveJobGiverStep3 } from "./logic/api";
-import Step1ShopDetails from "./Step1ShopDetails";
-import Step2JobDetails from "./Step2JobDetails";
-import Step3ShopPhotos from "./Step3ShopPhotos";
+import Step1PersonalDetails from "./Step1PersonalDetails";
+import Step2JobRelatedDetails from "./Step2JobRelatedDetails";
 
-const MAX_STEPS = 3;
+const MAX_STEPS = 2;
 
 const validateStep1 = (formData) => {
-  const required = ["name", "shopName", "shopType", "area", "city", "contact"];
+  const required = ["fullName", "mobileNumber", "age", "gender"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
-      Alert.alert("Validation Error", `Please fill in all required fields in Page 1.`);
+      Alert.alert("Validation Error", "Please fill in all required personal details in Step 1.");
       return false;
     }
   }
-  if (!/^\d{10}$/.test(formData.contact)) {
-    Alert.alert("Validation Error", "Please enter a valid 10-digit contact number.");
+  if (!/^\d{10}$/.test(formData.mobileNumber)) {
+    Alert.alert("Validation Error", "Please enter a valid 10-digit mobile number.");
+    return false;
+  }
+  const age = parseInt(formData.age, 10);
+  if (age < 14 || age > 100) {
+    Alert.alert("Validation Error", "Please enter a valid age between 14 and 100.");
     return false;
   }
   return true;
 };
 
 const validateStep2 = (formData) => {
-  const required = ["age", "gender", "education", "experienceYear", "experienceField", "workStartTime", "workEndTime"];
+  const required = ["currentLocation", "experience", "canJoinImmediately"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
-      Alert.alert("Validation Error", `Please fill in all required fields in Page 2.`);
+      Alert.alert("Validation Error", "Please fill in all required job details in Step 2.");
       return false;
     }
   }
   return true;
 };
 
-const validateStep3 = (formData) => {
-  if (!String(formData.salaryOffering || "").trim()) {
-    Alert.alert("Validation Error", "Please enter salary offering per month.");
-    return false;
-  }
-  if (!formData.shopPhoto1) {
-    Alert.alert("Validation Error", "Please upload at least one shop photo.");
-    return false;
-  }
-  return true;
-};
-
-export default function AddJobGiver() {
+export default function JobSeekerForm() {
   const navigation = useNavigation();
   const { dark, colors } = useTheme();
   const ofs = getOwnerFormStyles(colors, dark);
@@ -80,13 +71,13 @@ export default function AddJobGiver() {
         const accountContact = user?.contact || user?.contact_number;
         setFormData((prev) => ({
           ...prev,
-          name: prev.name || user?.name || "",
-          contact:
-            prev.contact ||
+          fullName: prev.fullName || user?.name || "",
+          mobileNumber:
+            prev.mobileNumber ||
             (accountContact ? sanitizePhoneInput(String(accountContact)) : ""),
         }));
       } catch (error) {
-        console.error("[AddJobGiver] Could not prefill from account:", error);
+        console.error("[JobSeekerForm] Could not prefill from account:", error);
       }
     };
     prefillFromAccount();
@@ -98,7 +89,6 @@ export default function AddJobGiver() {
 
   const handleNext = () => {
     if (step === 1 && !validateStep1(formData)) return;
-    if (step === 2 && !validateStep2(formData)) return;
     setStep((prev) => Math.min(prev + 1, MAX_STEPS));
   };
 
@@ -111,49 +101,13 @@ export default function AddJobGiver() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep3(formData)) return;
+    if (!validateStep2(formData)) return;
 
     try {
       setIsSubmitting(true);
+      console.log("Job seeker form submitted:", formData);
 
-      // Step 1: Save personal info
-      const step1Data = {
-        name: formData.name,
-        shopName: formData.shopName,
-        shopType: formData.shopType,
-        area: formData.area,
-        city: formData.city,
-        landmark: formData.landmark,
-        contact: formData.contact,
-      };
-      const step1Response = await saveJobGiverStep1(step1Data);
-      const jobGiverId = step1Response.jobGiverId;
-
-      // Step 2: Save job details
-      const step2Data = {
-        jobGiverId: jobGiverId,
-        age: formData.age,
-        gender: formData.gender,
-        education: formData.education,
-        experienceYear: formData.experienceYear,
-        experienceField: formData.experienceField,
-        workingTimeStart: formData.workStartTime,
-        workingTimeEnd: formData.workEndTime,
-      };
-      await saveJobGiverStep2(step2Data);
-
-      // Step 3: Save salary, skills, and photos
-      const step3Data = {
-        jobGiverId: jobGiverId,
-        salaryOffering: formData.salaryOffering,
-        otherSkills: formData.otherSkills,
-        shopPhoto1: formData.shopPhoto1,
-        shopPhoto2: formData.shopPhoto2,
-        shopPhoto3: formData.shopPhoto3,
-      };
-      await saveJobGiverStep3(step3Data);
-
-      Alert.alert("Success", "Job posting details saved successfully!", [
+      Alert.alert("Success", "Your job seeker details saved successfully!", [
         {
           text: "OK",
           onPress: () => {
@@ -164,8 +118,7 @@ export default function AddJobGiver() {
         },
       ]);
     } catch (error) {
-      console.error("Error submitting job giver form:", error);
-      Alert.alert("Error", error.message || "Failed to save job details.");
+      Alert.alert("Error", error.message || "Failed to save your details.");
     } finally {
       setIsSubmitting(false);
     }
@@ -179,9 +132,8 @@ export default function AddJobGiver() {
       dark,
     };
 
-    if (step === 1) return <Step1ShopDetails {...stepProps} />;
-    if (step === 2) return <Step2JobDetails {...stepProps} />;
-    return <Step3ShopPhotos {...stepProps} />;
+    if (step === 1) return <Step1PersonalDetails {...stepProps} />;
+    return <Step2JobRelatedDetails {...stepProps} />;
   };
 
   return (
@@ -192,7 +144,7 @@ export default function AddJobGiver() {
     >
       <StatusBar barStyle="light-content" backgroundColor="#0f213d" />
 
-      <OwnerFormHeader title="Job Giver" step={step} maxSteps={MAX_STEPS} dark={dark} />
+      <OwnerFormHeader title="Job Seeker Profile" step={step} maxSteps={MAX_STEPS} dark={dark} />
 
       <ScrollView
         style={{ flex: 1 }}

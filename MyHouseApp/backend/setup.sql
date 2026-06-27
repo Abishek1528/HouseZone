@@ -279,3 +279,43 @@ CREATE TABLE IF NOT EXISTS mactenant (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (machineryId) REFERENCES machinarydet(id) ON DELETE CASCADE
 );
+
+-- 20. jobgiverdet table (job giver personal info)
+CREATE TABLE IF NOT EXISTS jobgiverdet (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    shop_name VARCHAR(255) NOT NULL,
+    shop_type VARCHAR(100) NOT NULL,
+    area VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    landmark VARCHAR(255),
+    contact VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 21. jobgiverjob table (job details)
+CREATE TABLE IF NOT EXISTS jobgiverjob (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    jobgiverdet_id INT NOT NULL,
+    age VARCHAR(50) NOT NULL, -- values: 'Any', '20-30', '30-40', '40-50'
+    gender VARCHAR(50) NOT NULL,
+    education VARCHAR(100) NOT NULL,
+    experience_year VARCHAR(50) NOT NULL,
+    experience_field VARCHAR(255) NOT NULL,
+    working_time_start VARCHAR(50) NOT NULL,
+    working_time_end VARCHAR(50) NOT NULL,
+    FOREIGN KEY (jobgiverdet_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
+);
+
+-- 22. jobgiversalary table (salary and skills)
+CREATE TABLE IF NOT EXISTS jobgiversalary (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    jobgiverdet_id INT NOT NULL,
+    salary_offering DECIMAL(10,2) NOT NULL,
+    other_skills TEXT,
+    shop_photo1 VARCHAR(500),
+    shop_photo2 VARCHAR(500),
+    shop_photo3 VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (jobgiverdet_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
+);

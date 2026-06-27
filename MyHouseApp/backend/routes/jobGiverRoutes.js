@@ -1,0 +1,95 @@
+import { Router } from 'express';
+import { pool } from '../config/database.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Create uploads directory for job giver if it doesn't exist
+const jobGiverUploadsDir = path.join(__dirname, '../uploads', 'jobgiver');
+if (!fs.existsSync(jobGiverUploadsDir)) {
+  fs.mkdirSync(jobGiverUploadsDir, { recursive: true });
+}
+
+// Configure multer storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, jobGiverUploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const jobGiverId = req.body.jobGiverId || Date.now();
+    const fieldName = file.fieldname;
+    const ext = path.extname(file.originalname);
+    const filename = `jobgiver-${jobGiverId}-${fieldName}-${Date.now()}${ext}`;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({ storage });
+
+// Save job giver step 1 (personal info)
+router.post('/jobgiver/step1', async (req, res) => {
+  try {
+    const { name, shopName, shopType, area, city, landmark, contact } = req.body;
+
+    const sql = `INSERT INTO jobgiverdet (name, shop_name, shop_type, area, city, landmark, contact) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const [result] = await pool.execute(sql, [name, shopName, shopType, area, city, landmark, contact]);
+
+    res.status(201).json({ jobGiverId: result.insertId, message: 'Job giver step 1 saved successfully' });
+  } catch (error) {
+    console.error('Error saving job giver step 1:', error);
+    res.status(500).json({ message: 'Error saving job giver step 1', error: error.message });
+  }
+});
+
+// Save job giver step 2 (job details)
+router.post('/jobgiver/step2', async (req, res) => {
+  try {
+    const { jobGiverId, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd } = req.body;
+
+    const sql = `INSERT INTO jobgiverjob (jobgiverdet_id, age, gender, education, experience_year, experience_field, working_time_start, working_time_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    await pool.execute(sql, [jobGiverId, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
+
+    res.status(201).json({ message: 'Job giver step 2 saved successfully' });
+  } catch (error) {
+    console.error('Error saving job giver step 2:', error);
+    res.status(500).json({ message: 'Error saving job giver step 2', error: error.message });
+  }
+});
+
+// Save job giver step 3 (salary, skills, photos)
+router.post('/jobgiver/step3', upload.fields([{ name: 'shopPhoto1' }, { name: 'shopPhoto2' }, { name: 'shopPhoto3' }]), async (req, res) => {
+  try {
+    const { jobGiverId, salaryOffering, otherSkills } = req.body;
+    const files = req.files;
+
+    let shopPhoto1Path = null;
+    let shopPhoto2Path = null;
+    let shopPhoto3Path = null;
+
+    if (files.shopPhoto1 && files.shopPhoto1[0]) {
+      shopPhoto1Path = files.shopPhoto1[0].filename;
+    }
+    if (files.shopPhoto2 && files.shopPhoto2[0]) {
+      shopPhoto2Path = files.shopPhoto2[0].filename;
+    }
+    if (files.shopPhoto3 && files.shopPhoto3[0]) {
+      shopPhoto3Path = files.shopPhoto3[0].filename;
+    }
+
+    const sql = `INSERT INTO jobgiversalary (jobgiverdet_id, salary_offering, other_skills, shop_photo1, shop_photo2, shop_photo3) VALUES (?, ?, ?, ?, ?, ?)`;
+    await pool.execute(sql, [jobGiverId, salaryOffering, otherSkills, shopPhoto1Path, shopPhoto2Path, shopPhoto3Path]);
+
+    res.status(201).json({ message: 'Job giver step 3 saved successfully' });
+  } catch (error) {
+    console.error('Error saving job giver step 3:', error);
+    res.status(500).json({ message: 'Error saving job giver step 3', error: error.message });
+  }
+});
+
+export default router;

@@ -23,6 +23,8 @@ import machineryOwnerAdminRoutes from './machineryOwnerAdminRoutes.js';
 import newTenantRoutes from './newTenantRoutes.js';
 import myHistoryRoutes from './myHistoryRoutes.js';
 import vehiclesOwnerAdminRoutes from './vehiclesOwnerAdminRoutes.js';
+import jobGiverRoutes from './jobGiverRoutes.js';
+import jobSeekerRoutes from './jobSeekerRoutes.js';
 
 const router = Router();
 
@@ -52,5 +54,7 @@ router.use('/', machineryTenantRoutes);
 router.use('/', machineryOwnerAdminRoutes);
 router.use('/', newTenantRoutes);
 router.use('/', myHistoryRoutes);
+router.use('/', jobGiverRoutes);
+router.use('/', jobSeekerRoutes);
 
 export default router;
