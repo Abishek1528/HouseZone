@@ -1,5 +1,4 @@
 import React from "react";
-import { Text } from "react-native";
 import OwnerFormField from "../../shared/components/OwnerFormField";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
 import OptionSelectField from "../../shared/components/OptionSelectField";
@@ -10,6 +9,13 @@ const genderOptions = [
   { label: "Male", value: "male" },
   { label: "Female", value: "female" },
   { label: "Any", value: "any" },
+];
+
+const ageOptions = [
+  { label: "Any", value: "Any" },
+  { label: "20-30", value: "20-30" },
+  { label: "30-40", value: "30-40" },
+  { label: "40-50", value: "40-50" },
 ];
 
 const educationOptions = [
@@ -51,13 +57,14 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
       colors={colors}
       dark={dark}
     >
-      <OwnerFormField
+      <OptionSelectField
         label="Age *"
-        value={formData.age}
-        onChangeText={(value) => handleInputChange("age", value.replace(/\D/g, ""))}
-        keyboardType="numeric"
+        options={ageOptions}
+        selectedValue={formData.age || ""}
+        onSelect={(value) => handleInputChange("age", value)}
         colors={colors}
         dark={dark}
+        collapsible
       />
       <OptionSelectField
         label="Gender *"

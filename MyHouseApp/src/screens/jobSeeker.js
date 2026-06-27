@@ -1,183 +1,103 @@
 import React, { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { getOwnerFormStyles } from "../styles/ownerFormStyles";
-import Footer from "../components/Footer";
-import OwnerFormHeader from "../shared/components/OwnerFormHeader";
-import { useTheme } from "../context/ThemeContext";
-import { sanitizePhoneInput } from "../shared/utils/phoneInput";
-import { initialFormData } from "./jobSeeker/logic/mainLogic";
-import Step1PersonalDetails from "./jobSeeker/Step1PersonalDetails";
-import Step2JobRelatedDetails from "./jobSeeker/Step2JobRelatedDetails";
+import { View, Text, TouchableOpacity, FlatList, Image, Alert } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { getTenantPageStyles } from '../styles/tenantPageStyles';
+import propertyListStyles from './residential/tenant/propertyListStyles';
+import TenantPageHeader from '../shared/components/TenantPageHeader';
+import { useTheme } from '../context/ThemeContext';
+import { getJobListings } from './jobSeeker/logic/api';
 
-const MAX_STEPS = 2;
+const JobCard = ({ job, onViewDetails, tps, dark }) => {
+  const { colors } = tps;
+  if (!job) return null;
 
-const validateStep1 = (formData) => {
-  const required = ["fullName", "mobileNumber", "age", "gender"];
-  for (const field of required) {
-    if (!String(formData[field] || "").trim()) {
-      Alert.alert("Validation Error", "Please fill in all required personal details in Step 1.");
-      return false;
-    }
-  }
-  if (!/^\d{10}$/.test(formData.mobileNumber)) {
-    Alert.alert("Validation Error", "Please enter a valid 10-digit mobile number.");
-    return false;
-  }
-  const age = parseInt(formData.age, 10);
-  if (age < 14 || age > 100) {
-    Alert.alert("Validation Error", "Please enter a valid age between 14 and 100.");
-    return false;
-  }
-  return true;
-};
-
-const validateStep2 = (formData) => {
-  const required = ["currentLocation", "experience", "canJoinImmediately"];
-  for (const field of required) {
-    if (!String(formData[field] || "").trim()) {
-      Alert.alert("Validation Error", "Please fill in all required job details in Step 2.");
-      return false;
-    }
-  }
-  return true;
+  return (
+    <View style={tps.card}>
+      <Image
+        source={{ uri: job.shopPhoto1 }}
+        style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0' }]}
+        resizeMode="cover"
+      />
+      <View style={propertyListStyles.detailsContainer}>
+        <View style={tps.propertyInfo}>
+          <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>
+            {job.shopType} • {job.area}, {job.city}
+          </Text>
+          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
+            ₹{job.salaryOffering}/month
+          </Text>
+        </View>
+        <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.text, fontWeight: '600', fontSize: 16 }}>
+          {job.shopName}
+        </Text>
+        <TouchableOpacity
+          style={[propertyListStyles.viewMoreButton, { borderTopColor: colors.border }]}
+          onPress={() => onViewDetails(job)}
+        >
+          <Text style={[propertyListStyles.viewMoreText, { color: colors.primary }]}>View Details</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
 export default function JobSeeker() {
   const navigation = useNavigation();
-  const { dark, colors } = useTheme();
-  const ofs = getOwnerFormStyles(colors, dark);
+  const { dark } = useTheme();
+  const tps = getTenantPageStyles(dark);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState(initialFormData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const prefillFromAccount = async () => {
-      try {
-        const stored = await AsyncStorage.getItem("userDetails");
-        if (!stored) return;
-        const user = JSON.parse(stored);
-        const accountContact = user?.contact || user?.contact_number;
-        setFormData((prev) => ({
-          ...prev,
-          fullName: prev.fullName || user?.name || "",
-          mobileNumber:
-            prev.mobileNumber ||
-            (accountContact ? sanitizePhoneInput(String(accountContact)) : ""),
-        }));
-      } catch (error) {
-        console.error("[JobSeeker] Could not prefill from account:", error);
-      }
-    };
-    prefillFromAccount();
-  }, []);
-
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleNext = () => {
-    if (step === 1 && !validateStep1(formData)) return;
-    setStep((prev) => Math.min(prev + 1, MAX_STEPS));
-  };
-
-  const handleBack = () => {
-    if (step > 1) {
-      setStep((prev) => prev - 1);
-      return;
-    }
-    navigation.goBack();
-  };
-
-  const handleSubmit = async () => {
-    if (!validateStep2(formData)) return;
-
+  const fetchJobs = async () => {
     try {
-      setIsSubmitting(true);
-      console.log("Job seeker form submitted:", formData);
-
-      Alert.alert("Success", "Your job seeker details saved successfully!", [
-        {
-          text: "OK",
-          onPress: () => {
-            setFormData(initialFormData);
-            setStep(1);
-            navigation.goBack();
-          },
-        },
-      ]);
+      setLoading(true);
+      const data = await getJobListings();
+      setJobs(data);
     } catch (error) {
-      Alert.alert("Error", error.message || "Failed to save your details.");
+      console.error("Error fetching job listings:", error);
+      Alert.alert("Error", "Failed to load job listings.");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  const renderStep = () => {
-    const stepProps = {
-      formData,
-      handleInputChange,
-      colors: ofs.themeColors,
-      dark,
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchJobs();
+    }, [])
+  );
 
-    if (step === 1) return <Step1PersonalDetails {...stepProps} />;
-    return <Step2JobRelatedDetails {...stepProps} />;
+  const handleViewDetails = (job) => {
+    navigation.navigate('JobDetails', { jobId: job.id });
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={ofs.screen}
-      keyboardVerticalOffset={0}
-    >
-      <StatusBar barStyle="light-content" backgroundColor="#0f213d" />
-
-      <OwnerFormHeader title="Job Seeker Profile" step={step} maxSteps={MAX_STEPS} dark={dark} />
-
-      <ScrollView
-        style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={ofs.scrollContent}
-      >
-        <View style={ofs.formCenterWrap}>
-          {renderStep()}
-
-          <View style={ofs.formActionsRow}>
-            <TouchableOpacity
-              style={[ofs.formActionBtn, ofs.formActionBtnOutline]}
-              onPress={handleBack}
-              disabled={isSubmitting}
-            >
-              <Text style={ofs.formActionBtnOutlineText}>Back</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[ofs.formActionBtn, ofs.formActionBtnPrimary]}
-              onPress={step < MAX_STEPS ? handleNext : handleSubmit}
-              disabled={isSubmitting}
-            >
-              <Text style={ofs.formActionBtnText}>
-                {isSubmitting ? "..." : step < MAX_STEPS ? "Next" : "Submit"}
-              </Text>
-            </TouchableOpacity>
-          </View>
+    <View style={tps.screen}>
+      <Header />
+      <TenantPageHeader
+        title="Job Listings"
+        subtitle="Browse available jobs in your area"
+      />
+      <View style={propertyListStyles.content}>
+        <View style={propertyListStyles.titleRow}>
+          <Text style={tps.pageTitle}>Available Jobs</Text>
         </View>
-      </ScrollView>
-
+        {loading ? (
+          <Text style={tps.loadingText}>Loading jobs...</Text>
+        ) : jobs.length === 0 ? (
+          <Text style={propertyListStyles.noPropertiesText}>No jobs available</Text>
+        ) : (
+          <FlatList
+            data={jobs}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => <JobCard job={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />}
+            style={propertyListStyles.list}
+          />
+        )}
+      </View>
       <Footer />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
