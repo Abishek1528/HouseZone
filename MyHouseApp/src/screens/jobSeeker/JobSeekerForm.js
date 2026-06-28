@@ -17,6 +17,7 @@ import OwnerFormHeader from "../../shared/components/OwnerFormHeader";
 import { useTheme } from "../../context/ThemeContext";
 import { sanitizePhoneInput } from "../../shared/utils/phoneInput";
 import { initialFormData } from "./logic/mainLogic";
+import { saveJobSeeker } from "./logic/api";
 import Step1PersonalDetails from "./Step1PersonalDetails";
 import Step2JobRelatedDetails from "./Step2JobRelatedDetails";
 
@@ -114,7 +115,24 @@ export default function JobSeekerForm() {
 
     try {
       setIsSubmitting(true);
-      console.log("Job seeker form submitted:", formData);
+
+      // Save job seeker data to API
+      const submitData = {
+        fullName: formData.fullName,
+        mobileNumber: formData.mobileNumber,
+        age: formData.age,
+        gender: formData.gender,
+        aadharNumber: formData.aadharNumber,
+        profilePicture: formData.profilePicture,
+        experience: formData.experience,
+        education: formData.education,
+        experienceYears: formData.experienceYears,
+        lastWorkingShop: formData.lastWorkingShop,
+        otherSkills: formData.otherSkills,
+        canJoinImmediately: formData.canJoinImmediately
+      };
+
+      await saveJobSeeker(submitData);
 
       Alert.alert("Success", "Your job seeker details saved successfully!", [
         {
@@ -127,6 +145,7 @@ export default function JobSeekerForm() {
         },
       ]);
     } catch (error) {
+      console.error("Error submitting job seeker form:", error);
       Alert.alert("Error", error.message || "Failed to save your details.");
     } finally {
       setIsSubmitting(false);

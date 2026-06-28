@@ -26,6 +26,54 @@ const convertKeysToCamelCase = (obj) => {
   return obj;
 };
 
+// POST save job seeker form data
+router.post('/jobseeker', async (req, res) => {
+  try {
+    console.log('Job seeker req.body:', req.body);
+    const {
+      fullName,
+      mobileNumber,
+      age,
+      gender,
+      aadharNumber,
+      profilePicture,
+      experience,
+      education,
+      experienceYears,
+      lastWorkingShop,
+      otherSkills,
+      canJoinImmediately
+    } = req.body;
+
+    // Convert undefined to null
+    const values = [
+      fullName,
+      mobileNumber,
+      age,
+      gender,
+      aadharNumber !== undefined ? aadharNumber : null,
+      profilePicture !== undefined ? profilePicture : null,
+      experience,
+      education,
+      experienceYears !== undefined ? experienceYears : null,
+      lastWorkingShop !== undefined ? lastWorkingShop : null,
+      otherSkills !== undefined ? otherSkills : null,
+      canJoinImmediately
+    ];
+
+    console.log('Inserting into jobseeker with values:', values);
+    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, other_skills, can_join_immediately) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const [result] = await pool.execute(sql, values);
+    console.log('Insert result:', result);
+
+    res.status(201).json({ jobSeekerId: result.insertId, message: 'Job seeker data saved successfully' });
+  } catch (error) {
+    console.error('Error saving job seeker data:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ message: 'Error saving job seeker data', error: error.message });
+  }
+});
+
 // GET all job listings for job seeker
 router.get('/jobseeker/jobs', async (req, res) => {
   try {
