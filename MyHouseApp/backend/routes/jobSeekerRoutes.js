@@ -10,6 +10,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const jobGiverUploadsDir = path.join(__dirname, '../uploads', 'jobgiver');
 
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(jobGiverUploadsDir)) {
+  fs.mkdirSync(jobGiverUploadsDir, { recursive: true });
+}
+
 // Helper function to convert snake_case to camelCase
 const toCamelCase = (str) => str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
 

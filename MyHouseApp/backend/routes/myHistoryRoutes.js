@@ -185,7 +185,7 @@ router.get('/my-history', async (req, res) => {
         vo.area,
         vo.city
       FROM vehtenant vt
-      LEFT JOIN vehiclesdet vd ON vt.voNo = vd.id
+      LEFT JOIN vehiclesdet vd ON vt.vehicleId = vd.id
       LEFT JOIN vehiclesowndet vo ON vd.vehiclesowndet_id = vo.id
       WHERE ${phoneMatchSql('vt.mobile_number')}
          OR ${phoneMatchSql('vt.alternate_number')}
@@ -225,7 +225,7 @@ router.get('/my-history', async (req, res) => {
         mt.current_address AS currentAddress,
         mt.mobile_number AS mobileNumber,
         mt.alternate_number AS alternateNumber,
-        md.owner_id AS propertyId,
+        md.machinaryowndet_id AS propertyId,
         md.machinery_name AS itemName,
         md.machinery_type AS itemType,
         md.machinery_model AS model,
@@ -233,8 +233,8 @@ router.get('/my-history', async (req, res) => {
         mo.area,
         mo.city
       FROM mactenant mt
-      LEFT JOIN machinarydet md ON mt.moNo = md.owner_id
-      LEFT JOIN machinaryowndet mo ON md.owner_id = mo.id
+      LEFT JOIN machinarydet md ON mt.machineryId = md.id
+      LEFT JOIN machinaryowndet mo ON md.machinaryowndet_id = mo.id
       WHERE ${phoneMatchSql('mt.mobile_number')}
          OR ${phoneMatchSql('mt.alternate_number')}
       ORDER BY mt.id DESC`,
@@ -392,15 +392,15 @@ router.get('/my-history', async (req, res) => {
       const [machineryOwnerRows] = await pool.execute(
         `SELECT
           mo.id AS recordId,
-          mo.person_name AS ownerName,
+          mo.name_of_person AS ownerName,
           mo.area,
           mo.city,
           mo.${machineryContactCol} AS contactNo,
-          COUNT(md.owner_id) AS itemCount
+          COUNT(md.id) AS itemCount
         FROM machinaryowndet mo
-        LEFT JOIN machinarydet md ON md.owner_id = mo.id
+        LEFT JOIN machinarydet md ON md.machinaryowndet_id = mo.id
         WHERE ${phoneMatchSql(`mo.${machineryContactCol}`)}
-        GROUP BY mo.id, mo.person_name, mo.area, mo.city, mo.${machineryContactCol}
+        GROUP BY mo.id, mo.name_of_person, mo.area, mo.city, mo.${machineryContactCol}
         ORDER BY mo.id DESC`,
         [contact]
       );
