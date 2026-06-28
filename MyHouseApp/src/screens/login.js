@@ -167,13 +167,13 @@ export default function Login() {
       </View>
       
       <ScrollView 
-        style={{ flex: 1 }} 
+        style={loginStyles.contentSection} 
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
       >
         <Animated.View 
-          style={[loginStyles.contentSection, { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }]}
+          style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }}
         >
         <View style={loginStyles.formCard}>
           <Text style={loginStyles.formCardTitle}>Login Account</Text>
@@ -246,7 +246,7 @@ export default function Login() {
             <Text style={loginStyles.signupLinkText}>Create New Account</Text>
           </TouchableOpacity>
         </View>
-      </Animated.View>
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
