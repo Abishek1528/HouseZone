@@ -19,19 +19,14 @@ const handleFetchRequest = async (url, options) => {
   }
 };
 
-export const getJobListings = async () => {
-  return handleFetchRequest(`${API_BASE_URL}/jobseeker/jobs`, {
-    method: 'GET',
-  });
-};
-
-export const getJobDetails = async (jobId) => {
-  return handleFetchRequest(`${API_BASE_URL}/jobseeker/jobs/${jobId}`, {
-    method: 'GET',
+export const saveJobSeeker = async (data) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobseeker`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
   });
 };
 
 export default {
-  getJobListings,
-  getJobDetails
+  saveJobSeeker
 };

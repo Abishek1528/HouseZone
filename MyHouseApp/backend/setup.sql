@@ -319,3 +319,21 @@ CREATE TABLE IF NOT EXISTS jobgiversalary (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (jobgiverdet_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
 );
+
+-- 23. jobseeker table (job seeker details)
+CREATE TABLE IF NOT EXISTS jobseeker (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    mobile_number VARCHAR(20) NOT NULL,
+    age INT NOT NULL,
+    gender VARCHAR(50) NOT NULL,
+    aadhar_number VARCHAR(20),
+    profile_picture VARCHAR(500),
+    experience VARCHAR(50) NOT NULL,
+    education VARCHAR(255) NOT NULL,
+    experience_years VARCHAR(50),
+    last_working_shop VARCHAR(255),
+    other_skills TEXT,
+    can_join_immediately VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
