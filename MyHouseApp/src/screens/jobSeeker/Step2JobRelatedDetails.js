@@ -22,11 +22,12 @@ const Step2JobRelatedDetails = ({ formData, handleInputChange, colors, dark }) =
     dark={dark}
   >
     <OwnerFormField
-      label="Current Location (City/Town) *"
-      value={formData.currentLocation}
-      onChangeText={(value) => handleInputChange("currentLocation", value)}
+      label="Educational Qualification *"
+      value={formData.education}
+      onChangeText={(value) => handleInputChange("education", value)}
       colors={colors}
       dark={dark}
+      placeholder="e.g., 12th Pass, Graduate, etc."
     />
     <OptionSelectField
       label="Experience (Fresher/Experienced) *"
@@ -37,14 +38,62 @@ const Step2JobRelatedDetails = ({ formData, handleInputChange, colors, dark }) =
       dark={dark}
       collapsible
     />
-    <OwnerFormField
-      label="Educational Qualification"
-      value={formData.education}
-      onChangeText={(value) => handleInputChange("education", value)}
-      colors={colors}
-      dark={dark}
-      placeholder="e.g., 12th Pass, Graduate, etc."
-    />
+    {formData.experience === "experienced" && (
+      <>
+        <OwnerFormField
+          label="Experience Years *"
+          value={formData.experienceYears}
+          onChangeText={(value) => handleInputChange("experienceYears", value)}
+          colors={colors}
+          dark={dark}
+          placeholder="e.g., 2, 5, etc."
+        />
+        <OwnerFormField
+          label="Last Working Shop *"
+          value={formData.lastWorkingShop}
+          onChangeText={(value) => handleInputChange("lastWorkingShop", value)}
+          colors={colors}
+          dark={dark}
+          placeholder="Name of your last workplace"
+        />
+        <OwnerFormField
+          label="Other Skills *"
+          value={formData.otherSkills}
+          onChangeText={(value) => handleInputChange("otherSkills", value)}
+          colors={colors}
+          dark={dark}
+          placeholder="Any additional skills you have"
+        />
+      </>
+    )}
+    {formData.experience === "fresher" && (
+      <>
+        <OwnerFormField
+          label="Experience Years"
+          value={formData.experienceYears}
+          onChangeText={(value) => handleInputChange("experienceYears", value)}
+          colors={colors}
+          dark={dark}
+          placeholder="e.g., 0"
+        />
+        <OwnerFormField
+          label="Last Working Shop"
+          value={formData.lastWorkingShop}
+          onChangeText={(value) => handleInputChange("lastWorkingShop", value)}
+          colors={colors}
+          dark={dark}
+          placeholder="Name of your last workplace (if any)"
+        />
+        <OwnerFormField
+          label="Other Skills"
+          value={formData.otherSkills}
+          onChangeText={(value) => handleInputChange("otherSkills", value)}
+          colors={colors}
+          dark={dark}
+          placeholder="Any additional skills you have"
+        />
+      </>
+    )}
     <OptionSelectField
       label="Can Join Immediately? *"
       options={joinImmediatelyOptions}

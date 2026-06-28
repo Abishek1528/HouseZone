@@ -7,9 +7,10 @@ export const initialFormData = {
   aadharNumber: "",
   profilePicture: "",
   // Step 2: Job Related Details
-  currentLocation: "",
   experience: "",
-  canJoinImmediately: "",
   education: "",
-  experienceDetails: "",
+  experienceYears: "",
+  lastWorkingShop: "",
+  otherSkills: "",
+  canJoinImmediately: "",
 };
