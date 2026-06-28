@@ -29,7 +29,7 @@ const loginStyles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     marginTop: -50, 
-    zIndex: 2,
+    marginBottom: 20,
   },
   formCard: {
     backgroundColor: '#fff',
@@ -40,7 +40,6 @@ const loginStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 15,
     elevation: 8,
-    zIndex: 2,
   },
   formCardTitle: {
     fontSize: 20,
