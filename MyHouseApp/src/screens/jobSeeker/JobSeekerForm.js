@@ -43,11 +43,20 @@ const validateStep1 = (formData) => {
 };
 
 const validateStep2 = (formData) => {
-  const required = ["currentLocation", "experience", "canJoinImmediately"];
+  const required = ["experience", "education", "canJoinImmediately"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
       Alert.alert("Validation Error", "Please fill in all required job details in Step 2.");
       return false;
+    }
+  }
+  if (formData.experience === "experienced") {
+    const experienceRequired = ["experienceYears", "lastWorkingShop", "otherSkills"];
+    for (const field of experienceRequired) {
+      if (!String(formData[field] || "").trim()) {
+        Alert.alert("Validation Error", "Please fill in all experience details as you are experienced.");
+        return false;
+      }
     }
   }
   return true;
