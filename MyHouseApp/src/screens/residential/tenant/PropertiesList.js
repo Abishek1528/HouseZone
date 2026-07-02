@@ -69,20 +69,41 @@ const SelectedFilterBox = ({ label, value, onRemove, tps }) => {
 
 const RENT_FILTER_OPTIONS = [
   { label: "Any", value: "" },
-  { label: "2000-4000", value: "2000-4000" },
-  { label: "4000-6000", value: "4000-6000" },
-  { label: "6000-8000", value: "6000-8000" },
-  { label: "8000-10000", value: "8000-10000" },
-  { label: "10000-12000", value: "10000-12000" },
+  { label: "2k-4k", value: "2000-4000" },
+  { label: "4k-6k", value: "4000-6000" },
+  { label: "6k-8k", value: "6000-8000" },
+  { label: "8k-10k", value: "8000-10000" },
+  { label: "10k-12k", value: "10000-12000" },
 ];
 
 const BEDROOM_FILTER_OPTIONS = [
   { label: "Any", value: "" },
   { label: "1 BHK", value: "1" },
   { label: "2 BHK", value: "2" },
-  { label: "3 BHK", value: "3" },
-  { label: "3+ BHK", value: "4" },
+  { label: "2+ BHK", value: "3" },
 ];
+
+// Get label for bedroom filter value
+const getBedroomLabel = (value) => {
+  switch(value) {
+    case '1': return '1 BHK';
+    case '2': return '2 BHK';
+    case '3': return '2+ BHK';
+    default: return '';
+  }
+};
+
+// Get label for rent filter value
+const getRentLabel = (value) => {
+  switch(value) {
+    case '2000-4000': return '₹2k-4k';
+    case '4000-6000': return '₹4k-6k';
+    case '6000-8000': return '₹6k-8k';
+    case '8000-10000': return '₹8k-10k';
+    case '10000-12000': return '₹10k-12k';
+    default: return '';
+  }
+};
 
 export default function PropertiesList() {
   const navigation = useNavigation();

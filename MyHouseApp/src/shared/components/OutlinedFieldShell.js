@@ -15,17 +15,20 @@ const OutlinedFieldShell = ({
   filled = false,
   contentMode = "input",
   compact = false,
+  error = false,
 }) => {
   const progress = useRef(new Animated.Value(floated ? 1 : 0)).current;
   const labelBg = dark ? "#1f2937" : OWNER_COLORS.white;
   const boxBg = filled && !dark ? OWNER_COLORS.filledBg : dark ? "#1f2937" : "#f5f7fa";
-  const borderColor = filled
-    ? dark
-      ? OWNER_COLORS.filledBorderDark
-      : OWNER_COLORS.filledBorder
-    : dark
-      ? "#4b5563"
-      : "#bdbdbd";
+  const borderColor = error
+    ? "#ef4444"
+    : filled
+      ? dark
+        ? OWNER_COLORS.filledBorderDark
+        : OWNER_COLORS.filledBorder
+      : dark
+        ? "#4b5563"
+        : "#bdbdbd";
   const restColor = dark ? "#9ca3af" : "#94a3b8";
 
   const isOptions = contentMode === "options" && floated;

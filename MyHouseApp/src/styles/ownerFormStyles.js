@@ -154,12 +154,12 @@ const ownerFormStyles = StyleSheet.create({
     width: "100%",
   },
   formActionBtn: {
-    paddingVertical: verticalScale(10),
-    paddingHorizontal: scale(28),
-    borderRadius: scale(14),
+    paddingVertical: verticalScale(14),
+    paddingHorizontal: scale(36),
+    borderRadius: scale(16),
     alignItems: "center",
     justifyContent: "center",
-    minWidth: scale(100),
+    minWidth: scale(120),
   },
   formActionBtnPrimary: {
     backgroundColor: OWNER_COLORS.accent,

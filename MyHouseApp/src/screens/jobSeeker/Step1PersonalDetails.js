@@ -13,7 +13,7 @@ const genderOptions = [
   { label: "Other", value: "other" },
 ];
 
-const Step1PersonalDetails = ({ formData, handleInputChange, colors, dark }) => {
+const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, colors, dark }) => {
   const ofs = getOwnerFormStyles(colors, dark);
 
   const requestPermission = async (type) => {
@@ -72,9 +72,11 @@ const Step1PersonalDetails = ({ formData, handleInputChange, colors, dark }) => 
       <OwnerFormField
         label="Mobile Number *"
         value={formData.mobileNumber}
-        onChangeText={(value) => handleInputChange("mobileNumber", sanitizePhoneInput(value))}
+        onChangeText={(value) => handleInputChange("mobileNumber", sanitizePhoneInput(value)}
+        onBlur={() => onBlur("mobileNumber", formData.mobileNumber)}
         keyboardType="phone-pad"
         maxLength={10}
+        error={errors.mobileNumber}
         colors={colors}
         dark={dark}
       />

@@ -9,9 +9,15 @@ export const step1InitialData = {
   contactNo: "",
 };
 
-export const handleStep1InputChange = (formData, setFormData) => (field, value) => {
+export const handleStep1InputChange = (formData, setFormData, setErrors) => (field, value) => {
   setFormData({
     ...formData,
     [field]: value
   });
+  if (setErrors) {
+    setErrors(prev => ({
+      ...prev,
+      [field]: null
+    }));
+  }
 };

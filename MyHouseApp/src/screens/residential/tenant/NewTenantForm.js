@@ -22,7 +22,7 @@ const NewTenantForm = () => {
 
   const [tenantData, setTenantData] = useState({
     name: '',
-    job: '',
+    occupation: '',
     salary: '',
     nativePlace: '',
     currentAddress: '',
@@ -56,7 +56,7 @@ const NewTenantForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!tenantData.name?.trim() || !tenantData.job?.trim() || !tenantData.salary?.trim() ||
+    if (!tenantData.name?.trim() || !tenantData.occupation?.trim() || !tenantData.salary?.trim() ||
         !tenantData.nativePlace?.trim() || !tenantData.mobileNumber?.trim()) {
       Alert.alert('Validation Error', 'Please fill in all required fields');
       return;
@@ -90,7 +90,7 @@ const NewTenantForm = () => {
         roNo: propertyId,
         category: category || 'residential',
         tenant_name: tenantData.name.trim(),
-        job: tenantData.job.trim(),
+        job: tenantData.occupation.trim(),
         salary: salaryNum,
         native_place: tenantData.nativePlace.trim(),
         current_address: tenantData.currentAddress.trim(),
@@ -137,8 +137,8 @@ const NewTenantForm = () => {
         <ScrollView style={{ flex: 1 }} contentContainerStyle={tps.scrollContent} showsVerticalScrollIndicator={false}>
           <TenantFormCard title="Your Details" subtitle="Fields marked * are required" colors={themeColors} dark={dark}>
             {renderField('Name *', 'name', { placeholder: 'Full Name' })}
-            {renderField('Job *', 'job', { placeholder: 'Occupation' })}
-            {renderField('Salary per Month *', 'salary', { placeholder: 'Monthly Salary', keyboardType: 'numeric' })}
+            {renderField('Occupation *', 'occupation', { placeholder: 'Occupation' })}
+            {renderField('Monthly Income *', 'salary', { placeholder: 'Monthly Income', keyboardType: 'numeric' })}
             {renderField('Native Place *', 'nativePlace', { placeholder: 'Native Place' })}
             {renderField('Current Address', 'currentAddress', { placeholder: 'Current Address', multiline: true, numberOfLines: 3 })}
             {renderField('Mobile Number *', 'mobileNumber', {

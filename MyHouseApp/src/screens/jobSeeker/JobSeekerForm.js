@@ -72,6 +72,17 @@ export default function JobSeekerForm({ route }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateField = (field, value) => {
+    let error = null;
+    if (field === "mobileNumber") {
+      if (value && value.length !== 10) {
+        error = "Please enter a valid 10-digit mobile number";
+      }
+    }
+    return error;
+  };
 
   useEffect(() => {
     const prefillFromAccount = async () => {
@@ -94,8 +105,23 @@ export default function JobSeekerForm({ route }) {
     prefillFromAccount();
   }, []);
 
+  const handleFieldBlur = (field, value) => {
+    const error = validateField(field, value);
+    setErrors(prev => ({
+      ...prev,
+      [field]: error
+    }));
+  };
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: null
+      }));
+    }
   };
 
   const handleNext = () => {
@@ -165,6 +191,8 @@ export default function JobSeekerForm({ route }) {
     const stepProps = {
       formData,
       handleInputChange,
+      errors,
+      onBlur: handleFieldBlur,
       colors: ofs.themeColors,
       dark,
     };
