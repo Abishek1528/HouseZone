@@ -342,12 +342,6 @@ export default function PropertyDetails() {
                 <Text style={tps.label}>Floor Number:</Text>
                 <Text style={tps.value}>{property.houseDetails.floorNumber || 'N/A'}</Text>
               </View>
-              <View style={tps.detailRow}>
-                <Text style={tps.label}>Built-up Area:</Text>
-                <Text style={tps.value}>
-                  {property.area ? `${property.area}` : 'N/A'}
-                </Text>
-              </View>
             </View>
           )}
           

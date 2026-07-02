@@ -301,7 +301,7 @@ export default function Home() {
           <View style={homeContentStyles.modalContainer}>
             <TouchableWithoutFeedback>
               <View style={homeContentStyles.modalView}>
-                <Text style={homeContentStyles.modalTitle}>Select Your Role</Text>
+                <Text style={homeContentStyles.modalTitle}>Are You</Text>
                 <Text style={homeContentStyles.modalText}>Category: {selectedCategory}</Text>
 
                 <View style={homeContentStyles.roleRow}>

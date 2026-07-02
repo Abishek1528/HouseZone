@@ -30,6 +30,21 @@ const BaseForm = ({
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateField = (field, value) => {
+    let error = null;
+    if (field === "pincode") {
+      if (value && value.length !== 6) {
+        error = "Please enter a valid 6-digit pincode";
+      }
+    } else if (field === "contactNo") {
+      if (value && value.length !== 10) {
+        error = "Please enter a valid 10-digit contact number";
+      }
+    }
+    return error;
+  };
 
   useEffect(() => {
     const prefillOwnerContactFromAccount = async () => {
@@ -64,7 +79,15 @@ const BaseForm = ({
     return [];
   };
 
-  const handleStep1Change = handleStep1InputChange(formData, setFormData);
+  const handleStep1Change = handleStep1InputChange(formData, setFormData, setErrors);
+
+  const handleFieldBlur = (field, value) => {
+    const error = validateField(field, value);
+    setErrors(prev => ({
+      ...prev,
+      [field]: error
+    }));
+  };
 
   const handleInputChange = (field, value) => {
     try {
@@ -72,6 +95,13 @@ const BaseForm = ({
         ...formData,
         [field]: value
       });
+      // Clear error when user starts typing
+      if (errors[field]) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: null
+        }));
+      }
     } catch (error) {
       console.error(`[${title}] Failed to update field`, {
         category,
@@ -770,7 +800,7 @@ const BaseForm = ({
   const renderCurrentStep = () => {
     try {
       if (step === 1) {
-        return <Step1Address formData={formData} handleInputChange={handleStep1Change} colors={ofs.themeColors} dark={dark} />;
+        return <Step1Address formData={formData} handleInputChange={handleStep1Change} errors={errors} onBlur={handleFieldBlur} colors={ofs.themeColors} dark={dark} />;
       }
 
       if (step === 2) {

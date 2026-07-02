@@ -3,7 +3,7 @@ import OwnerFormField from "./OwnerFormField";
 import OwnerFormCard from "./OwnerFormCard";
 import { sanitizePhoneInput } from "../utils/phoneInput";
 
-const Step1Address = ({ formData, handleInputChange, colors, dark }) => (
+const Step1Address = ({ formData, handleInputChange, errors, onBlur, colors, dark }) => (
   <OwnerFormCard
     title="Address Information"
     subtitle="Owner contact and property location"
@@ -35,8 +35,11 @@ const Step1Address = ({ formData, handleInputChange, colors, dark }) => (
     <OwnerFormField
       label="Pincode *"
       value={formData.pincode}
-      onChangeText={(value) => handleInputChange("pincode", value)}
+      onChangeText={(value) => handleInputChange("pincode", value.replace(/\D/g, ""))}
+      onBlur={() => onBlur("pincode", formData.pincode)}
       keyboardType="numeric"
+      maxLength={6}
+      error={errors.pincode}
       colors={colors}
       dark={dark}
     />
@@ -58,8 +61,10 @@ const Step1Address = ({ formData, handleInputChange, colors, dark }) => (
       label="Contact No *"
       value={formData.contactNo}
       onChangeText={(value) => handleInputChange("contactNo", sanitizePhoneInput(value))}
+      onBlur={() => onBlur("contactNo", formData.contactNo)}
       keyboardType="phone-pad"
       maxLength={10}
+      error={errors.contactNo}
       colors={colors}
       dark={dark}
     />

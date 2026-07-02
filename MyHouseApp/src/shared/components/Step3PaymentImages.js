@@ -104,10 +104,10 @@ const Step3PaymentImages = ({
         <View style={ofs.infoBox}>
           <Text style={ofs.infoTitle}>Choose Payment Option</Text>
           <Text style={ofs.infoText}>
-            <Text style={{ fontWeight: "bold" }}>Option 1:</Text> Fill Lease Amount (Advance & Rent will be disabled)
+            <Text style={{ fontWeight: "bold" }}>Option 1:</Text> Fill Advance Amount & Monthly Rent (Lease will be disabled)
           </Text>
           <Text style={[ofs.infoText, { marginTop: 6 }]}>
-            <Text style={{ fontWeight: "bold" }}>Option 2:</Text> Fill Advance Amount & Monthly Rent (Lease will be disabled)
+            <Text style={{ fontWeight: "bold" }}>Option 2:</Text> Fill Lease Amount (Advance & Rent will be disabled)
           </Text>
         </View>
 
