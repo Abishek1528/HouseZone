@@ -57,8 +57,8 @@ const homeContentStyles = StyleSheet.create({
     color: '#1a1a1a',
   },
   button: {
-    width: isTablet() ? '30%' : '48%',
-    height: verticalScale(isTablet() ? 180 : 130),
+    width: isTablet() ? '28%' : '44%',
+    height: verticalScale(isTablet() ? 200 : 160),
     backgroundColor: '#fff',
     borderRadius: scale(24),
     justifyContent: 'center',

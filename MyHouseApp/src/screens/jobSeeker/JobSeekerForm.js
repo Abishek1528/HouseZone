@@ -63,10 +63,11 @@ const validateStep2 = (formData) => {
   return true;
 };
 
-export default function JobSeekerForm() {
+export default function JobSeekerForm({ route }) {
   const navigation = useNavigation();
   const { dark, colors } = useTheme();
   const ofs = getOwnerFormStyles(colors, dark);
+  const { job } = route.params || {};
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
@@ -129,7 +130,8 @@ export default function JobSeekerForm() {
         experienceYears: formData.experienceYears,
         lastWorkingShop: formData.lastWorkingShop,
         otherSkills: formData.otherSkills,
-        canJoinImmediately: formData.canJoinImmediately
+        canJoinImmediately: formData.canJoinImmediately,
+        jobGiverJobId: job?.id
       };
 
       const response = await saveJobSeeker(submitData);
@@ -137,9 +139,11 @@ export default function JobSeekerForm() {
       // Save the job seeker ID to AsyncStorage
       if (response?.jobSeekerId || response?.id) {
         await AsyncStorage.setItem('jobSeekerId', String(response.jobSeekerId || response.id));
+        // Also save the mobile number for future lookups
+        await AsyncStorage.setItem('jobSeekerMobile', formData.mobileNumber);
       }
 
-      Alert.alert("Success", "Your job seeker details saved successfully!", [
+      Alert.alert("Success", "Your job application has been submitted successfully!", [
         {
           text: "OK",
           onPress: () => {

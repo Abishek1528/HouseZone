@@ -155,7 +155,7 @@ router.get('/jobgiver/debug/columns', async (req, res) => {
 // Get all job seekers for job giver
 router.get('/jobgiver/jobseekers', async (req, res) => {
   try {
-    const sql = `SELECT * FROM jobseeker ORDER BY created_at DESC`;
+    const sql = `SELECT js.*, jd.shop_name, jd.shop_type, jd.area, jd.city FROM jobseeker js LEFT JOIN jobgiverdet jd ON js.job_giver_job_id = jd.id ORDER BY js.created_at DESC`;
     const [rows] = await pool.execute(sql);
     
     // Convert snake_case to camelCase
@@ -179,7 +179,7 @@ router.get('/jobgiver/jobseekers', async (req, res) => {
 router.get('/jobgiver/jobseekers/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const sql = `SELECT * FROM jobseeker WHERE id = ?`;
+    const sql = `SELECT js.*, jd.shop_name, jd.shop_type, jd.area, jd.city FROM jobseeker js LEFT JOIN jobgiverdet jd ON js.job_giver_job_id = jd.id WHERE js.id = ?`;
     const [rows] = await pool.execute(sql, [id]);
     
     if (rows.length === 0) {
