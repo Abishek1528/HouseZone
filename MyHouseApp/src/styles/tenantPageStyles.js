@@ -642,6 +642,11 @@ export const getTenantPageStyles = (dark = false) => {
       borderRadius: 14,
       alignItems: "center",
     },
+    btnPrimaryText: {
+      color: "#fff",
+      fontWeight: "700",
+      fontSize: 14,
+    },
     btnOutline: {
       flex: 1,
       backgroundColor: dark ? "#374151" : C.white,
