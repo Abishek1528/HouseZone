@@ -152,4 +152,81 @@ router.get('/jobgiver/debug/columns', async (req, res) => {
   }
 });
 
+// Get all job seekers for job giver
+router.get('/jobgiver/jobseekers', async (req, res) => {
+  try {
+    const sql = `SELECT * FROM jobseeker ORDER BY created_at DESC`;
+    const [rows] = await pool.execute(sql);
+    
+    // Convert snake_case to camelCase
+    const convertKeysToCamelCase = (obj) => {
+      return Object.keys(obj).reduce((result, key) => {
+        const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        result[camelKey] = obj[key];
+        return result;
+      }, {});
+    };
+    
+    const camelCaseRows = rows.map(convertKeysToCamelCase);
+    res.status(200).json(camelCaseRows);
+  } catch (error) {
+    console.error('Error fetching job seekers:', error);
+    res.status(500).json({ message: 'Error fetching job seekers', error: error.message });
+  }
+});
+
+// Get single job seeker details by id
+router.get('/jobgiver/jobseekers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = `SELECT * FROM jobseeker WHERE id = ?`;
+    const [rows] = await pool.execute(sql, [id]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Job seeker not found' });
+    }
+    
+    // Convert snake_case to camelCase
+    const convertKeysToCamelCase = (obj) => {
+      return Object.keys(obj).reduce((result, key) => {
+        const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        result[camelKey] = obj[key];
+        return result;
+      }, {});
+    };
+    
+    const camelCaseRow = convertKeysToCamelCase(rows[0]);
+    res.status(200).json(camelCaseRow);
+  } catch (error) {
+    console.error('Error fetching job seeker details:', error);
+    res.status(500).json({ message: 'Error fetching job seeker details', error: error.message });
+  }
+});
+
+// Accept job seeker application
+router.put('/jobgiver/jobseekers/:id/accept', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = `UPDATE jobseeker SET status = 'accepted' WHERE id = ?`;
+    await pool.execute(sql, [id]);
+    res.status(200).json({ message: 'Application accepted' });
+  } catch (error) {
+    console.error('Error accepting job seeker:', error);
+    res.status(500).json({ message: 'Error accepting application', error: error.message });
+  }
+});
+
+// Decline job seeker application
+router.put('/jobgiver/jobseekers/:id/decline', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = `UPDATE jobseeker SET status = 'declined' WHERE id = ?`;
+    await pool.execute(sql, [id]);
+    res.status(200).json({ message: 'Application declined' });
+  } catch (error) {
+    console.error('Error declining job seeker:', error);
+    res.status(500).json({ message: 'Error declining application', error: error.message });
+  }
+});
+
 export default router;

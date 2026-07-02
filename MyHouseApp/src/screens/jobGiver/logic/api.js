@@ -83,8 +83,32 @@ export const saveJobGiverStep3 = async (data) => {
   }
 };
 
+export const getJobSeekers = async () => {
+  return handleFetchRequest(`${API_BASE_URL}/jobgiver/jobseekers`);
+};
+
+export const getJobSeekerDetails = async (jobSeekerId) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobgiver/jobseekers/${jobSeekerId}`);
+};
+
+export const acceptJobSeeker = async (jobSeekerId) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobgiver/jobseekers/${jobSeekerId}/accept`, {
+    method: 'PUT',
+  });
+};
+
+export const declineJobSeeker = async (jobSeekerId) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobgiver/jobseekers/${jobSeekerId}/decline`, {
+    method: 'PUT',
+  });
+};
+
 export default {
   saveJobGiverStep1,
   saveJobGiverStep2,
-  saveJobGiverStep3
+  saveJobGiverStep3,
+  getJobSeekers,
+  getJobSeekerDetails,
+  acceptJobSeeker,
+  declineJobSeeker
 };

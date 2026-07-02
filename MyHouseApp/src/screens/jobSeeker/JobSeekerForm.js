@@ -132,7 +132,12 @@ export default function JobSeekerForm() {
         canJoinImmediately: formData.canJoinImmediately
       };
 
-      await saveJobSeeker(submitData);
+      const response = await saveJobSeeker(submitData);
+      
+      // Save the job seeker ID to AsyncStorage
+      if (response?.jobSeekerId || response?.id) {
+        await AsyncStorage.setItem('jobSeekerId', String(response.jobSeekerId || response.id));
+      }
 
       Alert.alert("Success", "Your job seeker details saved successfully!", [
         {
