@@ -47,7 +47,8 @@ router.post('/jobseeker', async (req, res) => {
       experienceYears,
       lastWorkingShop,
       otherSkills,
-      canJoinImmediately
+      canJoinImmediately,
+      jobGiverJobId
     } = req.body;
 
     // Convert undefined to null
@@ -63,11 +64,12 @@ router.post('/jobseeker', async (req, res) => {
       experienceYears !== undefined ? experienceYears : null,
       lastWorkingShop !== undefined ? lastWorkingShop : null,
       otherSkills !== undefined ? otherSkills : null,
-      canJoinImmediately
+      canJoinImmediately,
+      jobGiverJobId !== undefined ? jobGiverJobId : null
     ];
 
     console.log('Inserting into jobseeker with values:', values);
-    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, other_skills, can_join_immediately) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, other_skills, can_join_immediately, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const [result] = await pool.execute(sql, values);
     console.log('Insert result:', result);
 
@@ -190,6 +192,25 @@ router.get('/jobseeker/jobs/:id', async (req, res) => {
   } catch (error) {
     console.error('Error fetching job details:', error);
     res.status(500).json({ message: 'Error fetching job details', error: error.message });
+  }
+});
+
+// GET job seeker applications by mobile number
+router.get('/jobseeker/applications/:mobileNumber', async (req, res) => {
+  try {
+    const { mobileNumber } = req.params;
+
+    const [rows] = await pool.execute(
+      `SELECT js.*, jd.shop_name, jd.shop_type, jd.area, jd.city FROM jobseeker js LEFT JOIN jobgiverdet jd ON js.job_giver_job_id = jd.id WHERE js.mobile_number = ? ORDER BY js.created_at DESC`,
+      [mobileNumber]
+    );
+
+    // Convert snake_case to camelCase
+    const camelCaseRows = rows.map(convertKeysToCamelCase);
+    res.status(200).json(camelCaseRows);
+  } catch (error) {
+    console.error('Error fetching job seeker applications:', error);
+    res.status(500).json({ message: 'Error fetching applications', error: error.message });
   }
 });
 

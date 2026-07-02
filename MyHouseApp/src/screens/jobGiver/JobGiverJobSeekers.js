@@ -13,6 +13,12 @@ const JobSeekerCard = ({ jobSeeker, onViewDetails, tps, dark }) => {
   const { colors } = tps;
   if (!jobSeeker) return null;
 
+  const getStatusColor = () => {
+    if (jobSeeker?.status === 'accepted') return '#27ae60';
+    if (jobSeeker?.status === 'declined') return '#e74c3c';
+    return '#f39c12';
+  };
+
   return (
     <View style={tps.card}>
       <View style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
@@ -23,13 +29,18 @@ const JobSeekerCard = ({ jobSeeker, onViewDetails, tps, dark }) => {
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>
             {jobSeeker.experience} • {jobSeeker.education}
           </Text>
-          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
+          <Text style={[propertyListStyles.rentText, { color: getStatusColor() }]}>
             Age: {jobSeeker.age}
           </Text>
         </View>
-        <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.text, fontWeight: '600', fontSize: 16 }}>
+        <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 4, color: colors.text, fontWeight: '600', fontSize: 16 }}>
           {jobSeeker.fullName}
         </Text>
+        {jobSeeker.shopName && (
+          <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 4, color: colors.text, fontSize: 14 }}>
+            Applied to: {jobSeeker.shopName}
+          </Text>
+        )}
         <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.text, fontSize: 14 }}>
           Gender: {jobSeeker.gender}
         </Text>

@@ -120,6 +120,23 @@ export default function JobGiverJobSeekerDetails({ route }) {
             </Text>
           </View>
         )}
+        {jobSeeker.shopName && (
+          <View style={tps.section}>
+            <Text style={tps.sectionTitle}>Applied to</Text>
+            <View style={tps.firstDetailRow}>
+              <Text style={tps.label}>Shop Name</Text>
+              <Text style={tps.value}>{jobSeeker.shopName}</Text>
+            </View>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>Shop Type</Text>
+              <Text style={tps.value}>{jobSeeker.shopType}</Text>
+            </View>
+            <View style={tps.detailRow}>
+              <Text style={tps.label}>Location</Text>
+              <Text style={tps.value}>{jobSeeker.area}, {jobSeeker.city}</Text>
+            </View>
+          </View>
+        )}
         <ScrollView
           style={propertyDetailsStyles.scrollContainer}
           contentContainerStyle={propertyDetailsStyles.scrollContentContainer}

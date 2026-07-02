@@ -28,7 +28,12 @@ export const getJobDetails = async (jobId) => {
 };
 
 export const getJobSeekerById = async (jobSeekerId) => {
+  // Use the same endpoint as job giver since it returns all details
   return handleFetchRequest(`${API_BASE_URL}/jobgiver/jobseekers/${jobSeekerId}`);
+};
+
+export const getJobSeekerApplications = async (mobileNumber) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobseeker/applications/${mobileNumber}`);
 };
 
 export const saveJobSeeker = async (data) => {
@@ -43,5 +48,6 @@ export default {
   getJobListings,
   getJobDetails,
   getJobSeekerById,
+  getJobSeekerApplications,
   saveJobSeeker
 };
