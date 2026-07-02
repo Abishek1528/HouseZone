@@ -22,6 +22,12 @@ export default function JobGiver() {
         >
           <Text style={categoryContentStyles.buttonText}>Post Job Details</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[categoryContentStyles.button, categoryContentStyles.secondaryButton]}
+          onPress={() => navigation.navigate("JobGiverJobSeekers")}
+        >
+          <Text style={categoryContentStyles.buttonText}>View Job Seekers</Text>
+        </TouchableOpacity>
       </View>
       <Footer />
     </View>

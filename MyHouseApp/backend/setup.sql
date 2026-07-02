@@ -335,5 +335,6 @@ CREATE TABLE IF NOT EXISTS jobseeker (
     last_working_shop VARCHAR(255),
     other_skills TEXT,
     can_join_immediately VARCHAR(50) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

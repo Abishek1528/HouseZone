@@ -28,6 +28,8 @@ import MachineryListPage from '../screens/machinery/tenant/MachineryListPage';
 import MachineryDetailsPage from '../screens/machinery/tenant/MachineryDetailsPage';
 import JobDetails from '../screens/jobSeeker/JobDetails';
 import JobSeekerForm from '../screens/jobSeeker/JobSeekerForm';
+import JobGiverJobSeekers from '../screens/jobGiver/JobGiverJobSeekers';
+import JobGiverJobSeekerDetails from '../screens/jobGiver/JobGiverJobSeekerDetails';
 import Profile from '../screens/Profile';
 import MyHistory from '../screens/MyHistory';
 import Settings from '../screens/Settings';
@@ -70,6 +72,8 @@ export default function AppNavigator() {
         <Stack.Screen name="JobSeekerForm" component={JobSeekerForm} />
         <Stack.Screen name="JobGiver" component={JobGiver} />
         <Stack.Screen name="AddJobGiver" component={AddJobGiver} />
+        <Stack.Screen name="JobGiverJobSeekers" component={JobGiverJobSeekers} />
+        <Stack.Screen name="JobGiverJobSeekerDetails" component={JobGiverJobSeekerDetails} />
         <Stack.Screen name="BusinessPropertiesList" component={BusinessPropertiesList} />
         <Stack.Screen name="PropertiesList" component={PropertiesList} />
         <Stack.Screen name="PropertyDetails" component={PropertyDetails} />

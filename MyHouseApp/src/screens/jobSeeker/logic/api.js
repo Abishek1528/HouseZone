@@ -27,6 +27,10 @@ export const getJobDetails = async (jobId) => {
   return handleFetchRequest(`${API_BASE_URL}/jobseeker/jobs/${jobId}`);
 };
 
+export const getJobSeekerById = async (jobSeekerId) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobgiver/jobseekers/${jobSeekerId}`);
+};
+
 export const saveJobSeeker = async (data) => {
   return handleFetchRequest(`${API_BASE_URL}/jobseeker`, {
     method: 'POST',
@@ -38,5 +42,6 @@ export const saveJobSeeker = async (data) => {
 export default {
   getJobListings,
   getJobDetails,
+  getJobSeekerById,
   saveJobSeeker
 };
