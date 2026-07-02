@@ -39,7 +39,9 @@ export default function JobGiverJobSeekerDetails({ route }) {
   const handleAccept = async () => {
     try {
       await acceptJobSeeker(jobSeekerId);
-      Alert.alert("Success", "Application accepted!", [{ text: "OK", onPress: () => navigation.goBack() }]);
+      // Refresh the data after accepting
+      await fetchJobSeekerDetails();
+      Alert.alert("Success", "Application accepted!", [{ text: "OK" }]);
     } catch (error) {
       console.error("Error accepting job seeker:", error);
       Alert.alert("Error", "Failed to accept application.");
@@ -49,7 +51,9 @@ export default function JobGiverJobSeekerDetails({ route }) {
   const handleDecline = async () => {
     try {
       await declineJobSeeker(jobSeekerId);
-      Alert.alert("Success", "Application declined.", [{ text: "OK", onPress: () => navigation.goBack() }]);
+      // Refresh the data after declining
+      await fetchJobSeekerDetails();
+      Alert.alert("Success", "Application declined.", [{ text: "OK" }]);
     } catch (error) {
       console.error("Error declining job seeker:", error);
       Alert.alert("Error", "Failed to decline application.");
