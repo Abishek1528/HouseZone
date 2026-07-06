@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
@@ -234,9 +235,13 @@ export default function JobSeekerForm({ route }) {
               onPress={step < MAX_STEPS ? handleNext : handleSubmit}
               disabled={isSubmitting}
             >
-              <Text style={ofs.formActionBtnText}>
-                {isSubmitting ? "..." : step < MAX_STEPS ? "Next" : "Submit"}
-              </Text>
+              {isSubmitting ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <Text style={ofs.formActionBtnText}>
+                  {step < MAX_STEPS ? "Next" : "Submit"}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
