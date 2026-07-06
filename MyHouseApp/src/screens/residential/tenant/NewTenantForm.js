@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -165,7 +165,11 @@ const NewTenantForm = () => {
             onPress={handleSubmit}
             disabled={isSubmitting}
           >
-            <Text style={tps.btnText}>{isSubmitting ? 'Submitting...' : 'Submit'}</Text>
+            {isSubmitting ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={tps.btnText}>Submit</Text>
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

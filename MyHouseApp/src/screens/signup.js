@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +15,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const handleSignup = async () => {
@@ -24,6 +25,7 @@ export default function Signup() {
     }
 
     try {
+      setIsLoading(true);
       console.log(`Attempting to signup with API URL: ${API_BASE_URL}/signup`);
       const response = await fetch(`${API_BASE_URL}/signup`, {
         method: 'POST',
@@ -85,6 +87,8 @@ export default function Signup() {
       }
       
       Alert.alert("Connection Error", errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -218,8 +222,13 @@ export default function Signup() {
           <TouchableOpacity 
             style={signupStyles.signupButton} 
             onPress={handleSignup}
+            disabled={isLoading}
           >
-            <Text style={signupStyles.signupButtonText}>Signup</Text>
+            {isLoading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={signupStyles.signupButtonText}>Signup</Text>
+            )}
           </TouchableOpacity>
           
           <TouchableOpacity 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar } from "react-native";
+import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar, ActivityIndicator } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import categoryContentStyles from "../../styles/categoryContentStyles";
 import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
@@ -871,9 +871,13 @@ const BaseForm = ({
               onPress={step < maxSteps ? handleNextStep : handleFormSubmit}
               disabled={isSubmitting}
             >
-              <Text style={ofs.formActionBtnText}>
-                {isSubmitting ? "..." : step < maxSteps ? "Next" : "Submit"}
-              </Text>
+              {isSubmitting ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <Text style={ofs.formActionBtnText}>
+                  {step < maxSteps ? "Next" : "Submit"}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

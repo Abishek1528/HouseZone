@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar, Animated, Easing, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,6 +13,7 @@ export default function Login() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const fadeAnim1 = useRef(new Animated.Value(0)).current;
@@ -60,6 +61,7 @@ export default function Login() {
     }
 
     try {
+      setIsLoading(true);
       console.log(`Attempting to login with API URL: ${API_BASE_URL}/login`);
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
@@ -121,6 +123,8 @@ export default function Login() {
       }
       
       Alert.alert("Connection Error", errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -235,8 +239,13 @@ export default function Login() {
           <TouchableOpacity 
             style={loginStyles.loginButton} 
             onPress={handleLogin}
+            disabled={isLoading}
           >
-            <Text style={loginStyles.loginButtonText}>Login Account</Text>
+            {isLoading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={loginStyles.loginButtonText}>Login Account</Text>
+            )}
           </TouchableOpacity>
           
           <TouchableOpacity 
