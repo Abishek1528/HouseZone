@@ -72,7 +72,7 @@ const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, col
       <OwnerFormField
         label="Mobile Number *"
         value={formData.mobileNumber}
-        onChangeText={(value) => handleInputChange("mobileNumber", sanitizePhoneInput(value)}
+        onChangeText={(value) => handleInputChange("mobileNumber", sanitizePhoneInput(value))}
         onBlur={() => onBlur("mobileNumber", formData.mobileNumber)}
         keyboardType="phone-pad"
         maxLength={10}
