@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Header from '../components/Header';
@@ -8,7 +8,7 @@ import { getTenantPageStyles } from '../styles/tenantPageStyles';
 import propertyListStyles from './residential/tenant/propertyListStyles';
 import TenantPageHeader from '../shared/components/TenantPageHeader';
 import { useTheme } from '../context/ThemeContext';
-import { getJobListings, getJobSeekerApplications } from './jobSeeker/logic/api';
+import { getJobListings } from './jobSeeker/logic/api';
 
 const JobCard = ({ job, onViewDetails, tps, dark }) => {
   const { colors } = tps;
@@ -44,49 +44,13 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
   );
 };
 
-const ApplicationCard = ({ application, tps, dark }) => {
-  const getStatusColor = () => {
-    if (application?.status === 'accepted') return '#27ae60';
-    if (application?.status === 'declined') return '#e74c3c';
-    return '#f39c12';
-  };
-
-  return (
-    <View style={[tps.card, { marginBottom: 16 }]}>
-      <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 8 }}>
-          {application.shopName || 'Unknown Company'}
-        </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 14, color: '#666' }}>
-            {application.shopType} • {application.area}, {application.city}
-          </Text>
-          <Text style={{
-            fontSize: 14,
-            fontWeight: '600',
-            color: getStatusColor(),
-            textTransform: 'capitalize',
-            backgroundColor: getStatusColor() + '20',
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderRadius: 6
-          }}>
-            {application.status}
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-};
-
 export default function JobSeeker() {
   const navigation = useNavigation();
   const { dark } = useTheme();
   const tps = getTenantPageStyles(dark);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [applications, setApplications] = useState([]);
-  const [mobileNumber, setMobileNumber] = useState(null);
+  const [hasApplications, setHasApplications] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -97,12 +61,7 @@ export default function JobSeeker() {
       ]);
       
       setJobs(jobsData);
-      setMobileNumber(storedMobile);
-      
-      if (storedMobile) {
-        const apps = await getJobSeekerApplications(storedMobile);
-        setApplications(apps);
-      }
+      setHasApplications(!!storedMobile);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -127,20 +86,32 @@ export default function JobSeeker() {
         title="Job Listings"
         subtitle="Browse available jobs in your area"
       />
-      <View style={[propertyListStyles.content, { paddingBottom: 80 }]}>
-        {applications.length > 0 && (
-          <View style={{ marginBottom: 16 }}>
-            <Text style={[tps.pageTitle, { marginBottom: 12 }]}>My Applications</Text>
-            {applications.map((app, index) => (
-              <ApplicationCard key={index} application={app} tps={tps} dark={dark} />
-            ))}
-          </View>
-        )}
+      <ScrollView 
+        style={{ flex: 1 }} 
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 16 }}>
+          {hasApplications && (
+            <TouchableOpacity
+              style={{
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                backgroundColor: tps.colors.primary,
+                borderRadius: 8
+              }}
+              onPress={() => navigation.navigate('JobSeekerMyApplications')}
+            >
+              <Text style={{ color: 'white', fontWeight: '600' }}>My Applications</Text>
+            </TouchableOpacity>
+          )}
+        </View>
         
-        {!mobileNumber && (
+        {!hasApplications && (
           <TouchableOpacity
             style={{
               marginBottom: 16,
+              marginTop: 8,
               padding: 16,
               backgroundColor: tps.colors.primary + '20',
               borderRadius: 12,
@@ -170,14 +141,11 @@ export default function JobSeeker() {
         ) : jobs.length === 0 ? (
           <Text style={propertyListStyles.noPropertiesText}>No jobs available</Text>
         ) : (
-          <FlatList
-            data={jobs}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={({ item }) => <JobCard job={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />}
-            style={propertyListStyles.list}
-          />
+          jobs.map((item) => (
+            <JobCard key={String(item.id)} job={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />
+          ))
         )}
-      </View>
+      </ScrollView>
       <Footer />
     </View>
   );

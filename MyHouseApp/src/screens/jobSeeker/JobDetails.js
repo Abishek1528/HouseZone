@@ -13,7 +13,7 @@ export default function JobDetails({ route }) {
   const navigation = useNavigation();
   const { dark } = useTheme();
   const tps = getTenantPageStyles(dark);
-  const { jobId } = route.params || {};
+  const { jobId, job: initialJob } = route.params || {};
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,10 +30,13 @@ export default function JobDetails({ route }) {
         setLoading(false);
       }
     };
-    if (jobId) {
+    if (initialJob) {
+      setJob(initialJob);
+      setLoading(false);
+    } else if (jobId) {
       fetchJobDetails();
     }
-  }, [jobId]);
+  }, [jobId, initialJob]);
 
   const handleProceed = () => {
     navigation.navigate('JobSeekerForm', { job });
@@ -74,11 +77,10 @@ export default function JobDetails({ route }) {
         title={job?.shopName || 'Job Details'}
         subtitle="Review job details"
       />
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
       <ScrollView
-        style={propertyDetailsStyles.scrollContainer}
-        contentContainerStyle={propertyDetailsStyles.scrollContentContainer}
-        nestedScrollEnabled
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
       >
 
         {/* Shop Image */}
@@ -154,7 +156,6 @@ export default function JobDetails({ route }) {
           )}
         </View>
       </ScrollView>
-      </View>
 
       <View style={[tps.bottomBar, { paddingHorizontal: 16, paddingBottom: 12 }]}>
         <TouchableOpacity style={tps.btnOutline} onPress={() => navigation.goBack()}>
