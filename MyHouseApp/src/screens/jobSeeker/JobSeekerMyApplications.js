@@ -8,6 +8,7 @@ import { getTenantPageStyles } from '../../styles/tenantPageStyles';
 import TenantPageHeader from '../../shared/components/TenantPageHeader';
 import { useTheme } from '../../context/ThemeContext';
 import { getJobSeekerApplications } from './logic/api';
+import { getTimeAgo } from '../../shared/utils/timeUtils.js';
 
 const ApplicationCard = ({ application, tps, dark }) => {
   const getStatusStyle = () => {
@@ -15,42 +16,71 @@ const ApplicationCard = ({ application, tps, dark }) => {
       return {
         color: '#27ae60',
         bg: '#27ae6015',
-        border: '#27ae60'
+        border: '#27ae60',
+        icon: '✅'
       };
     }
     if (application?.status === 'declined') {
       return {
         color: '#e74c3c',
         bg: '#e74c3c15',
-        border: '#e74c3c'
+        border: '#e74c3c',
+        icon: '❌'
       };
     }
     return {
       color: '#f39c12',
       bg: '#f39c1215',
-      border: '#f39c12'
+      border: '#f39c12',
+      icon: '⏳'
     };
   };
 
   const statusStyle = getStatusStyle();
 
   return (
-    <View style={[tps.card, { marginBottom: 16, borderLeftWidth: 4, borderLeftColor: statusStyle.border }]}>
+    <View style={[
+      tps.card, 
+      { 
+        marginBottom: 16, 
+        borderLeftWidth: 4, 
+        borderLeftColor: statusStyle.border,
+        flexDirection: 'column' // Override the row from tps.card
+      }
+    ]}>
       <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 8, color: dark ? '#fff' : '#1a1a1a' }}>
-          {application.shopName || 'Unknown Company'}
-        </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-          <View style={{ flex: 1, marginRight: 12 }}>
-            <Text style={{ fontSize: 14, color: dark ? '#aaa' : '#666', marginBottom: 4 }}>
-              {application.shopType} • {application.area}, {application.city}
+        {/* Shop name and notification icon */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: dark ? '#fff' : '#1a1a1a', flex: 1, marginRight: 8 }}>
+            {application.shopName || 'Unknown Company'}
+          </Text>
+          <Text style={{ fontSize: 24 }}>
+            {statusStyle.icon}
+          </Text>
+        </View>
+        
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 14, color: dark ? '#aaa' : '#666', marginBottom: 4 }}>
+            {application.shopType} • {application.area}, {application.city}
+          </Text>
+          {application.salaryOffering && (
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#27ae60', marginBottom: 4 }}>
+              ₹{application.salaryOffering}/month
             </Text>
-            {application.salaryOffering && (
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#27ae60' }}>
-                ₹{application.salaryOffering}/month
-              </Text>
-            )}
-          </View>
+          )}
+          {/* Working time */}
+          {application.workingTimeStart && application.workingTimeEnd && (
+            <Text style={{ fontSize: 13, color: dark ? '#999' : '#888', marginBottom: 4 }}>
+              Working: {application.workingTimeStart} - {application.workingTimeEnd}
+            </Text>
+          )}
+          {/* Posted time */}
+          <Text style={{ fontSize: 12, color: dark ? '#999' : '#777', fontWeight: '500' }}>
+            Posted {getTimeAgo(application.createdAt)}
+          </Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View style={{
             backgroundColor: statusStyle.bg,
             borderWidth: 1,
@@ -69,8 +99,6 @@ const ApplicationCard = ({ application, tps, dark }) => {
               {application.status}
             </Text>
           </View>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ fontSize: 12, color: dark ? '#888' : '#888', fontWeight: '600' }}>
             Applied: {new Date(application.createdAt).toLocaleDateString('en-IN', {
               day: 'numeric',

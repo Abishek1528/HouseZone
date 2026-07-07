@@ -11,6 +11,7 @@ import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
 import { getOwnerFormThemeColors } from '../../../styles/ownerFormStyles';
 import TenantPageHeader from '../../../shared/components/TenantPageHeader';
 import { useTheme } from '../../../context/ThemeContext';
+import { getTimeAgo } from '../../../shared/utils/timeUtils.js';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
 const API_HOST = API_BASE_URL.replace(/\/api$/, '');
@@ -37,10 +38,13 @@ const PropertyCard = ({ property, onViewDetails, tps, dark }) => {
       <View style={propertyListStyles.detailsContainer}>
         <View style={tps.propertyInfo}>
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>{displayPropertyType}</Text>
-          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
+          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]>
             ₹{displayRent}{rentLabel}
           </Text>
         </View>
+        <Text style={{ marginLeft: 12, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }>
+          Posted {getTimeAgo(property.createdAt)}
+        </Text>
         <TouchableOpacity
           style={[propertyListStyles.viewMoreButton, { borderTopColor: colors.border }]}
           onPress={() => onViewDetails(property?.id)}

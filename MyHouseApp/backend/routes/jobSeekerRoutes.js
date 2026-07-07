@@ -201,7 +201,13 @@ router.get('/jobseeker/applications/:mobileNumber', async (req, res) => {
     const { mobileNumber } = req.params;
 
     const [rows] = await pool.execute(
-      `SELECT js.*, jd.shop_name, jd.shop_type, jd.area, jd.city, jsal.salary_offering FROM jobseeker js LEFT JOIN jobgiverdet jd ON js.job_giver_job_id = jd.id LEFT JOIN jobgiversalary jsal ON jd.id = jsal.jobgiverdet_id WHERE js.mobile_number = ? ORDER BY js.created_at DESC`,
+      `SELECT js.*, jd.shop_name, jd.shop_type, jd.area, jd.city, jsal.salary_offering, jj.working_time_start, jj.working_time_end 
+       FROM jobseeker js 
+       LEFT JOIN jobgiverdet jd ON js.job_giver_job_id = jd.id 
+       LEFT JOIN jobgiverjob jj ON jd.id = jj.jobgiverdet_id
+       LEFT JOIN jobgiversalary jsal ON jd.id = jsal.jobgiverdet_id 
+       WHERE js.mobile_number = ? 
+       ORDER BY js.created_at DESC`,
       [mobileNumber]
     );
 
