@@ -11,6 +11,7 @@ import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import { getMachineryProperties } from "./api";
 import { useTheme } from "../../../context/ThemeContext";
+import { getTimeAgo } from "../../../shared/utils/timeUtils.js";
 
 // Component to display selected filters as horizontal boxes with remove option
 const SelectedFilterBox = ({ label, value, onRemove }) => {
@@ -147,6 +148,9 @@ export default function MachineryListPage() {
               <Text style={machineryListStyles.typeText}>{item.machinery_type || "Machinery"}</Text>
               <Text style={machineryListStyles.modelText}>Model: {item.machinery_model || "N/A"}</Text>
               <Text style={machineryListStyles.rentText}>₹{item.charge_per_day || "N/A"}/day</Text>
+              <Text style={{ fontSize: 12, color: tps.colors.subText, fontWeight: '500', marginTop: 4 }}>
+                Posted {getTimeAgo(item.createdAt)}
+              </Text>
             </View>
           </TouchableOpacity>
           

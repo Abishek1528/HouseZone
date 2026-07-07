@@ -9,6 +9,7 @@ import propertyListStyles from './residential/tenant/propertyListStyles';
 import TenantPageHeader from '../shared/components/TenantPageHeader';
 import { useTheme } from '../context/ThemeContext';
 import { getJobListings } from './jobSeeker/logic/api';
+import { getTimeAgo } from '../shared/utils/timeUtils.js';
 
 const JobCard = ({ job, onViewDetails, tps, dark }) => {
   const { colors } = tps;
@@ -32,6 +33,9 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         </View>
         <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.text, fontWeight: '600', fontSize: 16 }}>
           {job.shopName}
+        </Text>
+        <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }}>
+          Posted {getTimeAgo(job.createdAt)}
         </Text>
         <TouchableOpacity
           style={[propertyListStyles.viewMoreButton, { borderTopColor: colors.border }]}

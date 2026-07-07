@@ -19,6 +19,7 @@ import { getTenantPageStyles } from '../../../styles/tenantPageStyles';
 import { getOwnerFormThemeColors } from '../../../styles/ownerFormStyles';
 import TenantPageHeader from '../../../shared/components/TenantPageHeader';
 import { useTheme } from '../../../context/ThemeContext';
+import { getTimeAgo } from '../../../shared/utils/timeUtils.js';
 
 // Component to display selected filters as horizontal boxes with remove option
 const SelectedFilterBox = ({ label, value, onRemove }) => {
@@ -95,7 +96,8 @@ const VehiclesList = () => {
                 nonAcPrice: item.nonAcPrice || 0,
                 area: item.area || '',
                 city: item.city || '',
-                images: Array.isArray(item.images) ? item.images : []
+                images: Array.isArray(item.images) ? item.images : [],
+                createdAt: item.createdAt
             }));
 
             setVehicles(normalizedVehicles);
@@ -161,7 +163,9 @@ const VehiclesList = () => {
                     <Text style={[propertyListStyles.infoText, { marginBottom: 8 }]}>
                         Fuel: {item.fuelType || 'N/A'}
                     </Text>
-
+                    <Text style={{ marginLeft: 12, marginBottom: 8, color: tps.colors.subText, fontSize: 12, fontWeight: '500' }}>
+                        Posted {getTimeAgo(item.createdAt)}
+                    </Text>
                     <TouchableOpacity
                         style={propertyListStyles.viewMoreButton}
                         onPress={() => navigation.navigate('VehicleDetails', { id: item.id })}
