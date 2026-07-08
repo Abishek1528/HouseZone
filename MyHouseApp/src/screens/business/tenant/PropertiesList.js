@@ -38,11 +38,11 @@ const PropertyCard = ({ property, onViewDetails, tps, dark }) => {
       <View style={propertyListStyles.detailsContainer}>
         <View style={tps.propertyInfo}>
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>{displayPropertyType}</Text>
-          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]>
+          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
             ₹{displayRent}{rentLabel}
           </Text>
         </View>
-        <Text style={{ marginLeft: 12, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }>
+        <Text style={{ marginLeft: 12, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }}>
           Posted {getTimeAgo(property.createdAt)}
         </Text>
         <TouchableOpacity
