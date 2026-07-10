@@ -23,20 +23,28 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         resizeMode="cover"
       />
       <View style={propertyListStyles.detailsContainer}>
-        <View style={tps.propertyInfo}>
+        {/* Company Name */}
+        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 12, color: colors.text, fontWeight: '700', fontSize: 18 }}>
+          {job.shopName}
+        </Text>
+        {/* Job Title */}
+        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.primary, fontWeight: '600', fontSize: 16 }}>
+          {job.jobTitle}
+        </Text>
+        {/* Area and Salary */}
+        <View style={[tps.propertyInfo, { marginTop: 8 }]}>
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>
-            {job.shopType} • {job.area}, {job.city}
+            {job.area}, {job.city}
           </Text>
           <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
             ₹{job.salaryOffering}/month
           </Text>
         </View>
-        <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.text, fontWeight: '600', fontSize: 16 }}>
-          {job.shopName}
-        </Text>
-        <Text style={{ marginLeft: 12, marginRight: 12, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }}>
+        {/* Posted Ago */}
+        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 8, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }}>
           Posted {getTimeAgo(job.createdAt)}
         </Text>
+        {/* View Details */}
         <TouchableOpacity
           style={[propertyListStyles.viewMoreButton, { borderTopColor: colors.border }]}
           onPress={() => onViewDetails(job)}

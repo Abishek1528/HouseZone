@@ -57,40 +57,12 @@ const Step2JobRelatedDetails = ({ formData, handleInputChange, colors, dark }) =
           placeholder="Name of your last workplace"
         />
         <OwnerFormField
-          label="Other Skills *"
-          value={formData.otherSkills}
-          onChangeText={(value) => handleInputChange("otherSkills", value)}
+          label="Add Experience"
+          value={formData.addExperience}
+          onChangeText={(value) => handleInputChange("addExperience", value)}
           colors={colors}
           dark={dark}
-          placeholder="Any additional skills you have"
-        />
-      </>
-    )}
-    {formData.experience === "fresher" && (
-      <>
-        <OwnerFormField
-          label="Experience Years"
-          value={formData.experienceYears}
-          onChangeText={(value) => handleInputChange("experienceYears", value)}
-          colors={colors}
-          dark={dark}
-          placeholder="e.g., 0"
-        />
-        <OwnerFormField
-          label="Last Working Shop"
-          value={formData.lastWorkingShop}
-          onChangeText={(value) => handleInputChange("lastWorkingShop", value)}
-          colors={colors}
-          dark={dark}
-          placeholder="Name of your last workplace (if any)"
-        />
-        <OwnerFormField
-          label="Other Skills"
-          value={formData.otherSkills}
-          onChangeText={(value) => handleInputChange("otherSkills", value)}
-          colors={colors}
-          dark={dark}
-          placeholder="Any additional skills you have"
+          placeholder="Describe your work experience"
         />
       </>
     )}

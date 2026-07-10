@@ -11,6 +11,6 @@ export const initialFormData = {
   education: "",
   experienceYears: "",
   lastWorkingShop: "",
-  otherSkills: "",
+  addExperience: "",
   canJoinImmediately: "",
 };

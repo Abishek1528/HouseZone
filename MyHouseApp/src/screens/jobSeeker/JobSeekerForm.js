@@ -53,7 +53,7 @@ const validateStep2 = (formData) => {
     }
   }
   if (formData.experience === "experienced") {
-    const experienceRequired = ["experienceYears", "lastWorkingShop", "otherSkills"];
+    const experienceRequired = ["experienceYears", "lastWorkingShop", "addExperience"];
     for (const field of experienceRequired) {
       if (!String(formData[field] || "").trim()) {
         Alert.alert("Validation Error", "Please fill in all experience details as you are experienced.");
@@ -156,7 +156,7 @@ export default function JobSeekerForm({ route }) {
         education: formData.education,
         experienceYears: formData.experienceYears,
         lastWorkingShop: formData.lastWorkingShop,
-        otherSkills: formData.otherSkills,
+        addExperience: formData.addExperience,
         canJoinImmediately: formData.canJoinImmediately,
         jobGiverJobId: job?.id
       };
