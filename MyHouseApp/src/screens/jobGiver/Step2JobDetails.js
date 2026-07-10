@@ -57,6 +57,14 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
       colors={colors}
       dark={dark}
     >
+      <OwnerFormField
+        label="Job Title *"
+        value={formData.jobTitle}
+        onChangeText={(value) => handleInputChange("jobTitle", value)}
+        placeholder="e.g., Salesman, Cashier, etc."
+        colors={colors}
+        dark={dark}
+      />
       <OptionSelectField
         label="Age *"
         options={ageOptions}

@@ -41,7 +41,7 @@ const validateStep1 = (formData) => {
 };
 
 const validateStep2 = (formData) => {
-  const required = ["age", "gender", "education", "experienceYear", "experienceField", "workStartTime", "workEndTime"];
+  const required = ["jobTitle", "age", "gender", "education", "experienceYear", "experienceField", "workStartTime", "workEndTime"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
       Alert.alert("Validation Error", `Please fill in all required fields in Page 2.`);
@@ -133,6 +133,7 @@ export default function AddJobGiver() {
       // Step 2: Save job details
       const step2Data = {
         jobGiverId: jobGiverId,
+        jobTitle: formData.jobTitle,
         age: formData.age,
         gender: formData.gender,
         education: formData.education,

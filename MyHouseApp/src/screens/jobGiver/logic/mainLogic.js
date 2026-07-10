@@ -9,6 +9,7 @@ export const initialFormData = {
   contact: "",
 
   // Page 2 — Job Details
+  jobTitle: "",
   age: "",
   gender: "",
   education: "",

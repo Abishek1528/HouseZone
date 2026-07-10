@@ -46,7 +46,7 @@ router.post('/jobseeker', async (req, res) => {
       education,
       experienceYears,
       lastWorkingShop,
-      otherSkills,
+      addExperience,
       canJoinImmediately,
       jobGiverJobId
     } = req.body;
@@ -63,13 +63,13 @@ router.post('/jobseeker', async (req, res) => {
       education,
       experienceYears !== undefined ? experienceYears : null,
       lastWorkingShop !== undefined ? lastWorkingShop : null,
-      otherSkills !== undefined ? otherSkills : null,
+      addExperience !== undefined ? addExperience : null,
       canJoinImmediately,
       jobGiverJobId !== undefined ? jobGiverJobId : null
     ];
 
     console.log('Inserting into jobseeker with values:', values);
-    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, other_skills, can_join_immediately, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, add_experience, can_join_immediately, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const [result] = await pool.execute(sql, values);
     console.log('Insert result:', result);
 
@@ -81,7 +81,7 @@ router.post('/jobseeker', async (req, res) => {
   }
 });
 
-// GET all job listings for job seeker
+// Get all job listings for job seeker
 router.get('/jobseeker/jobs', async (req, res) => {
   try {
     let query = `SELECT 
@@ -90,11 +90,15 @@ router.get('/jobseeker/jobs', async (req, res) => {
       jd.shop_type,
       jd.area,
       jd.city,
+      jd.created_at,
+      jj.job_title,
       jj.age,
       jj.gender,
       jj.education,
       jj.experience_year,
       jj.experience_field,
+      jj.working_time_start,
+      jj.working_time_end,
       js.salary_offering
     FROM jobgiverdet jd
     LEFT JOIN jobgiverjob jj ON jd.id = jj.jobgiverdet_id
@@ -144,6 +148,8 @@ router.get('/jobseeker/jobs/:id', async (req, res) => {
         jd.city,
         jd.landmark,
         jd.contact,
+        jd.created_at,
+        jj.job_title,
         jj.age,
         jj.gender,
         jj.education,
