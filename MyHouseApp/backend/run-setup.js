@@ -1,38 +1,95 @@
+
 import mysql from 'mysql2/promise';
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function runSetup() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    port: parseInt(process.env.DB_PORT) || 3306,
-    multipleStatements: true
-  });
+dotenv.config();
 
+const columnExists = async (connection, tableName, columnName) => {
+  const [rows] = await connection.query(
+    `SHOW COLUMNS FROM ${tableName} LIKE ?`,
+    [columnName]
+  );
+  return rows.length > 0;
+};
+
+const runSetup = async () => {
   try {
-    console.log('Connected to MySQL server successfully');
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      port: parseInt(process.env.DB_PORT) || 3306,
+      database: process.env.DB_NAME || 'defaultdb'
+    });
 
-    const sql = fs.readFileSync(path.join(__dirname, 'setup.sql'), 'utf8');
-    console.log('Executing setup.sql...');
-    
-    await connection.query(sql);
-    
-    console.log('✅ All tables created successfully in defaultdb');
-  } catch (error) {
-    console.error('❌ Error setting up database:', error);
-  } finally {
+    console.log('Connected to database');
+
+    const setupSqlPath = path.join(__dirname, 'setup.sql');
+    let setupSql = await fs.readFile(setupSqlPath, 'utf8');
+
+    // Remove the USE statement since we already specified database in connection
+    setupSql = setupSql.replace(/USE .*?;/i, '');
+
+    // Split into individual statements
+    const statements = setupSql
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s);
+
+    for (const statement of statements) {
+      // Skip the ALTER TABLE statements that use IF NOT EXISTS, we'll handle those separately
+      if (statement.includes('ADD COLUMN IF NOT EXISTS') || statement.includes('DROP COLUMN IF EXISTS')) {
+        continue;
+      }
+      console.log('Executing:', statement.substring(0, 80) + '...');
+      await connection.query(statement);
+    }
+
+    // Now handle the column additions manually
+    console.log('\nChecking and adding missing columns...');
+
+    // Check and add job_title to jobgiverjob
+    if (!(await columnExists(connection, 'jobgiverjob', 'job_title'))) {
+      console.log('Adding job_title column to jobgiverjob...');
+      await connection.query(
+        'ALTER TABLE jobgiverjob ADD COLUMN job_title VARCHAR(255) NOT NULL AFTER jobgiverdet_id'
+      );
+    } else {
+      console.log('job_title column already exists in jobgiverjob');
+    }
+
+    // Check and add add_experience to jobseeker
+    if (!(await columnExists(connection, 'jobseeker', 'add_experience'))) {
+      console.log('Adding add_experience column to jobseeker...');
+      await connection.query(
+        'ALTER TABLE jobseeker ADD COLUMN add_experience TEXT AFTER last_working_shop'
+      );
+    } else {
+      console.log('add_experience column already exists in jobseeker');
+    }
+
+    // Check and drop other_skills from jobseeker if it exists
+    if (await columnExists(connection, 'jobseeker', 'other_skills')) {
+      console.log('Dropping other_skills column from jobseeker...');
+      await connection.query(
+        'ALTER TABLE jobseeker DROP COLUMN other_skills'
+      );
+    } else {
+      console.log('other_skills column does not exist in jobseeker');
+    }
+
+    console.log('\nSetup completed successfully!');
     await connection.end();
-    console.log('Connection closed');
+  } catch (error) {
+    console.error('Error running setup:', error);
+    process.exit(1);
   }
-}
+};
 
 runSetup();
