@@ -192,10 +192,10 @@ export default function JobGiverJobSeekerDetails({ route }) {
                 <Text style={tps.value}>{jobSeeker.lastWorkingShop}</Text>
               </View>
             )}
-            {jobSeeker.otherSkills && (
+            {jobSeeker.addExperience && (
               <View style={tps.detailRow}>
-                <Text style={tps.label}>Other Skills</Text>
-                <Text style={tps.value}>{jobSeeker.otherSkills}</Text>
+                <Text style={tps.label}>Add Experience</Text>
+                <Text style={tps.value}>{jobSeeker.addExperience}</Text>
               </View>
             )}
           </View>

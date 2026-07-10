@@ -297,6 +297,7 @@ CREATE TABLE IF NOT EXISTS jobgiverdet (
 CREATE TABLE IF NOT EXISTS jobgiverjob (
     id INT AUTO_INCREMENT PRIMARY KEY,
     jobgiverdet_id INT NOT NULL,
+    job_title VARCHAR(255) NOT NULL,
     age VARCHAR(50) NOT NULL, -- values: 'Any', '20-30', '30-40', '40-50'
     gender VARCHAR(50) NOT NULL,
     education VARCHAR(100) NOT NULL,
@@ -333,10 +334,15 @@ CREATE TABLE IF NOT EXISTS jobseeker (
     education VARCHAR(255) NOT NULL,
     experience_years VARCHAR(50),
     last_working_shop VARCHAR(255),
-    other_skills TEXT,
+    add_experience TEXT,
     can_join_immediately VARCHAR(50) NOT NULL,
     job_giver_job_id INT,
     status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_giver_job_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
 );
+
+-- Add missing columns to existing tables (if they already exist)
+ALTER TABLE jobgiverjob ADD COLUMN IF NOT EXISTS job_title VARCHAR(255) NOT NULL AFTER jobgiverdet_id;
+ALTER TABLE jobseeker ADD COLUMN IF NOT EXISTS add_experience TEXT AFTER last_working_shop;
+ALTER TABLE jobseeker DROP COLUMN IF EXISTS other_skills;
