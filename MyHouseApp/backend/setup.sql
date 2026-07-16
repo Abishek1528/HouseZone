@@ -320,9 +320,8 @@ CREATE TABLE IF NOT EXISTS jobgiversalary (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (jobgiverdet_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
 );
-
 -- 23. jobseeker table (job seeker details)
-CREATE TABLE IF NOT EXISTS jobseeker (
+CREATE TABLE IF NOT EXISTS jobseeker (      
     id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
     mobile_number VARCHAR(20) NOT NULL,
@@ -342,7 +341,3 @@ CREATE TABLE IF NOT EXISTS jobseeker (
     FOREIGN KEY (job_giver_job_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
 );
 
--- Add missing columns to existing tables (if they already exist)
-ALTER TABLE jobgiverjob ADD COLUMN IF NOT EXISTS job_title VARCHAR(255) NOT NULL AFTER jobgiverdet_id;
-ALTER TABLE jobseeker ADD COLUMN IF NOT EXISTS add_experience TEXT AFTER last_working_shop;
-ALTER TABLE jobseeker DROP COLUMN IF EXISTS other_skills;
