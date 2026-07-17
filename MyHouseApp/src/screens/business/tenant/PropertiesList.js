@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, Alert, Image } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Alert, Image, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import TenantFilterPanel from '../../../shared/components/TenantFilterPanel';
 import { useNavigation } from "@react-navigation/native";
 import Header from '../../../components/Header';
@@ -156,53 +156,61 @@ export default function PropertiesList() {
     navigation.navigate('BusinessPropertyDetails', { propertyId: id });
   };
 
+  const listHeader = () => (
+    <View style={propertyListStyles.content}>
+      <View style={propertyListStyles.titleRow}>
+        <Text style={tps.pageTitle}>Listings</Text>
+        <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
+          <Text style={tps.filterBtnText}>
+            {isFilterVisible ? "Hide Filter" : "Filter"} {isFilterVisible ? "▲" : "▼"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      
+      {isFilterVisible && (
+        <TenantFilterPanel
+          colors={themeColors}
+          sections={[
+            { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
+            { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
+          ]}
+        />
+      )}
+
+      {/* Selected Filters Display */}
+      <View style={propertyListStyles.selectedFiltersContainer}>
+        <SelectedFilterBox label="Type" value={typeFilter} onRemove={() => setTypeFilter('')} tps={tps} />
+        <SelectedFilterBox label="Area" value={areaFilter} onRemove={() => setAreaFilter('')} tps={tps} />
+      </View>
+      {loading && (
+        <Text style={tps.loadingText}>Loading properties...</Text>
+      )}
+      {!loading && properties.length === 0 && (
+        <Text style={propertyListStyles.noPropertiesText}>No properties found</Text>
+      )}
+    </View>
+  );
+
   return (
-    <View style={tps.screen}>
+    <KeyboardAvoidingView
+      style={tps.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
       <Header />
       <TenantPageHeader
         title="Business Properties"
         subtitle="Browse commercial spaces available to rent"
       />
-      <View style={propertyListStyles.content}>
-        <View style={propertyListStyles.titleRow}>
-          <Text style={tps.pageTitle}>Listings</Text>
-          <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
-            <Text style={tps.filterBtnText}>
-              {isFilterVisible ? "Hide Filter" : "Filter"} {isFilterVisible ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        
-        {isFilterVisible && (
-          <TenantFilterPanel
-            colors={themeColors}
-            sections={[
-              { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
-              { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
-            ]}
-          />
-        )}
-
-        {/* Selected Filters Display */}
-        <View style={propertyListStyles.selectedFiltersContainer}>
-          <SelectedFilterBox label="Type" value={typeFilter} onRemove={() => setTypeFilter('')} tps={tps} />
-          <SelectedFilterBox label="Area" value={areaFilter} onRemove={() => setAreaFilter('')} tps={tps} />
-        </View>
-
-        {loading ? (
-          <Text style={tps.loadingText}>Loading properties...</Text>
-        ) : properties.length === 0 ? (
-          <Text style={propertyListStyles.noPropertiesText}>No properties found</Text>
-        ) : (
-          <FlatList
-            data={properties}
-            keyExtractor={(item) => (item?.id || Math.random()).toString()}
-            renderItem={({ item }) => <PropertyCard property={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />}
-            style={propertyListStyles.list}
-          />
-        )}
-      </View>
+      <FlatList
+        data={properties}
+        keyExtractor={(item) => (item?.id || Math.random()).toString()}
+        renderItem={({ item }) => <PropertyCard property={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />}
+        style={propertyListStyles.list}
+        ListHeaderComponent={listHeader}
+        showsVerticalScrollIndicator={false}
+      />
       <Footer />
-    </View>
+    </KeyboardAvoidingView>
   );
 }

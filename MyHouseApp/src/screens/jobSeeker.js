@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Alert, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Header from '../components/Header';
@@ -213,32 +213,22 @@ export default function JobSeeker() {
     navigation.navigate('JobDetails', { job });
   };
 
-  return (
-    <View style={tps.screen}>
-      <Header />
-      <TenantPageHeader
-        title="Job Listings"
-        subtitle="Browse available jobs in your area"
-      />
-      <ScrollView 
-        style={{ flex: 1 }} 
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 16 }}>
-          <Text style={[tps.pageTitle, { marginBottom: 0 }]}>Available Jobs</Text>
-          <TouchableOpacity
-            style={tps.filterBtn}
-            onPress={() => setIsFilterVisible(!isFilterVisible)}
-          >
-            <Text style={tps.filterBtnText}>
-              {isFilterVisible ? "Hide Filter" : "Filter"}{" "}
-              {isFilterVisible ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+  const listHeader = () => (
+    <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 16 }}>
+        <Text style={[tps.pageTitle, { marginBottom: 0 }]}>Available Jobs</Text>
+        <TouchableOpacity
+          style={tps.filterBtn}
+          onPress={() => setIsFilterVisible(!isFilterVisible)}
+        >
+          <Text style={tps.filterBtnText}>
+            {isFilterVisible ? "Hide Filter" : "Filter"}{" "}
+            {isFilterVisible ? "▲" : "▼"}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-        {isFilterVisible && (
+      {isFilterVisible && (
         <TenantFilterPanel
           colors={themeColors}
           sections={[
@@ -306,62 +296,82 @@ export default function JobSeeker() {
         />
       </View>
 
-        <View style={{ marginTop: 16 }}>
-          {hasApplications && (
-            <TouchableOpacity
-              style={{
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                backgroundColor: tps.colors.primary,
-                borderRadius: 8,
-                marginBottom: 16,
-                alignSelf: 'flex-start'
-              }}
-              onPress={() => navigation.navigate('JobSeekerMyApplications')}
-            >
-              <Text style={{ color: 'white', fontWeight: '600' }}>My Applications</Text>
-            </TouchableOpacity>
-          )}
-          
-          {!hasApplications && (
-            <TouchableOpacity
-              style={{
-                marginBottom: 16,
-                padding: 16,
-                backgroundColor: tps.colors.primary + '20',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: tps.colors.primary + '40'
-              }}
-              onPress={() => {
-                Alert.alert(
-                  "Apply for Jobs",
-                  "Please select a job from the list below to apply!",
-                  [{ text: "OK" }]
-                )
-              }}
-            >
-              <Text style={{ color: tps.colors.primary, fontWeight: 'bold', fontSize: 16 }}>
-                Apply for Jobs
-              </Text>
-              <Text style={{ marginTop: 4, color: tps.colors.text, fontSize: 14 }}>
-                Select a job below to start your application
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        
-        {loading ? (
-          <Text style={tps.loadingText}>Loading jobs...</Text>
-        ) : jobs.length === 0 ? (
-          <Text style={propertyListStyles.noPropertiesText}>No jobs available</Text>
-        ) : (
-          jobs.map((item) => (
-            <JobCard key={String(item.id)} job={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />
-          ))
+      <View style={{ marginTop: 16 }}>
+        {hasApplications && (
+          <TouchableOpacity
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              backgroundColor: tps.colors.primary,
+              borderRadius: 8,
+              marginBottom: 16,
+              alignSelf: 'flex-start'
+            }}
+            onPress={() => navigation.navigate('JobSeekerMyApplications')}
+          >
+            <Text style={{ color: 'white', fontWeight: '600' }}>My Applications</Text>
+          </TouchableOpacity>
         )}
-      </ScrollView>
-      <Footer />
+        
+        {!hasApplications && (
+          <TouchableOpacity
+            style={{
+              marginBottom: 16,
+              padding: 16,
+              backgroundColor: tps.colors.primary + '20',
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: tps.colors.primary + '40'
+            }}
+            onPress={() => {
+              Alert.alert(
+                "Apply for Jobs",
+                "Please select a job from the list below to apply!",
+                [{ text: "OK" }]
+              )
+            }}
+          >
+            <Text style={{ color: tps.colors.primary, fontWeight: 'bold', fontSize: 16 }}>
+              Apply for Jobs
+            </Text>
+            <Text style={{ marginTop: 4, color: tps.colors.text, fontSize: 14 }}>
+              Select a job below to start your application
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {loading && (
+        <Text style={tps.loadingText}>Loading jobs...</Text>
+      )}
+      {!loading && jobs.length === 0 && (
+        <Text style={propertyListStyles.noPropertiesText}>No jobs available</Text>
+      )}
     </View>
+  );
+
+  return (
+    <KeyboardAvoidingView
+      style={tps.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <Header />
+      <TenantPageHeader
+        title="Job Listings"
+        subtitle="Browse available jobs in your area"
+      />
+      <FlatList
+        data={jobs}
+        renderItem={({ item }) => (
+          <JobCard job={item} onViewDetails={handleViewDetails} tps={tps} dark={dark} />
+        )}
+        keyExtractor={(item) => (item?.id || Math.random()).toString()}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        ListHeaderComponent={listHeader}
+        showsVerticalScrollIndicator={false}
+      />
+      <Footer />
+    </KeyboardAvoidingView>
   );
 }

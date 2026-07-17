@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import TenantFilterPanel from '../../../shared/components/TenantFilterPanel';
 import { useNavigation } from "@react-navigation/native";
 import categoryContentStyles from '../../../styles/categoryContentStyles';
@@ -248,96 +248,103 @@ export default function PropertiesList() {
     }
   };
 
+  const listHeader = () => (
+    <View style={propertyListStyles.content}>
+      <View style={propertyListStyles.titleRow}>
+        <Text style={tps.pageTitle}>Listings</Text>
+        <TouchableOpacity
+          style={tps.filterBtn}
+          onPress={() => setIsFilterVisible(!isFilterVisible)}
+        >
+          <Text style={tps.filterBtnText}>
+            {isFilterVisible ? "Hide Filter" : "Filter"}{" "}
+            {isFilterVisible ? "▲" : "▼"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      
+      {isFilterVisible && (
+        <TenantFilterPanel
+          colors={themeColors}
+          sections={[
+            {
+              key: "rent",
+              label: "Rent",
+              options: RENT_FILTER_OPTIONS,
+              value: rentFilter,
+              onSelect: setRentFilter,
+            },
+            {
+              key: "bedrooms",
+              label: "Bedrooms",
+              options: BEDROOM_FILTER_OPTIONS,
+              value: bedroomFilter,
+              onSelect: setBedroomFilter,
+            },
+            {
+              key: "area",
+              type: "searchable",
+              label: "Area",
+              options: areaFilterOptions,
+              value: areaFilter,
+              onSelect: setAreaFilter,
+              placeholder: "Search area...",
+            },
+          ]}
+        />
+      )}
+      
+      {/* Display selected filters horizontally with remove option */}
+      <View style={propertyListStyles.selectedFiltersContainer}>
+        <SelectedFilterBox
+          label="Rent"
+          value={getRentLabel(rentFilter)}
+          onRemove={() => setRentFilter("")}
+          tps={tps}
+        />
+        <SelectedFilterBox
+          label="Bedrooms"
+          value={getBedroomLabel(bedroomFilter)}
+          onRemove={() => setBedroomFilter("")}
+          tps={tps}
+        />
+        <SelectedFilterBox
+          label="Area"
+          value={areaFilter}
+          onRemove={() => setAreaFilter("")}
+          tps={tps}
+        />
+      </View>
+      {loading && (
+        <Text style={tps.loadingText}>Loading properties...</Text>
+      )}
+      {!loading && properties.length === 0 && (
+        <Text style={propertyListStyles.noPropertiesText}>No properties found</Text>
+      )}
+    </View>
+  );
+
   return (
-    <View style={tps.screen}>
+    <KeyboardAvoidingView
+      style={tps.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
       <Header />
       <TenantPageHeader
         title="Available Properties"
         subtitle="Browse residential listings in your area"
       />
-      <View style={propertyListStyles.content}>
-        <View style={propertyListStyles.titleRow}>
-          <Text style={tps.pageTitle}>Listings</Text>
-          <TouchableOpacity
-            style={tps.filterBtn}
-            onPress={() => setIsFilterVisible(!isFilterVisible)}
-          >
-            <Text style={tps.filterBtnText}>
-              {isFilterVisible ? "Hide Filter" : "Filter"}{" "}
-              {isFilterVisible ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        
-        {isFilterVisible && (
-          <TenantFilterPanel
-            colors={themeColors}
-            sections={[
-              {
-                key: "rent",
-                label: "Rent",
-                options: RENT_FILTER_OPTIONS,
-                value: rentFilter,
-                onSelect: setRentFilter,
-              },
-              {
-                key: "bedrooms",
-                label: "Bedrooms",
-                options: BEDROOM_FILTER_OPTIONS,
-                value: bedroomFilter,
-                onSelect: setBedroomFilter,
-              },
-              {
-                key: "area",
-                type: "searchable",
-                label: "Area",
-                options: areaFilterOptions,
-                value: areaFilter,
-                onSelect: setAreaFilter,
-                placeholder: "Search area...",
-              },
-            ]}
-          />
-        )}
-        
-        {/* Display selected filters horizontally with remove option */}
-        <View style={propertyListStyles.selectedFiltersContainer}>
-          <SelectedFilterBox
-            label="Rent"
-            value={getRentLabel(rentFilter)}
-            onRemove={() => setRentFilter("")}
-            tps={tps}
-          />
-          <SelectedFilterBox
-            label="Bedrooms"
-            value={getBedroomLabel(bedroomFilter)}
-            onRemove={() => setBedroomFilter("")}
-            tps={tps}
-          />
-          <SelectedFilterBox
-            label="Area"
-            value={areaFilter}
-            onRemove={() => setAreaFilter("")}
-            tps={tps}
-          />
-        </View>
-        
-        {/* Properties List */}
-        {loading ? (
-          <Text style={tps.loadingText}>Loading properties...</Text>
-        ) : properties.length === 0 ? (
-          <Text style={propertyListStyles.noPropertiesText}>No properties found</Text>
-        ) : (
-          <FlatList
-            data={properties}
-            renderItem={renderProperty}
-            keyExtractor={(item) => (item?.id || Math.random()).toString()}
-            style={propertyListStyles.list}
-          />
-        )}
-      </View>
+      <FlatList
+        data={properties}
+        renderItem={renderProperty}
+        keyExtractor={(item) => (item?.id || Math.random()).toString()}
+        style={propertyListStyles.list}
+        ListHeaderComponent={listHeader}
+        showsVerticalScrollIndicator={false}
+      />
       
       <Footer />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
