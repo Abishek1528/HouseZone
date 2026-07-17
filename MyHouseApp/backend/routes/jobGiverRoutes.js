@@ -66,11 +66,11 @@ router.post('/jobgiver/step1', async (req, res) => {
 router.post('/jobgiver/step2', async (req, res) => {
   try {
     console.log('Step 2 req.body:', req.body);
-    const { jobGiverId, jobTitle, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd } = req.body;
+    const { jobGiverId, jobTitle, employmentType, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd } = req.body;
 
-    console.log('Inserting into jobgiverjob with values:', [jobGiverId, jobTitle, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
-    const sql = `INSERT INTO jobgiverjob (jobgiverdet_id, job_title, age, gender, education, experience_year, experience_field, working_time_start, working_time_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    await pool.execute(sql, [jobGiverId, jobTitle, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
+    console.log('Inserting into jobgiverjob with values:', [jobGiverId, jobTitle, employmentType, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
+    const sql = `INSERT INTO jobgiverjob (jobgiverdet_id, job_title, employment_type, age, gender, education, experience_year, experience_field, working_time_start, working_time_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    await pool.execute(sql, [jobGiverId, jobTitle, employmentType, age, gender, education, experienceYear, experienceField, workingTimeStart, workingTimeEnd]);
 
     res.status(201).json({ message: 'Job giver step 2 saved successfully' });
   } catch (error) {

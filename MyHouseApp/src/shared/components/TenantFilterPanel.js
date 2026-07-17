@@ -1,11 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
 import OptionButtonGroup from "./OptionButtonGroup";
+import SearchableDropdown from "./SearchableDropdown";
 import { tenantListStyles } from "../../styles/tenantPageStyles";
 
 /**
  * Full-width filter card for tenant listing screens.
- * Each section: label + wrapping option chips (no outlined form shell).
+ * Each section: label + wrapping option chips (no outlined form shell) OR searchable dropdown.
  */
 const TenantFilterPanel = ({ title = null, sections = [], colors }) => {
   if (!sections.length) return null;
@@ -17,16 +18,28 @@ const TenantFilterPanel = ({ title = null, sections = [], colors }) => {
         <View key={section.key || section.label || index}>
           {index > 0 ? <View style={tenantListStyles.filterDivider} /> : null}
           <View style={tenantListStyles.filterSection}>
-            <Text style={tenantListStyles.filterSectionLabel}>
-              {String(section.label || "").replace(/:$/, "")}
-            </Text>
-            <OptionButtonGroup
-              options={section.options}
-              selectedValue={section.value}
-              onSelect={section.onSelect}
-              colors={colors}
-              layout="filter"
-            />
+            {section.type === 'searchable' ? (
+              <SearchableDropdown
+                label={String(section.label || "").replace(/:$/, "")}
+                options={section.options}
+                selectedValue={section.value}
+                onSelect={section.onSelect}
+                placeholder={section.placeholder || "Search..."}
+              />
+            ) : (
+              <>
+                <Text style={tenantListStyles.filterSectionLabel}>
+                  {String(section.label || "").replace(/:$/, "")}
+                </Text>
+                <OptionButtonGroup
+                  options={section.options}
+                  selectedValue={section.value}
+                  onSelect={section.onSelect}
+                  colors={colors}
+                  layout="filter"
+                />
+              </>
+            )}
           </View>
         </View>
       ))}

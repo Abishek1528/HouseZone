@@ -33,6 +33,10 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.primary, fontWeight: '600', fontSize: 16 }}>
           {job.jobTitle}
         </Text>
+        {/* Employment Type */}
+        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.text, fontWeight: '500', fontSize: 14 }}>
+          {job.employmentType}
+        </Text>
         {/* Area and Salary */}
         <View style={[tps.propertyInfo, { marginTop: 8 }]}>
           <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>
@@ -77,6 +81,12 @@ const SelectedFilterBox = ({ label, value, onRemove, tps }) => {
   );
 };
 
+const EMPLOYMENT_TYPE_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Full-time", value: "full-time" },
+  { label: "Part-time", value: "part-time" },
+];
+
 const SALARY_FILTER_OPTIONS = [
   { label: "Any", value: "" },
   { label: "5k-10k", value: "5000-10000" },
@@ -98,6 +108,14 @@ const getSalaryLabel = (value) => {
   }
 };
 
+const getEmploymentTypeLabel = (value) => {
+  switch(value) {
+    case 'full-time': return 'Full-time';
+    case 'part-time': return 'Part-time';
+    default: return '';
+  }
+};
+
 export default function JobSeeker() {
   const navigation = useNavigation();
   const { dark } = useTheme();
@@ -110,6 +128,7 @@ export default function JobSeeker() {
   const [salaryFilter, setSalaryFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
   const [jobTitleFilter, setJobTitleFilter] = useState('');
+  const [employmentTypeFilter, setEmploymentTypeFilter] = useState('');
   const [areaFilterOptions, setAreaFilterOptions] = useState([{ label: "Any", value: "" }]);
   const [jobTitleOptions, setJobTitleOptions] = useState([{ label: "Any", value: "" }]);
 
@@ -144,24 +163,24 @@ export default function JobSeeker() {
         getJobListings(filters),
         AsyncStorage.getItem('jobSeekerMobile')
       ]);
-      
+
       setJobs(jobsData);
       setHasApplications(!!storedMobile);
-      
+
       // Update filter options from fetched jobs
       const uniqueAreas = collectUniqueAreas(jobsData);
       const uniqueJobTitles = collectUniqueJobTitles(jobsData);
-      
+
       setAreaFilterOptions([
         { label: "Any", value: "" },
         ...uniqueAreas.map((area) => ({ label: area, value: area })),
       ]);
-      
+
       setJobTitleOptions([
         { label: "Any", value: "" },
         ...uniqueJobTitles.map((title) => ({ label: title, value: title })),
       ]);
-      
+
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -180,14 +199,15 @@ export default function JobSeeker() {
     const filters = {};
     if (jobTitleFilter) filters.jobTitle = jobTitleFilter;
     if (areaFilter) filters.area = areaFilter;
+    if (employmentTypeFilter) filters.employmentType = employmentTypeFilter;
     if (salaryFilter) {
       const [min, max] = salaryFilter.split('-').map(Number);
       filters.minSalary = min;
       filters.maxSalary = max;
     }
-    
+
     fetchData(filters);
-  }, [jobTitleFilter, areaFilter, salaryFilter]);
+  }, [jobTitleFilter, areaFilter, salaryFilter, employmentTypeFilter]);
 
   const handleViewDetails = (job) => {
     navigation.navigate('JobDetails', { job });
@@ -219,65 +239,83 @@ export default function JobSeeker() {
         </View>
 
         {isFilterVisible && (
-          <TenantFilterPanel
-            colors={themeColors}
-            sections={[
-              {
-                key: "jobTitle",
-                label: "Job Title",
-                options: jobTitleOptions,
-                value: jobTitleFilter,
-                onSelect: setJobTitleFilter,
-              },
-              {
-                key: "area",
-                label: "Area",
-                options: areaFilterOptions,
-                value: areaFilter,
-                onSelect: setAreaFilter,
-              },
-              {
-                key: "salary",
-                label: "Salary",
-                options: SALARY_FILTER_OPTIONS,
-                value: salaryFilter,
-                onSelect: setSalaryFilter,
-              },
-            ]}
-          />
-        )}
+        <TenantFilterPanel
+          colors={themeColors}
+          sections={[
+            {
+              key: "jobTitle",
+              type: "searchable",
+              label: "Job Title",
+              options: jobTitleOptions,
+              value: jobTitleFilter,
+              onSelect: setJobTitleFilter,
+              placeholder: "Search job title...",
+            },
+            {
+              key: "area",
+              type: "searchable",
+              label: "Area",
+              options: areaFilterOptions,
+              value: areaFilter,
+              onSelect: setAreaFilter,
+              placeholder: "Search area...",
+            },
+            {
+              key: "employmentType",
+              label: "Employment Type",
+              options: EMPLOYMENT_TYPE_FILTER_OPTIONS,
+              value: employmentTypeFilter,
+              onSelect: setEmploymentTypeFilter,
+            },
+            {
+              key: "salary",
+              label: "Salary",
+              options: SALARY_FILTER_OPTIONS,
+              value: salaryFilter,
+              onSelect: setSalaryFilter,
+            },
+          ]}
+        />
+      )}
 
-        {/* Display selected filters horizontally with remove option */}
-        <View style={[propertyListStyles.selectedFiltersContainer, { marginTop: 16 }]}>
-          <SelectedFilterBox
-            label="Job Title"
-            value={jobTitleFilter}
-            onRemove={() => setJobTitleFilter("")}
-            tps={tps}
-          />
-          <SelectedFilterBox
-            label="Area"
-            value={areaFilter}
-            onRemove={() => setAreaFilter("")}
-            tps={tps}
-          />
-          <SelectedFilterBox
-            label="Salary"
-            value={getSalaryLabel(salaryFilter)}
-            onRemove={() => setSalaryFilter("")}
-            tps={tps}
-          />
-        </View>
+      {/* Display selected filters horizontally with remove option */}
+      <View style={[propertyListStyles.selectedFiltersContainer, { marginTop: 16 }]}>
+        <SelectedFilterBox
+          label="Job Title"
+          value={jobTitleFilter}
+          onRemove={() => setJobTitleFilter("")}
+          tps={tps}
+        />
+        <SelectedFilterBox
+          label="Area"
+          value={areaFilter}
+          onRemove={() => setAreaFilter("")}
+          tps={tps}
+        />
+        <SelectedFilterBox
+          label="Employment Type"
+          value={getEmploymentTypeLabel(employmentTypeFilter)}
+          onRemove={() => setEmploymentTypeFilter("")}
+          tps={tps}
+        />
+        <SelectedFilterBox
+          label="Salary"
+          value={getSalaryLabel(salaryFilter)}
+          onRemove={() => setSalaryFilter("")}
+          tps={tps}
+        />
+      </View>
 
         <View style={{ marginTop: 16 }}>
           {hasApplications && (
             <TouchableOpacity
               style={{
                 paddingVertical: 8,
-                paddingHorizontal: 16,
+                paddingHorizontal: 12,
                 backgroundColor: tps.colors.primary,
                 borderRadius: 8,
-                marginBottom: 16
+                marginBottom: 16,
+                alignSelf: 'flex-start'
               }}
               onPress={() => navigation.navigate('JobSeekerMyApplications')}
             >

@@ -280,8 +280,14 @@ CREATE TABLE IF NOT EXISTS mactenant (
     FOREIGN KEY (machineryId) REFERENCES machinarydet(id) ON DELETE CASCADE
 );
 
+-- Drop existing job tables first
+DROP TABLE IF EXISTS jobseeker;
+DROP TABLE IF EXISTS jobgiversalary;
+DROP TABLE IF EXISTS jobgiverjob;
+DROP TABLE IF EXISTS jobgiverdet;
+
 -- 20. jobgiverdet table (job giver personal info)
-CREATE TABLE IF NOT EXISTS jobgiverdet (
+CREATE TABLE jobgiverdet (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     shop_name VARCHAR(255) NOT NULL,
@@ -294,10 +300,11 @@ CREATE TABLE IF NOT EXISTS jobgiverdet (
 );
 
 -- 21. jobgiverjob table (job details)
-CREATE TABLE IF NOT EXISTS jobgiverjob (
+CREATE TABLE jobgiverjob (
     id INT AUTO_INCREMENT PRIMARY KEY,
     jobgiverdet_id INT NOT NULL,
     job_title VARCHAR(255) NOT NULL,
+    employment_type VARCHAR(50) NOT NULL, -- values: 'full-time', 'part-time'
     age VARCHAR(50) NOT NULL, -- values: 'Any', '20-30', '30-40', '40-50'
     gender VARCHAR(50) NOT NULL,
     education VARCHAR(100) NOT NULL,
@@ -309,7 +316,7 @@ CREATE TABLE IF NOT EXISTS jobgiverjob (
 );
 
 -- 22. jobgiversalary table (salary and skills)
-CREATE TABLE IF NOT EXISTS jobgiversalary (
+CREATE TABLE jobgiversalary (
     id INT AUTO_INCREMENT PRIMARY KEY,
     jobgiverdet_id INT NOT NULL,
     salary_offering DECIMAL(10,2) NOT NULL,
@@ -321,7 +328,7 @@ CREATE TABLE IF NOT EXISTS jobgiversalary (
     FOREIGN KEY (jobgiverdet_id) REFERENCES jobgiverdet(id) ON DELETE CASCADE
 );
 -- 23. jobseeker table (job seeker details)
-CREATE TABLE IF NOT EXISTS jobseeker (      
+CREATE TABLE jobseeker (      
     id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
     mobile_number VARCHAR(20) NOT NULL,
@@ -335,6 +342,7 @@ CREATE TABLE IF NOT EXISTS jobseeker (
     last_working_shop VARCHAR(255),
     add_experience TEXT,
     can_join_immediately VARCHAR(50) NOT NULL,
+    preferred_employment_type VARCHAR(50), -- values: 'full-time', 'part-time', 'any'
     job_giver_job_id INT,
     status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
