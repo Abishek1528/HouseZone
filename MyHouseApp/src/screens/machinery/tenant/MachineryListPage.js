@@ -47,13 +47,6 @@ const TYPE_FILTER_OPTIONS = [
   { label: "Loader", value: "Loader" },
 ];
 
-const AREA_FILTER_OPTIONS = [
-  { label: "Any", value: "" },
-  { label: "Area 1", value: "Area 1" },
-  { label: "Area 2", value: "Area 2" },
-  { label: "Area 3", value: "Area 3" },
-];
-
 export default function MachineryListPage() {
   const { dark } = useTheme();
   const themeColors = getOwnerFormThemeColors(dark);
@@ -64,6 +57,7 @@ export default function MachineryListPage() {
   const [rentFilter, setRentFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
+  const [areaFilterOptions, setAreaFilterOptions] = useState([{ label: "Any", value: "" }]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
   const baseHost = API_BASE_URL.replace(/\/api$/, '');
@@ -79,11 +73,33 @@ export default function MachineryListPage() {
     return `${baseHost}/uploads/machinery/${filename}`;
   };
 
+  const collectUniqueAreas = (...sources) => {
+    const names = new Set();
+    sources.forEach((source) => {
+      if (!Array.isArray(source)) return;
+      source.forEach((item) => {
+        const value = typeof item === 'string' ? item : item?.area;
+        if (value != null && String(value).trim()) {
+          names.add(String(value).trim());
+        }
+      });
+    });
+    return [...names].sort((a, b) => a.localeCompare(b));
+  };
+
   const loadProperties = async (filters = {}) => {
     try {
       setLoading(true);
       const data = await getMachineryProperties(filters);
       console.log('Loaded machinery properties:', data);
+      
+      // Update area filter options
+      const uniqueAreas = collectUniqueAreas(data || []);
+      setAreaFilterOptions([
+        { label: "Any", value: "" },
+        ...uniqueAreas.map((area) => ({ label: area, value: area })),
+      ]);
+      
       setProperties(data || []);
     } catch (error) {
       Alert.alert("Error", "Failed to load machinery properties. Please try again.");
@@ -192,7 +208,7 @@ export default function MachineryListPage() {
             sections={[
               { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
               { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
-              { key: "area", label: "Area", options: AREA_FILTER_OPTIONS, value: areaFilter, onSelect: setAreaFilter },
+              { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
             ]}
           />
         )}

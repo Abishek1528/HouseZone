@@ -64,6 +64,16 @@ const runSetup = async () => {
       console.log('job_title column already exists in jobgiverjob');
     }
 
+    // Check and add employment_type to jobgiverjob
+    if (!(await columnExists(connection, 'jobgiverjob', 'employment_type'))) {
+      console.log('Adding employment_type column to jobgiverjob...');
+      await connection.query(
+        "ALTER TABLE jobgiverjob ADD COLUMN employment_type VARCHAR(50) NOT NULL DEFAULT 'full-time' AFTER job_title"
+      );
+    } else {
+      console.log('employment_type column already exists in jobgiverjob');
+    }
+
     // Check and add add_experience to jobseeker
     if (!(await columnExists(connection, 'jobseeker', 'add_experience'))) {
       console.log('Adding add_experience column to jobseeker...');

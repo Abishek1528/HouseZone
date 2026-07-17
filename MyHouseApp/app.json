@@ -2,6 +2,7 @@
   "expo": {
     "name": "MyHouseApp",
     "slug": "MyHouseApp",
+    "owner": "abishek22",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -58,7 +59,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "94228fc2-cf9a-4d0e-95b3-5f6d61366fbe"
+        "projectId": "9af76d32-3eff-46be-8a86-556de932917d"
       }
     }
   }
