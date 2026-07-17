@@ -19,8 +19,14 @@ const handleFetchRequest = async (url, options) => {
   }
 };
 
-export const getJobListings = async () => {
-  return handleFetchRequest(`${API_BASE_URL}/jobseeker/jobs`);
+export const getJobListings = async (filters = {}) => {
+  const queryParams = new URLSearchParams();
+  if (filters.jobTitle) queryParams.append('jobTitle', filters.jobTitle);
+  if (filters.area) queryParams.append('area', filters.area);
+  if (filters.minSalary) queryParams.append('minSalary', filters.minSalary);
+  if (filters.maxSalary) queryParams.append('maxSalary', filters.maxSalary);
+  const url = `${API_BASE_URL}/jobseeker/jobs${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+  return handleFetchRequest(url);
 };
 
 export const getJobDetails = async (jobId) => {

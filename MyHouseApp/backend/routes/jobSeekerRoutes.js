@@ -104,9 +104,38 @@ router.get('/jobseeker/jobs', async (req, res) => {
     LEFT JOIN jobgiverjob jj ON jd.id = jj.jobgiverdet_id
     LEFT JOIN jobgiversalary js ON jd.id = js.jobgiverdet_id`;
 
+    const params = [];
+    const conditions = [];
+
+    const { jobTitle, area, minSalary, maxSalary } = req.query;
+
+    if (jobTitle) {
+      conditions.push(`jj.job_title LIKE ?`);
+      params.push(`%${jobTitle}%`);
+    }
+
+    if (area) {
+      conditions.push(`jd.area LIKE ?`);
+      params.push(`%${area}%`);
+    }
+
+    if (minSalary) {
+      conditions.push(`js.salary_offering >= ?`);
+      params.push(parseFloat(minSalary));
+    }
+
+    if (maxSalary) {
+      conditions.push(`js.salary_offering <= ?`);
+      params.push(parseFloat(maxSalary));
+    }
+
+    if (conditions.length > 0) {
+      query += ` WHERE ${conditions.join(' AND ')}`;
+    }
+
     query += ` ORDER BY jd.id DESC`;
 
-    const [rows] = await pool.execute(query);
+    const [rows] = await pool.execute(query, params);
 
     let filenames = [];
     try {
