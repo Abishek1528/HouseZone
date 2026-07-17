@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import TenantFilterPanel from "../../../shared/components/TenantFilterPanel";
 import { useNavigation } from '@react-navigation/native';
 import propertyListStyles from "../../residential/tenant/propertyListStyles";
@@ -185,69 +185,76 @@ export default function MachineryListPage() {
     );
   };
 
+  const listHeader = () => (
+    <View style={propertyListStyles.content}>
+      <View style={propertyListStyles.titleRow}>
+        <Text style={tps.pageTitle}>Listings</Text>
+        <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
+          <Text style={tps.filterBtnText}>
+            {isFilterVisible ? "Hide Filter" : "Filter"} {isFilterVisible ? "▲" : "▼"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      
+      {isFilterVisible && (
+        <TenantFilterPanel
+          colors={themeColors}
+          sections={[
+            { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
+            { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
+            { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
+          ]}
+        />
+      )}
+
+      {/* Display selected filters horizontally with remove option */}
+      <View style={propertyListStyles.selectedFiltersContainer}>
+        <SelectedFilterBox 
+          label="Rent" 
+          value={getRentLabel(rentFilter)} 
+          onRemove={() => setRentFilter('')} 
+        />
+        <SelectedFilterBox 
+          label="Type" 
+          value={typeFilter} 
+          onRemove={() => setTypeFilter('')} 
+        />
+        <SelectedFilterBox 
+          label="Area" 
+          value={areaFilter} 
+          onRemove={() => setAreaFilter('')} 
+        />
+      </View>
+      {loading && (
+        <Text style={machineryListStyles.loadingText}>Loading machinery...</Text>
+      )}
+      {!loading && properties.length === 0 && (
+        <Text style={machineryListStyles.noPropertiesText}>No machinery found</Text>
+      )}
+    </View>
+  );
+
   return (
-    <View style={tps.screen}>
+    <KeyboardAvoidingView
+      style={tps.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
       <Header />
       <TenantPageHeader
         title="Available Machinery"
         subtitle="Find equipment for rent in your area"
       />
-      <View style={propertyListStyles.content}>
-        <View style={propertyListStyles.titleRow}>
-          <Text style={tps.pageTitle}>Listings</Text>
-          <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
-            <Text style={tps.filterBtnText}>
-              {isFilterVisible ? "Hide Filter" : "Filter"} {isFilterVisible ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        
-        {isFilterVisible && (
-          <TenantFilterPanel
-            colors={themeColors}
-            sections={[
-              { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
-              { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
-              { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
-            ]}
-          />
-        )}
-
-        {/* Display selected filters horizontally with remove option */}
-        <View style={propertyListStyles.selectedFiltersContainer}>
-          <SelectedFilterBox 
-            label="Rent" 
-            value={getRentLabel(rentFilter)} 
-            onRemove={() => setRentFilter('')} 
-          />
-          <SelectedFilterBox 
-            label="Type" 
-            value={typeFilter} 
-            onRemove={() => setTypeFilter('')} 
-          />
-          <SelectedFilterBox 
-            label="Area" 
-            value={areaFilter} 
-            onRemove={() => setAreaFilter('')} 
-          />
-        </View>
-
-        {loading ? (
-          <Text style={machineryListStyles.loadingText}>Loading machinery...</Text>
-        ) : properties.length === 0 ? (
-          <Text style={machineryListStyles.noPropertiesText}>No machinery found</Text>
-        ) : (
-          <FlatList
-            data={properties}
-            renderItem={renderProperty}
-            keyExtractor={(item) => (item?.id || Math.random()).toString()}
-            style={machineryListStyles.list}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
-      </View>
+      <FlatList
+        data={properties}
+        renderItem={renderProperty}
+        keyExtractor={(item) => (item?.id || Math.random()).toString()}
+        style={machineryListStyles.list}
+        ListHeaderComponent={listHeader}
+        showsVerticalScrollIndicator={false}
+      />
 
       <Footer />
-    </View>
+    </KeyboardAvoidingView>
   );
 }

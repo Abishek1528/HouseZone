@@ -7,7 +7,10 @@ import {
     ActivityIndicator,
     StyleSheet,
     Alert,
-    Image
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView
 } from 'react-native';
 import TenantFilterPanel from '../../../shared/components/TenantFilterPanel';
 import { useNavigation } from '@react-navigation/native';
@@ -188,70 +191,77 @@ const VehiclesList = () => {
         );
     };
 
+    const listHeader = () => (
+        <View style={propertyListStyles.content}>
+            <View style={propertyListStyles.titleRow}>
+                <Text style={tps.pageTitle}>Listings</Text>
+                <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
+                    <Text style={tps.filterBtnText}>
+                        {isFilterVisible ? 'Hide Filter' : 'Filter'} {isFilterVisible ? '▲' : '▼'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {isFilterVisible && (
+                <TenantFilterPanel
+                    colors={themeColors}
+                    sections={[
+                        { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
+                        { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
+                        { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
+                    ]}
+                />
+            )}
+
+            {/* Display selected filters horizontally with remove option */}
+            <View style={propertyListStyles.selectedFiltersContainer}>
+                <SelectedFilterBox
+                    label="Rent"
+                    value={getRentLabel(rentFilter)}
+                    onRemove={() => setRentFilter('')}
+                />
+                <SelectedFilterBox
+                    label="Type"
+                    value={typeFilter}
+                    onRemove={() => setTypeFilter('')}
+                />
+                <SelectedFilterBox
+                    label="Area"
+                    value={areaFilter}
+                    onRemove={() => setAreaFilter('')}
+                />
+            </View>
+            {loading && (
+                <Text style={propertyListStyles.loadingText}>Loading vehicles...</Text>
+            )}
+            {!loading && vehicles.length === 0 && (
+                <Text style={propertyListStyles.noPropertiesText}>No vehicles available at the moment.</Text>
+            )}
+        </View>
+    );
+
     return (
-        <View style={tps.screen}>
+        <KeyboardAvoidingView
+            style={tps.screen}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >
             <Header />
             <TenantPageHeader
                 title="Available Vehicles"
                 subtitle="Browse cars, buses, and more for rent"
             />
-            <View style={propertyListStyles.content}>
-                <View style={propertyListStyles.titleRow}>
-                    <Text style={tps.pageTitle}>Listings</Text>
-                    <TouchableOpacity style={tps.filterBtn} onPress={() => setIsFilterVisible(!isFilterVisible)}>
-                        <Text style={tps.filterBtnText}>
-                            {isFilterVisible ? 'Hide Filter' : 'Filter'} {isFilterVisible ? '▲' : '▼'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {isFilterVisible && (
-                    <TenantFilterPanel
-                        colors={themeColors}
-                        sections={[
-                            { key: "rent", label: "Rent", options: RENT_FILTER_OPTIONS, value: rentFilter, onSelect: setRentFilter },
-                            { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
-                            { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
-                        ]}
-                    />
-                )}
-
-                {/* Display selected filters horizontally with remove option */}
-                <View style={propertyListStyles.selectedFiltersContainer}>
-                    <SelectedFilterBox
-                        label="Rent"
-                        value={getRentLabel(rentFilter)}
-                        onRemove={() => setRentFilter('')}
-                    />
-                    <SelectedFilterBox
-                        label="Type"
-                        value={typeFilter}
-                        onRemove={() => setTypeFilter('')}
-                    />
-                    <SelectedFilterBox
-                        label="Area"
-                        value={areaFilter}
-                        onRemove={() => setAreaFilter('')}
-                    />
-                </View>
-
-                {/* Vehicles List */}
-                {loading ? (
-                    <Text style={propertyListStyles.loadingText}>Loading vehicles...</Text>
-                ) : vehicles.length === 0 ? (
-                    <Text style={propertyListStyles.noPropertiesText}>No vehicles available at the moment.</Text>
-                ) : (
-                    <FlatList
-                        data={vehicles}
-                        renderItem={renderVehicleCard}
-                        keyExtractor={(item) => (item?.id || Math.random()).toString()}
-                        style={propertyListStyles.list}
-                    />
-                )}
-            </View>
+            <FlatList
+                data={vehicles}
+                renderItem={renderVehicleCard}
+                keyExtractor={(item) => (item?.id || Math.random()).toString()}
+                style={propertyListStyles.list}
+                ListHeaderComponent={listHeader}
+                showsVerticalScrollIndicator={false}
+            />
 
             <Footer />
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
