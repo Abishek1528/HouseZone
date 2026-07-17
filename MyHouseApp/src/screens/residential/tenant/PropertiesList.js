@@ -289,10 +289,12 @@ export default function PropertiesList() {
               },
               {
                 key: "area",
+                type: "searchable",
                 label: "Area",
                 options: areaFilterOptions,
                 value: areaFilter,
                 onSelect: setAreaFilter,
+                placeholder: "Search area...",
               },
             ]}
           />

@@ -178,7 +178,7 @@ export default function PropertiesList() {
             colors={themeColors}
             sections={[
               { key: "type", label: "Type", options: TYPE_FILTER_OPTIONS, value: typeFilter, onSelect: setTypeFilter },
-              { key: "area", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter },
+              { key: "area", type: "searchable", label: "Area", options: areaFilterOptions, value: areaFilter, onSelect: setAreaFilter, placeholder: "Search area..." },
             ]}
           />
         )}
