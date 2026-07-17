@@ -26,6 +26,11 @@ const educationOptions = [
   { label: "PG", value: "pg" },
 ];
 
+const employmentTypeOptions = [
+  { label: "Full-time", value: "full-time" },
+  { label: "Part-time", value: "part-time" },
+];
+
 const experienceYearOptions = [
   { label: "Fresh", value: "fresh" },
   { label: "1 Year", value: "1year" },
@@ -64,6 +69,15 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
         placeholder="e.g., Salesman, Cashier, etc."
         colors={colors}
         dark={dark}
+      />
+      <OptionSelectField
+        label="Employment Type *"
+        options={employmentTypeOptions}
+        selectedValue={formData.employmentType || ""}
+        onSelect={(value) => handleInputChange("employmentType", value)}
+        colors={colors}
+        dark={dark}
+        collapsible
       />
       <OptionSelectField
         label="Age *"

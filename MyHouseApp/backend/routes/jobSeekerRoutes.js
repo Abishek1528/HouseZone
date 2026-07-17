@@ -48,6 +48,7 @@ router.post('/jobseeker', async (req, res) => {
       lastWorkingShop,
       addExperience,
       canJoinImmediately,
+      preferredEmploymentType,
       jobGiverJobId
     } = req.body;
 
@@ -65,11 +66,12 @@ router.post('/jobseeker', async (req, res) => {
       lastWorkingShop !== undefined ? lastWorkingShop : null,
       addExperience !== undefined ? addExperience : null,
       canJoinImmediately,
+      preferredEmploymentType !== undefined ? preferredEmploymentType : null,
       jobGiverJobId !== undefined ? jobGiverJobId : null
     ];
 
     console.log('Inserting into jobseeker with values:', values);
-    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, add_experience, can_join_immediately, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, add_experience, can_join_immediately, preferred_employment_type, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const [result] = await pool.execute(sql, values);
     console.log('Insert result:', result);
 
@@ -92,6 +94,7 @@ router.get('/jobseeker/jobs', async (req, res) => {
       jd.city,
       jd.created_at,
       jj.job_title,
+      jj.employment_type,
       jj.age,
       jj.gender,
       jj.education,
@@ -107,7 +110,7 @@ router.get('/jobseeker/jobs', async (req, res) => {
     const params = [];
     const conditions = [];
 
-    const { jobTitle, area, minSalary, maxSalary } = req.query;
+    const { jobTitle, area, minSalary, maxSalary, employmentType } = req.query;
 
     if (jobTitle) {
       conditions.push(`jj.job_title LIKE ?`);
@@ -127,6 +130,11 @@ router.get('/jobseeker/jobs', async (req, res) => {
     if (maxSalary) {
       conditions.push(`js.salary_offering <= ?`);
       params.push(parseFloat(maxSalary));
+    }
+
+    if (employmentType) {
+      conditions.push(`jj.employment_type = ?`);
+      params.push(employmentType);
     }
 
     if (conditions.length > 0) {
@@ -179,6 +187,7 @@ router.get('/jobseeker/jobs/:id', async (req, res) => {
         jd.contact,
         jd.created_at,
         jj.job_title,
+        jj.employment_type,
         jj.age,
         jj.gender,
         jj.education,
