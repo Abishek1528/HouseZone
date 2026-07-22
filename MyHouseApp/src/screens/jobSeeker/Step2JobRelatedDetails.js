@@ -49,7 +49,7 @@ const Step2JobRelatedDetails = ({ formData, handleInputChange, colors, dark }) =
           placeholder="e.g., 2, 5, etc."
         />
         <OwnerFormField
-          label="Last Working Shop *"
+          label="Last Working Company *"
           value={formData.lastWorkingShop}
           onChangeText={(value) => handleInputChange("lastWorkingShop", value)}
           colors={colors}

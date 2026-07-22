@@ -101,9 +101,14 @@ const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, col
       <OwnerFormField
         label="Aadhar Number"
         value={formData.aadharNumber}
-        onChangeText={(value) => handleInputChange("aadharNumber", value.replace(/\D/g, "").slice(0, 12))}
+        onChangeText={(value) => {
+          const sanitized = value.replace(/\D/g, "").slice(0, 12);
+          handleInputChange("aadharNumber", sanitized);
+        }}
+        onBlur={() => onBlur("aadharNumber", formData.aadharNumber)}
         keyboardType="numeric"
         maxLength={12}
+        error={errors.aadharNumber}
         colors={colors}
         dark={dark}
       />

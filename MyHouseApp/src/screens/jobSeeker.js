@@ -33,30 +33,30 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.primary, fontWeight: '600', fontSize: 16 }}>
           {job.jobTitle}
         </Text>
-        {/* Employment Type */}
+        {/* Area */}
         <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.text, fontWeight: '500', fontSize: 14 }}>
-          {job.employmentType}
+          {job.area}
         </Text>
-        {/* Area and Salary */}
-        <View style={[tps.propertyInfo, { marginTop: 8 }]}>
-          <Text style={[propertyListStyles.bedroomsText, { color: colors.text }]}>
-            {job.area}, {job.city}
+        {/* Employment Type and Salary */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12, marginRight: 12, marginTop: 4, gap: 8 }}>
+          <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14 }}>
+            {job.employmentType}
           </Text>
-          <Text style={[propertyListStyles.rentText, { color: '#27ae60' }]}>
+          <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14 }}>
             ₹{job.salaryOffering}/month
           </Text>
         </View>
-        {/* Posted Ago */}
-        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 8, marginBottom: 8, color: colors.subText, fontSize: 12, fontWeight: '500' }}>
-          Posted {getTimeAgo(job.createdAt)}
-        </Text>
-        {/* View Details */}
-        <TouchableOpacity
-          style={[propertyListStyles.viewMoreButton, { borderTopColor: colors.border }]}
-          onPress={() => onViewDetails(job)}
-        >
-          <Text style={[propertyListStyles.viewMoreText, { color: colors.primary }]}>View Details</Text>
-        </TouchableOpacity>
+        {/* Posted Ago and View Details */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 12, marginRight: 12, marginTop: 8, marginBottom: 8 }}>
+          <Text style={{ color: colors.subText, fontSize: 12, fontWeight: '500' }}>
+            Posted {getTimeAgo(job.createdAt)}
+          </Text>
+          <TouchableOpacity
+            onPress={() => onViewDetails(job)}
+          >
+            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '800' }}>View Details</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -83,27 +83,23 @@ const SelectedFilterBox = ({ label, value, onRemove, tps }) => {
 
 const EMPLOYMENT_TYPE_FILTER_OPTIONS = [
   { label: "Any", value: "" },
-  { label: "Full-time", value: "full-time" },
   { label: "Part-time", value: "part-time" },
+  { label: "Full-time", value: "full-time" },
 ];
 
 const SALARY_FILTER_OPTIONS = [
   { label: "Any", value: "" },
-  { label: "5k-10k", value: "5000-10000" },
-  { label: "10k-15k", value: "10000-15000" },
-  { label: "15k-20k", value: "15000-20000" },
-  { label: "20k-30k", value: "20000-30000" },
-  { label: "30k+", value: "30000-999999" },
+  { label: "≤10k", value: "0-10000" },
+  { label: "10k-20k", value: "10000-20000" },
+  { label: ">20k", value: "20000-999999" },
 ];
 
 // Get label for salary filter value
 const getSalaryLabel = (value) => {
   switch(value) {
-    case '5000-10000': return '₹5k-10k';
-    case '10000-15000': return '₹10k-15k';
-    case '15000-20000': return '₹15k-20k';
-    case '20000-30000': return '₹20k-30k';
-    case '30000-999999': return '₹30k+';
+    case '0-10000': return '≤10k';
+    case '10000-20000': return '10k-20k';
+    case '20000-999999': return '>20k';
     default: return '';
   }
 };
@@ -215,8 +211,7 @@ export default function JobSeeker() {
 
   const listHeader = () => (
     <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 16 }}>
-        <Text style={[tps.pageTitle, { marginBottom: 0 }]}>Available Jobs</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 16, marginTop: 16 }}>
         <TouchableOpacity
           style={tps.filterBtn}
           onPress={() => setIsFilterVisible(!isFilterVisible)}
