@@ -53,7 +53,7 @@ const validateStep2 = (formData) => {
     }
   }
   if (formData.experience === "experienced") {
-    const experienceRequired = ["experienceYears", "lastWorkingShop", "addExperience"];
+    const experienceRequired = ["experienceYears", "lastWorkingShop"];
     for (const field of experienceRequired) {
       if (!String(formData[field] || "").trim()) {
         Alert.alert("Validation Error", "Please fill in all experience details as you are experienced.");

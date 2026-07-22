@@ -19,44 +19,45 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
 
   return (
     <View style={tps.card}>
-      <Image
-        source={{ uri: job.shopPhoto1 }}
-        style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0' }]}
-        resizeMode="cover"
-      />
-      <View style={propertyListStyles.detailsContainer}>
+      {/* Left side: Image + employment type + posted */}
+      <View style={{ flexDirection: 'column', alignItems: 'center', marginRight: 12 }}>
+        <Image
+          source={{ uri: job.shopPhoto1 }}
+          style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0', marginRight: 0 }]}
+          resizeMode="cover"
+        />
+        <Text style={{ color: colors.text, fontWeight: '500', fontSize: 12, marginTop: 8 }}>
+          {job.employmentType}
+        </Text>
+        <Text style={{ color: colors.subText, fontSize: 12, fontWeight: '500', marginTop: 4 }}>
+          Posted {getTimeAgo(job.createdAt)}
+        </Text>
+      </View>
+      {/* Right side: Company name, job title, area, salary, view details */}
+      <View style={{ flex: 1, flexDirection: 'column' }}>
         {/* Company Name */}
-        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 12, color: colors.text, fontWeight: '700', fontSize: 18 }}>
+        <Text style={{ color: colors.text, fontWeight: '700', fontSize: 18 }}>
           {job.shopName}
         </Text>
         {/* Job Title */}
-        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.primary, fontWeight: '600', fontSize: 16 }}>
+        <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 16, marginTop: 4 }}>
           {job.jobTitle}
         </Text>
         {/* Area */}
-        <Text style={{ marginLeft: 12, marginRight: 12, marginTop: 4, color: colors.text, fontWeight: '500', fontSize: 14 }}>
+        <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14, marginTop: 4 }}>
           {job.area}
         </Text>
-        {/* Employment Type and Salary */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12, marginRight: 12, marginTop: 4, gap: 8 }}>
-          <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14 }}>
-            {job.employmentType}
-          </Text>
-          <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14 }}>
-            ₹{job.salaryOffering}/month
-          </Text>
-        </View>
-        {/* Posted Ago and View Details */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 12, marginRight: 12, marginTop: 8, marginBottom: 8 }}>
-          <Text style={{ color: colors.subText, fontSize: 12, fontWeight: '500' }}>
-            Posted {getTimeAgo(job.createdAt)}
-          </Text>
-          <TouchableOpacity
-            onPress={() => onViewDetails(job)}
-          >
-            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '800' }}>View Details</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Salary */}
+        <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14, marginTop: 4 }}>
+          ₹{job.salaryOffering}/month
+        </Text>
+        {/* View Details */}
+        <TouchableOpacity
+          style={{ marginTop: 8, alignSelf: 'flex-start' }}
+          onPress={() => onViewDetails(job)}
+        >
+          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '800' }}>View Details</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
