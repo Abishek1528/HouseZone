@@ -19,8 +19,8 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
 
   return (
     <View style={tps.card}>
-      {/* Left side: Image + employment type + posted */}
-      <View style={{ flexDirection: 'column', alignItems: 'center', marginRight: 12 }}>
+      {/* Left side: Image + employment type + posted ago */}
+      <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginRight: 12 }}>
         <Image
           source={{ uri: job.shopPhoto1 }}
           style={[propertyListStyles.imagePlaceholder, { backgroundColor: dark ? '#333' : '#f0f0f0', marginRight: 0 }]}
@@ -33,7 +33,7 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
           Posted {getTimeAgo(job.createdAt)}
         </Text>
       </View>
-      {/* Right side: Company name, job title, area, salary, view details */}
+      {/* Right side: Company name, job title, area/salary box, view details */}
       <View style={{ flex: 1, flexDirection: 'column' }}>
         {/* Company Name */}
         <Text style={{ color: colors.text, fontWeight: '700', fontSize: 18 }}>
@@ -43,17 +43,25 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 16, marginTop: 4 }}>
           {job.jobTitle}
         </Text>
-        {/* Area */}
-        <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14, marginTop: 4 }}>
-          {job.area}
-        </Text>
-        {/* Salary */}
-        <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14, marginTop: 4 }}>
-          ₹{job.salaryOffering}/month
-        </Text>
-        {/* View Details */}
+        {/* Area and Salary box */}
+        <View style={{ 
+          marginTop: 8, 
+          padding: 10, 
+          backgroundColor: dark ? '#1e3a5f' : '#e7f0ff', 
+          borderRadius: 12, 
+          borderWidth: 1, 
+          borderColor: dark ? '#374151' : '#dbeafe' 
+        }}>
+          <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14 }}>
+            Area: {job.area}
+          </Text>
+          <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14, marginTop: 4 }}>
+            ₹{job.salaryOffering}/month
+          </Text>
+        </View>
+        {/* View Details button aligned to right */}
         <TouchableOpacity
-          style={{ marginTop: 8, alignSelf: 'flex-start' }}
+          style={{ marginTop: 8, alignSelf: 'flex-end' }}
           onPress={() => onViewDetails(job)}
         >
           <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '800' }}>View Details</Text>
