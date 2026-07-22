@@ -22,6 +22,7 @@ export const tenantListStyles = StyleSheet.create({
     fontWeight: "900",
     color: "#fff",
     letterSpacing: -0.4,
+    textAlign: "center",
   },
   pageHeaderSubtitle: {
     fontSize: 13,
