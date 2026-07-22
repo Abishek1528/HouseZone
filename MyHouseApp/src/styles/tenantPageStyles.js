@@ -28,6 +28,7 @@ export const tenantListStyles = StyleSheet.create({
     color: "#cbd5e1",
     marginTop: 4,
     fontWeight: "500",
+    textAlign: "center",
   },
   content: {
     flex: 1,

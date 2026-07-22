@@ -98,7 +98,7 @@ export default function JobDetails({ route }) {
         <View style={tps.section}>
           <Text style={tps.sectionTitle}>Job Overview</Text>
           <View style={tps.firstDetailRow}>
-            <Text style={tps.label}>Shop Name</Text>
+            <Text style={tps.label}>Company Name</Text>
             <Text style={tps.value}>{job?.shopName || 'N/A'}</Text>
           </View>
           <View style={tps.detailRow}>
@@ -110,7 +110,7 @@ export default function JobDetails({ route }) {
             <Text style={tps.value}>{job?.employmentType || 'N/A'}</Text>
           </View>
           <View style={tps.detailRow}>
-            <Text style={tps.label}>Shop Type</Text>
+            <Text style={tps.label}>Company Type</Text>
             <Text style={tps.value}>{job?.shopType || 'N/A'}</Text>
           </View>
           <View style={tps.detailRow}>

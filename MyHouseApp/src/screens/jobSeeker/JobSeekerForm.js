@@ -81,6 +81,10 @@ export default function JobSeekerForm({ route }) {
       if (value && value.length !== 10) {
         error = "Please enter a valid 10-digit mobile number";
       }
+    } else if (field === "aadharNumber") {
+      if (value && value.length > 0 && value.length !== 12) {
+        error = "Aadhar number must be exactly 12 digits";
+      }
     }
     return error;
   };
@@ -176,7 +180,7 @@ export default function JobSeekerForm({ route }) {
           onPress: () => {
             setFormData(initialFormData);
             setStep(1);
-            navigation.goBack();
+            navigation.navigate('JobSeeker');
           },
         },
       ]);

@@ -124,11 +124,11 @@ export default function JobGiverJobSeekerDetails({ route }) {
           <View style={tps.section}>
             <Text style={tps.sectionTitle}>Applied to</Text>
             <View style={tps.firstDetailRow}>
-              <Text style={tps.label}>Shop Name</Text>
+              <Text style={tps.label}>Company Name</Text>
               <Text style={tps.value}>{jobSeeker.shopName}</Text>
             </View>
             <View style={tps.detailRow}>
-              <Text style={tps.label}>Shop Type</Text>
+              <Text style={tps.label}>Company Type</Text>
               <Text style={tps.value}>{jobSeeker.shopType}</Text>
             </View>
             <View style={tps.detailRow}>
@@ -188,7 +188,7 @@ export default function JobGiverJobSeekerDetails({ route }) {
             )}
             {jobSeeker.lastWorkingShop && (
               <View style={tps.detailRow}>
-                <Text style={tps.label}>Last Working Shop</Text>
+                <Text style={tps.label}>Last Working Company</Text>
                 <Text style={tps.value}>{jobSeeker.lastWorkingShop}</Text>
               </View>
             )}

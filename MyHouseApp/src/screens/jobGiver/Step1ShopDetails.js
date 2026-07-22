@@ -30,14 +30,14 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
       dark={dark}
     />
     <OwnerFormField
-      label="Shop Name *"
+      label="Company Name *"
       value={formData.shopName}
       onChangeText={(value) => handleInputChange("shopName", value)}
       colors={colors}
       dark={dark}
     />
     <OptionSelectField
-      label="Shop Type *"
+      label="Company Type *"
       options={shopTypeOptions}
       selectedValue={formData.shopType || ""}
       onSelect={(value) => handleInputChange("shopType", value)}
