@@ -4,6 +4,14 @@ import * as ImagePicker from "expo-image-picker";
 import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
 import OwnerFormField from "../../shared/components/OwnerFormField";
+import OptionSelectField from "../../shared/components/OptionSelectField";
+
+const salaryOptions = [
+  { label: "Work based", value: "work_based" },
+  { label: "≤10k", value: "upto_10k" },
+  { label: "10k-20k", value: "10k_to_20k" },
+  { label: ">20k", value: "above_20k" },
+];
 
 const PHOTO_FIELDS = [
   { key: "shopPhoto1", label: "Shop Photo 1 *", required: true },
@@ -100,13 +108,14 @@ const Step3ShopPhotos = ({ formData, handleInputChange, colors, dark }) => {
       colors={colors}
       dark={dark}
     >
-      <OwnerFormField
-        label="Salary Offering Per Month (₹) *"
-        value={formData.salaryOffering}
-        onChangeText={(value) => handleInputChange("salaryOffering", value.replace(/\D/g, ""))}
-        keyboardType="numeric"
+      <OptionSelectField
+        label="Salary Offering Per Month *"
+        options={salaryOptions}
+        selectedValue={formData.salaryOffering || ""}
+        onSelect={(value) => handleInputChange("salaryOffering", value)}
         colors={colors}
         dark={dark}
+        collapsible
       />
       <OwnerFormField
         label="Other Skills"

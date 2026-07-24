@@ -115,14 +115,16 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
         dark={dark}
         collapsible
       />
-      <OwnerFormField
-        label="Experience Field *"
-        value={formData.experienceField}
-        onChangeText={(value) => handleInputChange("experienceField", value)}
-        placeholder="Sales, cashier, etc."
-        colors={colors}
-        dark={dark}
-      />
+      {formData.experienceYear !== "fresh" && (
+        <OwnerFormField
+          label="Experience Field *"
+          value={formData.experienceField}
+          onChangeText={(value) => handleInputChange("experienceField", value)}
+          placeholder="Sales, cashier, etc."
+          colors={colors}
+          dark={dark}
+        />
+      )}
       <TimeSelectField
         label="Working Time Start *"
         value={formData.workStartTime}
