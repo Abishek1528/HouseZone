@@ -41,12 +41,17 @@ const validateStep1 = (formData) => {
 };
 
 const validateStep2 = (formData) => {
-  const required = ["jobTitle", "employmentType", "age", "gender", "education", "experienceYear", "experienceField", "workStartTime", "workEndTime"];
+  const required = ["jobTitle", "employmentType", "age", "gender", "education", "experienceYear", "workStartTime", "workEndTime"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
       Alert.alert("Validation Error", `Please fill in all required fields in Page 2.`);
       return false;
     }
+  }
+  // Only require experienceField if experienceYear is not "fresh"
+  if (formData.experienceYear !== "fresh" && !String(formData.experienceField || "").trim()) {
+    Alert.alert("Validation Error", "Please fill in all required fields in Page 2.");
+    return false;
   }
   return true;
 };
