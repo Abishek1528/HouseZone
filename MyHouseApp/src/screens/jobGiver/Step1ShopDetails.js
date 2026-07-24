@@ -23,9 +23,9 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
     dark={dark}
   >
     <OwnerFormField
-      label="Name *"
-      value={formData.name}
-      onChangeText={(value) => handleInputChange("name", value)}
+      label="Owner Name *"
+      value={formData.ownerName}
+      onChangeText={(value) => handleInputChange("ownerName", value)}
       colors={colors}
       dark={dark}
     />

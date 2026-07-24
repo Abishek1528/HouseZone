@@ -26,7 +26,7 @@ import Step3ShopPhotos from "./Step3ShopPhotos";
 const MAX_STEPS = 3;
 
 const validateStep1 = (formData) => {
-  const required = ["name", "shopName", "shopType", "area", "city", "contact"];
+  const required = ["ownerName", "shopName", "shopType", "area", "city", "contact"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
       Alert.alert("Validation Error", `Please fill in all required fields in Page 1.`);
@@ -81,7 +81,7 @@ export default function AddJobGiver() {
         const accountContact = user?.contact || user?.contact_number;
         setFormData((prev) => ({
           ...prev,
-          name: prev.name || user?.name || "",
+          ownerName: prev.ownerName || user?.name || "",
           contact:
             prev.contact ||
             (accountContact ? sanitizePhoneInput(String(accountContact)) : ""),
@@ -119,7 +119,7 @@ export default function AddJobGiver() {
 
       // Step 1: Save personal info
       const step1Data = {
-        name: formData.name,
+        ownerName: formData.ownerName,
         shopName: formData.shopName,
         shopType: formData.shopType,
         area: formData.area,
