@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: OWNER_COLORS.headerBgAlt,
     paddingTop: 8,
-    textAlign: "center",
+    textAlign: "left",
   },
 });
 

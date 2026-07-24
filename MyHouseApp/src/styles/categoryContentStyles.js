@@ -15,6 +15,8 @@ const categoryContentStyles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 15,
+    textAlign: "center",
+    width: "100%",
   },
   pageText: {
     fontSize: 15,

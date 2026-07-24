@@ -13,9 +13,9 @@ const genderOptions = [
 
 const ageOptions = [
   { label: "Any", value: "Any" },
-  { label: "20-30", value: "20-30" },
-  { label: "30-40", value: "30-40" },
-  { label: "40-50", value: "40-50" },
+  { label: "18-30", value: "18-30" },
+  { label: "30-50", value: "30-50" },
+  { label: "50-60", value: "50-60" },
 ];
 
 const educationOptions = [
