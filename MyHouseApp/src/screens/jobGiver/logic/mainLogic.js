@@ -4,7 +4,7 @@ export const initialFormData = {
   shopName: "",
   shopType: "",
   area: "",
-  city: "",
+  city: "Chidambaram",
   landmark: "",
   contact: "",
 

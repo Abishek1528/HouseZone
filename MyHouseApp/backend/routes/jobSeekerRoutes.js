@@ -125,6 +125,33 @@ const convertKeysToCamelCase = (obj) => {
   return obj;
 };
 
+// Parse a salary value (could be "10000", "10k-20k", "10000 to 20000/month", "15,000 Rs", etc.)
+// into its minimum numeric value for comparison purposes. Returns null if unparseable.
+const parseSalaryToNumber = (raw) => {
+  if (raw == null) return null;
+  const str = String(raw).trim();
+  if (!str) return null;
+  const lower = str.toLowerCase();
+  // Extract the first sequence of digits (optionally with comma/decimal separators)
+  // then handle "k" suffix / "lakh" suffix if present.
+  const kMatch = lower.match(/([\d][\d.,]*)\s*k/);
+  if (kMatch) {
+    const base = parseFloat(kMatch[1].replace(/,/g, ''));
+    if (!isNaN(base)) return Math.round(base * 1000);
+  }
+  const lakhMatch = lower.match(/([\d][\d.,]*)\s*lakh/);
+  if (lakhMatch) {
+    const base = parseFloat(lakhMatch[1].replace(/,/g, ''));
+    if (!isNaN(base)) return Math.round(base * 100000);
+  }
+  const numMatch = str.match(/([\d][\d.,]*)/);
+  if (numMatch) {
+    const base = parseFloat(numMatch[1].replace(/,/g, ''));
+    if (!isNaN(base)) return Math.round(base);
+  }
+  return null;
+};
+
 // POST save job seeker form data
 router.post('/jobseeker', async (req, res) => {
   try {
@@ -237,16 +264,6 @@ router.get('/jobseeker/jobs', async (req, res) => {
       params.push(`%${area}%`);
     }
 
-    if (minSalary) {
-      conditions.push(`js.salary_offering >= ?`);
-      params.push(parseFloat(minSalary));
-    }
-
-    if (maxSalary) {
-      conditions.push(`js.salary_offering <= ?`);
-      params.push(parseFloat(maxSalary));
-    }
-
     if (employmentType) {
       conditions.push(`jj.employment_type = ?`);
       params.push(employmentType);
@@ -266,6 +283,20 @@ router.get('/jobseeker/jobs', async (req, res) => {
       console.error('[jobseeker/jobs] Database query failed:', dbErr.message);
       console.error('[jobseeker/jobs] Query executed:', query);
       console.error('[jobseeker/jobs] Params:', params);
+    }
+
+    // Apply salary filter in JavaScript to handle non-numeric salary strings
+    // (e.g. "10k to 20k/month", "15,000 Rs", etc.)
+    if (minSalary || maxSalary) {
+      const minNum = minSalary ? parseFloat(minSalary) : null;
+      const maxNum = maxSalary ? parseFloat(maxSalary) : null;
+      rows = rows.filter((row) => {
+        const numeric = parseSalaryToNumber(row?.salary_offering);
+        if (numeric == null) return false;
+        if (minNum != null && numeric < minNum) return false;
+        if (maxNum != null && numeric > maxNum) return false;
+        return true;
+      });
     }
 
     let filenames = [];
@@ -546,6 +577,28 @@ router.get('/jobseeker/profiles/:id', async (req, res) => {
   } catch (error) {
     console.error('[jobSeekerProfile] Error fetching profile by id:', error);
     res.status(500).json({ message: 'Error fetching profile', error: error.message });
+  }
+});
+
+// DELETE a job application (jobseeker row) by ID
+router.delete('/jobseeker/applications/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return res.status(400).json({ message: 'Invalid application ID' });
+    }
+    const [result] = await pool.execute(
+      'DELETE FROM jobseeker WHERE id = ?',
+      [numericId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+    res.status(200).json({ message: 'Application deleted successfully' });
+  } catch (error) {
+    console.error('[jobSeeker] Error deleting application:', error);
+    res.status(500).json({ message: 'Error deleting application', error: error.message });
   }
 });
 

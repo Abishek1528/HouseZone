@@ -11,15 +11,16 @@ import TenantFilterPanel from '../shared/components/TenantFilterPanel';
 import { useTheme } from '../context/ThemeContext';
 import { getOwnerFormThemeColors } from '../styles/ownerFormStyles';
 import { getJobListings } from './jobSeeker/logic/api';
-import { getTimeAgo } from '../shared/utils/timeUtils.js';
 
 const JobCard = ({ job, onViewDetails, tps, dark }) => {
   const { colors } = tps;
   if (!job) return null;
 
+  const salaryDisplay = formatSalaryForDisplay(job.salaryOffering);
+
   return (
     <View style={tps.card}>
-      {/* Left side: Image + employment type + posted ago */}
+      {/* Left side: Image + employment type */}
       <View style={{ flexDirection: 'column', alignItems: 'center', width: 120, minWidth: 120 }}>
         {job.shopPhoto1 ? (
           <Image
@@ -36,9 +37,6 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         )}
         <Text style={{ color: colors.text, fontWeight: '500', fontSize: 11, marginTop: 6, textAlign: 'center' }}>
           {job.employmentType}
-        </Text>
-        <Text style={{ color: colors.subText, fontSize: 10, fontWeight: '500', marginTop: 4, textAlign: 'center' }}>
-          Posted {getTimeAgo(job.createdAt)}
         </Text>
       </View>
       {/* Right side: Company name, job title, area/salary box, view details */}
@@ -63,9 +61,11 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
           <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14 }}>
             Area: {job.area}
           </Text>
-          <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14, marginTop: 4 }}>
-            ₹{job.salaryOffering}/month
-          </Text>
+          {salaryDisplay ? (
+            <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14, marginTop: 4 }}>
+              {salaryDisplay}
+            </Text>
+          ) : null}
         </View>
         {/* View Details button aligned to right */}
         <TouchableOpacity
@@ -129,6 +129,51 @@ const getEmploymentTypeLabel = (value) => {
   }
 };
 
+const formatSalaryForDisplay = (raw) => {
+  if (raw == null) return '';
+  const str = String(raw).trim();
+  if (!str) return '';
+  // Strip any leading/trailing underscores and common placeholders
+  let cleaned = str.replace(/^_+|_+$/g, '').replace(/_+/g, ' ');
+  // If it looks like a pure number, format nicely
+  if (/^\d+$/.test(cleaned)) {
+    const num = parseInt(cleaned, 10);
+    if (num >= 1000) {
+      const k = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
+      return `${k}k / month`;
+    }
+    return `${num} / month`;
+  }
+  // If it contains "month" or "/" already, just return cleaned
+  if (/month|\/|\-|to/i.test(cleaned)) {
+    // Ensure "/ month" exists cleanly
+    if (!/month/i.test(cleaned)) {
+      return `${cleaned} / month`;
+    }
+    return cleaned;
+  }
+  return `${cleaned} / month`;
+};
+
+const JOB_TITLE_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Manager", value: "Manager" },
+  { label: "Cashier", value: "Cashier" },
+  { label: "Salesperson", value: "Salesperson" },
+  { label: "Accountant", value: "Accountant" },
+  { label: "Supervisor", value: "Supervisor" },
+  { label: "Helper", value: "Helper" },
+];
+
+const AREA_FILTER_OPTIONS = [
+  { label: "Any", value: "" },
+  { label: "Vandigate", value: "Vandigate" },
+  { label: "Ammapettai", value: "Ammapettai" },
+  { label: "Omakulam", value: "Omakulam" },
+  { label: "Anamalai Nagar", value: "Anamalai Nagar" },
+  { label: "Chidambaram Town", value: "Chidambaram Town" },
+];
+
 export default function JobSeeker() {
   const navigation = useNavigation();
   const { dark } = useTheme();
@@ -143,32 +188,6 @@ export default function JobSeeker() {
   const [areaFilter, setAreaFilter] = useState('');
   const [jobTitleFilter, setJobTitleFilter] = useState('');
   const [employmentTypeFilter, setEmploymentTypeFilter] = useState('');
-  const [areaFilterOptions, setAreaFilterOptions] = useState([{ label: "Any", value: "" }]);
-  const [jobTitleOptions, setJobTitleOptions] = useState([{ label: "Any", value: "" }]);
-
-  const collectUniqueAreas = (sources) => {
-    const names = new Set();
-    if (!Array.isArray(sources)) return [];
-    sources.forEach((item) => {
-      const value = item?.area;
-      if (value != null && String(value).trim()) {
-        names.add(String(value).trim());
-      }
-    });
-    return [...names].sort((a, b) => a.localeCompare(b));
-  };
-
-  const collectUniqueJobTitles = (sources) => {
-    const names = new Set();
-    if (!Array.isArray(sources)) return [];
-    sources.forEach((item) => {
-      const value = item?.jobTitle;
-      if (value != null && String(value).trim()) {
-        names.add(String(value).trim());
-      }
-    });
-    return [...names].sort((a, b) => a.localeCompare(b));
-  };
 
   const fetchData = async (filters = {}) => {
     try {
@@ -186,22 +205,6 @@ export default function JobSeeker() {
         setJobs(jobsData);
       }
       setHasApplications(!!storedMobile);
-
-      // Update filter options from fetched jobs
-      const jobList = Array.isArray(jobsData) ? jobsData : [];
-      const uniqueAreas = collectUniqueAreas(jobList);
-      const uniqueJobTitles = collectUniqueJobTitles(jobList);
-
-      setAreaFilterOptions([
-        { label: "Any", value: "" },
-        ...uniqueAreas.map((area) => ({ label: area, value: area })),
-      ]);
-
-      setJobTitleOptions([
-        { label: "Any", value: "" },
-        ...uniqueJobTitles.map((title) => ({ label: title, value: title })),
-      ]);
-
     } catch (error) {
       console.error("Error fetching data:", error);
       setJobs([]);
@@ -282,21 +285,17 @@ export default function JobSeeker() {
           sections={[
             {
               key: "jobTitle",
-              type: "searchable",
               label: "Job Title",
-              options: jobTitleOptions,
+              options: JOB_TITLE_FILTER_OPTIONS,
               value: jobTitleFilter,
               onSelect: setJobTitleFilter,
-              placeholder: "Search job title...",
             },
             {
               key: "area",
-              type: "searchable",
               label: "Area",
-              options: areaFilterOptions,
+              options: AREA_FILTER_OPTIONS,
               value: areaFilter,
               onSelect: setAreaFilter,
-              placeholder: "Search area...",
             },
             {
               key: "employmentType",

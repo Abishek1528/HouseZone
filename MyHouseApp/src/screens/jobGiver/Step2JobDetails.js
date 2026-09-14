@@ -38,6 +38,15 @@ const experienceYearOptions = [
   { label: "2+ Year", value: "2plus" },
 ];
 
+const jobTitleOptions = [
+  { label: "Manager", value: "Manager" },
+  { label: "Cashier", value: "Cashier" },
+  { label: "Salesperson", value: "Salesperson" },
+  { label: "Accountant", value: "Accountant" },
+  { label: "Supervisor", value: "Supervisor" },
+  { label: "Helper", value: "Helper" },
+];
+
 const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
   const ofs = getOwnerFormStyles(colors, dark);
 
@@ -62,13 +71,14 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
       colors={colors}
       dark={dark}
     >
-      <OwnerFormField
+      <OptionSelectField
         label="Job Title *"
-        value={formData.jobTitle}
-        onChangeText={(value) => handleInputChange("jobTitle", value)}
-        placeholder="e.g., Salesman, Cashier, etc."
+        options={jobTitleOptions}
+        selectedValue={formData.jobTitle || ""}
+        onSelect={(value) => handleInputChange("jobTitle", value)}
         colors={colors}
         dark={dark}
+        collapsible
       />
       <OptionSelectField
         label="Employment Type *"

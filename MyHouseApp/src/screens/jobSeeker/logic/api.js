@@ -91,6 +91,12 @@ export const getJobSeekerProfileById = async (profileId) => {
   return handleFetchRequest(`${API_BASE_URL}/jobseeker/profiles/${profileId}`);
 };
 
+export const deleteJobSeekerApplication = async (applicationId) => {
+  return handleFetchRequest(`${API_BASE_URL}/jobseeker/applications/${applicationId}`, {
+    method: 'DELETE'
+  });
+};
+
 export default {
   getJobListings,
   getJobDetails,
@@ -100,5 +106,6 @@ export default {
   saveJobSeekerProfile,
   getJobSeekerProfile,
   getAllJobSeekerProfiles,
-  getJobSeekerProfileById
+  getJobSeekerProfileById,
+  deleteJobSeekerApplication
 };
