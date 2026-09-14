@@ -154,6 +154,7 @@ export default function JobSeekerForm({ route }) {
         mobileNumber: formData.mobileNumber,
         age: formData.age,
         gender: formData.gender,
+        street: formData.street,
         area: formData.area,
         city: formData.city,
         contactNo: formData.contactNo,

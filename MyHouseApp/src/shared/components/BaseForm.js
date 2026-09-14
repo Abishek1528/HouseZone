@@ -800,7 +800,7 @@ const BaseForm = ({
   const renderCurrentStep = () => {
     try {
       if (step === 1) {
-        return <Step1Address formData={formData} handleInputChange={handleStep1Change} errors={errors} onBlur={handleFieldBlur} colors={ofs.themeColors} dark={dark} />;
+        return <Step1Address formData={formData} handleInputChange={handleStep1Change} errors={errors} onBlur={handleFieldBlur} colors={ofs.themeColors} dark={dark} category={category} />;
       }
 
       if (step === 2) {
@@ -816,6 +816,7 @@ const BaseForm = ({
             handleRemoveImage={handleImageRemoval}
             colors={ofs.themeColors}
             dark={dark}
+            category={category}
           />
         );
       }

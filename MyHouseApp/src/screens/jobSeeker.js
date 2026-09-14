@@ -237,8 +237,8 @@ export default function JobSeeker() {
   };
 
   const listHeader = () => (
-    <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 16, gap: 8 }}>
+    <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, marginTop: 8, gap: 8 }}>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {hasApplications && (
             <TouchableOpacity
@@ -317,7 +317,7 @@ export default function JobSeeker() {
       )}
 
       {/* Display selected filters horizontally with remove option */}
-      <View style={[propertyListStyles.selectedFiltersContainer, { marginTop: 16 }]}>
+      <View style={[propertyListStyles.selectedFiltersContainer, { marginTop: 8 }]}>
         <SelectedFilterBox
           label="Job Title"
           value={jobTitleFilter}
@@ -344,11 +344,11 @@ export default function JobSeeker() {
         />
       </View>
 
-      <View style={{ marginTop: 8 }}>
+      <View style={{ marginTop: 4 }}>
         {!hasApplications && (
           <TouchableOpacity
             style={{
-              marginBottom: 16,
+              marginBottom: 8,
               padding: 16,
               backgroundColor: tps.colors.primary + '20',
               borderRadius: 12,

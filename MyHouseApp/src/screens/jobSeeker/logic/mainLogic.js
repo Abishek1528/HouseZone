@@ -4,6 +4,7 @@ export const initialFormData = {
   mobileNumber: "",
   age: "",
   gender: "",
+  street: "",
   area: "",
   city: "",
   contactNo: "",

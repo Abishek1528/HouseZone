@@ -19,8 +19,12 @@ if (!fs.existsSync(jobGiverUploadsDir)) {
 // Maps snake_case column name → full ALTER TABLE fragment.
 const JOB_SEEKER_PROFILE_EXPECTED_COLUMNS = [
   {
+    name: 'street',
+    alter: 'ALTER TABLE job_seeker_profiles ADD COLUMN street VARCHAR(255) NULL AFTER gender'
+  },
+  {
     name: 'area',
-    alter: 'ALTER TABLE job_seeker_profiles ADD COLUMN area VARCHAR(255) NULL AFTER experience_field'
+    alter: 'ALTER TABLE job_seeker_profiles ADD COLUMN area VARCHAR(255) NULL AFTER street'
   },
   {
     name: 'city',
@@ -65,8 +69,12 @@ const repairJobSeekerProfileColumns = async () => {
 
 const JOB_SEEKER_EXPECTED_COLUMNS = [
   {
+    name: 'street',
+    alter: 'ALTER TABLE jobseeker ADD COLUMN street VARCHAR(255) NULL AFTER gender'
+  },
+  {
     name: 'area',
-    alter: 'ALTER TABLE jobseeker ADD COLUMN area VARCHAR(255) NULL AFTER gender'
+    alter: 'ALTER TABLE jobseeker ADD COLUMN area VARCHAR(255) NULL AFTER street'
   },
   {
     name: 'city',
@@ -126,6 +134,7 @@ router.post('/jobseeker', async (req, res) => {
       mobileNumber,
       age,
       gender,
+      street,
       area,
       city,
       contactNo,
@@ -147,6 +156,7 @@ router.post('/jobseeker', async (req, res) => {
       mobileNumber,
       age,
       gender,
+      street !== undefined ? street : null,
       area !== undefined ? area : null,
       city !== undefined ? city : null,
       contactNo !== undefined ? contactNo : null,
@@ -163,7 +173,7 @@ router.post('/jobseeker', async (req, res) => {
     ];
 
     console.log('Inserting into jobseeker with values:', values);
-    const insertSql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, area, city, contact_no, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, add_experience, can_join_immediately, preferred_employment_type, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const insertSql = `INSERT INTO jobseeker (full_name, mobile_number, age, gender, street, area, city, contact_no, aadhar_number, profile_picture, experience, education, experience_years, last_working_shop, add_experience, can_join_immediately, preferred_employment_type, job_giver_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     let insertResult;
     try {
@@ -416,6 +426,7 @@ router.post('/jobseeker/profile', async (req, res) => {
       experienceStatus,
       experienceYears,
       experienceField,
+      street,
       area,
       city,
       aadhar,
@@ -436,8 +447,8 @@ router.post('/jobseeker/profile', async (req, res) => {
     const insertSql = `
       INSERT INTO job_seeker_profiles (
         signup_id, name, age, gender, education, experience_status, experience_years, experience_field,
-        area, city, aadhar, phone_number, can_join_immediately
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        street, area, city, aadhar, phone_number, can_join_immediately
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const insertValues = [
       signupId !== undefined ? signupId : null,
@@ -448,6 +459,7 @@ router.post('/jobseeker/profile', async (req, res) => {
       experienceStatus,
       experienceStatus === 'experienced' ? (experienceYears || null) : null,
       experienceStatus === 'experienced' ? (experienceField || null) : null,
+      street !== undefined ? street : null,
       area !== undefined ? area : null,
       city !== undefined ? city : null,
       aadhar !== undefined ? aadhar : null,

@@ -45,13 +45,13 @@ const Step2Details = ({ formData, handleInputChange, colors, dark }) => {
 
   return (
     <OwnerFormCard
-      title="House Details"
-      subtitle="Property layout and amenities"
+      title="Residential Details"
+      subtitle="Residential property layout and amenities"
       colors={colors}
       dark={dark}
     >
         <OptionSelectField
-          label="Facing Direction *"
+          label="Entrance Facing *"
           options={DIRECTION_OPTIONS}
           selectedValue={formData.facingDirection}
           onSelect={(value) => handleInputChange("facingDirection", value)}

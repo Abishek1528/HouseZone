@@ -99,6 +99,14 @@ const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, col
         collapsible
       />
       <OwnerFormField
+        label="Street"
+        value={formData.street}
+        onChangeText={(value) => handleInputChange("street", value)}
+        placeholder="Enter your street / road / lane"
+        colors={colors}
+        dark={dark}
+      />
+      <OwnerFormField
         label="Area"
         value={formData.area}
         onChangeText={(value) => handleInputChange("area", value)}
