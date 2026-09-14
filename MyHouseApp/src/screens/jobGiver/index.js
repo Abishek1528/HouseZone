@@ -105,7 +105,17 @@ export default function AddJobGiver() {
   }, []);
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value };
+      const needsExperienceField =
+        next.experienceYear === "1year" || next.experienceYear === "2plus";
+      if (field === "experienceYear" && needsExperienceField && next.jobTitle) {
+        next.experienceField = next.jobTitle;
+      } else if (field === "jobTitle" && needsExperienceField) {
+        next.experienceField = value;
+      }
+      return next;
+    });
   };
 
   const handleNext = () => {

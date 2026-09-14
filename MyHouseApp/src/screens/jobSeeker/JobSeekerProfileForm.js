@@ -30,6 +30,13 @@ const genderOptions = [
   { label: "Other", value: "other" },
 ];
 
+const ageOptions = [
+  { label: "Any", value: "Any" },
+  { label: "18-30", value: "18-30" },
+  { label: "30-50", value: "30-50" },
+  { label: "50-60", value: "50-60" },
+];
+
 const educationOptions = [
   { label: "10th/12th", value: "10th/12th" },
   { label: "UG", value: "ug" },
@@ -47,6 +54,15 @@ const experienceYearOptions = [
   { label: "2 Years", value: "2years" },
   { label: "3 Years", value: "3years" },
   { label: "4+ Years", value: "4plus" },
+];
+
+const experienceFieldOptions = [
+  { label: "Manager", value: "Manager" },
+  { label: "Cashier", value: "Cashier" },
+  { label: "Salesperson", value: "Salesperson" },
+  { label: "Accountant", value: "Accountant" },
+  { label: "Supervisor", value: "Supervisor" },
+  { label: "Helper", value: "Helper" },
 ];
 
 const canJoinImmediatelyOptions = [
@@ -82,9 +98,8 @@ const validateStep1 = (data, errors, setErrors) => {
     delete newErrors.name;
   }
 
-  const age = parseInt(data.age, 10);
-  if (isNaN(age) || age < 14 || age > 100) {
-    newErrors.age = "Age must be between 14 and 100";
+  if (!String(data.age || "").trim()) {
+    newErrors.age = "Please select an age range";
     ok = false;
   } else {
     delete newErrors.age;
@@ -218,10 +233,6 @@ export default function JobSeekerProfileForm() {
             }
           }
 
-          if (!prefilledName && userDetails?.name) {
-            prefilledName = userDetails.name;
-          }
-
           let prefilledPhone = "";
           if (userDetails?.contact || userDetails?.contact_number) {
             prefilledPhone = sanitizePhoneInput(String(userDetails.contact || userDetails.contact_number));
@@ -332,14 +343,14 @@ export default function JobSeekerProfileForm() {
         dark={dark}
         error={errors.name}
       />
-      <OwnerFormField
+      <OptionSelectField
         label="Age *"
-        value={formData.age}
-        onChangeText={(value) => handleInputChange("age", value.replace(/\D/g, ""))}
-        keyboardType="numeric"
+        options={ageOptions}
+        selectedValue={formData.age || ""}
+        onSelect={(value) => handleInputChange("age", value)}
         colors={ofs.themeColors}
         dark={dark}
-        error={errors.age}
+        collapsible
       />
       <OptionSelectField
         label="Gender *"
@@ -440,14 +451,14 @@ export default function JobSeekerProfileForm() {
             dark={dark}
             collapsible
           />
-          <OwnerFormField
+          <OptionSelectField
             label="Experience Field *"
-            value={formData.experienceField}
-            onChangeText={(value) => handleInputChange("experienceField", value)}
-            placeholder="e.g., Sales, Teaching, IT, Manager, Cashier"
+            options={experienceFieldOptions}
+            selectedValue={formData.experienceField || ""}
+            onSelect={(value) => handleInputChange("experienceField", value)}
             colors={ofs.themeColors}
             dark={dark}
-            error={errors.experienceField}
+            collapsible
           />
         </>
       )}
