@@ -56,8 +56,8 @@ const Step2BusinessDetails = ({ formData, handleInputChange, colors, dark }) => 
 
   return (
     <OwnerFormCard
-      title="Business Details"
-      subtitle="Space layout and facilities"
+      title="Commercial Place Details"
+      subtitle="Commercial space layout and facilities"
       colors={colors}
       dark={dark}
     >

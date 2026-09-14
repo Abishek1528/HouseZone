@@ -3,21 +3,45 @@ import OwnerFormField from "./OwnerFormField";
 import OwnerFormCard from "./OwnerFormCard";
 import { sanitizePhoneInput } from "../utils/phoneInput";
 
-const Step1Address = ({ formData, handleInputChange, errors, onBlur, colors, dark }) => (
-  <OwnerFormCard
-    title="Address Information"
-    subtitle="Owner contact and property location"
-    colors={colors}
-    dark={dark}
-  >
-    <OwnerFormField
-      label="Name of the Person *"
-      value={formData.name}
-      onChangeText={(value) => handleInputChange("name", value)}
-      placeholder=""
+const getStep1Titles = (category) => {
+  if (category === "residential") {
+    return {
+      title: "Residential Address",
+      subtitle: "Owner contact and residential property location",
+      nameLabel: "Name of the Person *",
+    };
+  }
+  if (category === "business") {
+    return {
+      title: "Commercial place Address",
+      subtitle: "Owner contact and commercial property location",
+      nameLabel: "Name of the Owner *",
+    };
+  }
+  return {
+    title: "Address Information",
+    subtitle: "Owner contact and property location",
+    nameLabel: "Name of the Person *",
+  };
+};
+
+const Step1Address = ({ formData, handleInputChange, errors, onBlur, colors, dark, category }) => {
+  const labels = getStep1Titles(category);
+  return (
+    <OwnerFormCard
+      title={labels.title}
+      subtitle={labels.subtitle}
       colors={colors}
       dark={dark}
-    />
+    >
+      <OwnerFormField
+        label={labels.nameLabel}
+        value={formData.name}
+        onChangeText={(value) => handleInputChange("name", value)}
+        placeholder=""
+        colors={colors}
+        dark={dark}
+      />
     <OwnerFormField
       label="Door No *"
       value={formData.doorNo}
@@ -68,7 +92,8 @@ const Step1Address = ({ formData, handleInputChange, errors, onBlur, colors, dar
       colors={colors}
       dark={dark}
     />
-  </OwnerFormCard>
-);
+    </OwnerFormCard>
+  );
+};
 
 export default Step1Address;

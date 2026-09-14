@@ -31,12 +31,10 @@ const genderOptions = [
 ];
 
 const educationOptions = [
-  { label: "10th", value: "10th" },
-  { label: "12th", value: "12th" },
+  { label: "10th/12th", value: "10th/12th" },
   { label: "UG", value: "ug" },
   { label: "PG", value: "pg" },
   { label: "Diploma", value: "diploma" },
-  { label: "Other", value: "other" },
 ];
 
 const experienceStatusOptions = [
@@ -61,6 +59,7 @@ const initialProfileData = {
   name: "",
   age: "",
   gender: "",
+  street: "",
   area: "",
   city: "",
   aadhar: "",
@@ -350,6 +349,14 @@ export default function JobSeekerProfileForm() {
         colors={ofs.themeColors}
         dark={dark}
         collapsible
+      />
+      <OwnerFormField
+        label="Street"
+        value={formData.street}
+        onChangeText={(value) => handleInputChange("street", value)}
+        placeholder="e.g., Main Road, 2nd Lane, Gandhi Street"
+        colors={ofs.themeColors}
+        dark={dark}
       />
       <OwnerFormField
         label="Area"

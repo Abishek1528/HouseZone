@@ -4,6 +4,13 @@ import OwnerFormField from "../../shared/components/OwnerFormField";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
 import OptionSelectField from "../../shared/components/OptionSelectField";
 
+const educationOptions = [
+  { label: "10th/12th", value: "10th/12th" },
+  { label: "UG", value: "ug" },
+  { label: "PG", value: "pg" },
+  { label: "Diploma", value: "diploma" },
+];
+
 const experienceOptions = [
   { label: "Fresher", value: "fresher" },
   { label: "Experienced", value: "experienced" },
@@ -21,13 +28,14 @@ const Step2JobRelatedDetails = ({ formData, handleInputChange, colors, dark }) =
     colors={colors}
     dark={dark}
   >
-    <OwnerFormField
+    <OptionSelectField
       label="Educational Qualification *"
-      value={formData.education}
-      onChangeText={(value) => handleInputChange("education", value)}
+      options={educationOptions}
+      selectedValue={formData.education || ""}
+      onSelect={(value) => handleInputChange("education", value)}
       colors={colors}
       dark={dark}
-      placeholder="e.g., 12th Pass, Graduate, etc."
+      collapsible
     />
     <OptionSelectField
       label="Experience (Fresher/Experienced) *"

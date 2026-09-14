@@ -11,6 +11,31 @@ import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
 import OwnerFormCard from "./OwnerFormCard";
 import OwnerFormField from "./OwnerFormField";
 
+const getStep3Labels = (category) => {
+  if (category === "residential") {
+    return {
+      cardTitle: "Rent/Lease Details",
+      cardSubtitle: "Pricing and residential house photos",
+      imagesTitle: "Residential House Image",
+      imagesSubtitle: "Upload minimum 4 and maximum 7 images of your residential house.",
+    };
+  }
+  if (category === "business") {
+    return {
+      cardTitle: "Rent/Lease Details",
+      cardSubtitle: "Pricing and commercial place photos",
+      imagesTitle: "Commercial Place Images",
+      imagesSubtitle: "Upload minimum 4 and maximum 7 images of your commercial place.",
+    };
+  }
+  return {
+    cardTitle: "Payment Details",
+    cardSubtitle: "Pricing and property photos",
+    imagesTitle: "Property Images",
+    imagesSubtitle: "Upload minimum 4 and maximum 7 images of your property.",
+  };
+};
+
 const Step3PaymentImages = ({
   formData,
   handleInputChange,
@@ -18,8 +43,10 @@ const Step3PaymentImages = ({
   handleRemoveImage,
   colors,
   dark,
+  category,
 }) => {
   const ofs = getOwnerFormStyles(colors, dark);
+  const labels = getStep3Labels(category);
 
   const requestPermission = async (type) => {
     const result =
@@ -96,8 +123,8 @@ const Step3PaymentImages = ({
 
   return (
     <OwnerFormCard
-      title="Payment Details"
-      subtitle="Pricing and property photos"
+      title={labels.cardTitle}
+      subtitle={labels.cardSubtitle}
       colors={colors}
       dark={dark}
     >
@@ -152,9 +179,9 @@ const Step3PaymentImages = ({
 
         <View style={ofs.divider} />
 
-        <Text style={ofs.sectionBlockTitle}>Property Images</Text>
+        <Text style={ofs.sectionBlockTitle}>{labels.imagesTitle}</Text>
         <Text style={[ofs.subtitle, { textAlign: "left", marginBottom: 12 }]}>
-          Upload minimum 4 and maximum 7 images of your property.
+          {labels.imagesSubtitle}
         </Text>
 
         <View style={ofs.imageActionsRow}>
