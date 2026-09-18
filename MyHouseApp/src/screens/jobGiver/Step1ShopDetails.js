@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import OwnerFormField from "../../shared/components/OwnerFormField";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
 import OptionSelectField from "../../shared/components/OptionSelectField";
 import { sanitizePhoneInput } from "../../shared/utils/phoneInput";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+const DEFAULT_AREA_OPTIONS = [
+  { label: "Vandigate", value: "vandigate" },
+  { label: "Ammapettai", value: "ammapettai" },
+  { label: "Omakulam", value: "omakulam" },
+  { label: "Anamalai Nagar", value: "anamalai nagar" },
+  { label: "Chidambaram Town", value: "chidambaram town" },
+];
 
 const shopTypeOptions = [
   { label: "Jewelry", value: "jewelry" },
@@ -15,15 +25,32 @@ const shopTypeOptions = [
   { label: "Other", value: "other" },
 ];
 
-const areaOptions = [
-  { label: "Vandigate", value: "vandigate" },
-  { label: "Ammapettai", value: "ammapettai" },
-  { label: "Omakulam", value: "omakulam" },
-  { label: "Anamalai Nagar", value: "anamalai nagar" },
-  { label: "Chidambaram Town", value: "chidambaram town" },
-];
+const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => {
+  const [areaOptions, setAreaOptions] = useState(DEFAULT_AREA_OPTIONS);
 
-const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/job-options/areas`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const formatted = data.map(item => ({
+              label: item.name || item.title,
+              value: item.name || item.title
+            }));
+            setAreaOptions(formatted);
+          }
+        }
+      } catch (err) {
+        console.warn("[Step1ShopDetails] Using default area options:", err);
+      }
+    };
+    fetchAreas();
+  }, []);
+
+  return (
+
   <OwnerFormCard
     title="Personal Info"
     subtitle="Page 1"
@@ -88,5 +115,7 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => (
     />
   </OwnerFormCard>
 );
+};
 
 export default Step1ShopDetails;
+

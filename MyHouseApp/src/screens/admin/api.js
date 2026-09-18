@@ -158,3 +158,124 @@ export const getVehicleTenantsWithItems = async () => {
     throw new Error(`Failed to fetch vehicle tenants: ${error.message || 'Network error'}`);
   }
 };
+
+// Get all job givers for admin view
+export const getAllJobGivers = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/admin/jobgiver/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching job givers:', error);
+    throw new Error(`Failed to fetch job givers: ${error.message || 'Network error'}`);
+  }
+};
+
+// Get all job seekers for admin view
+export const getAllJobSeekersAdmin = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/admin/jobseeker/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching job seekers:', error);
+    throw new Error(`Failed to fetch job seekers: ${error.message || 'Network error'}`);
+  }
+};
+
+// Job Options: Titles
+export const getJobTitles = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/job-options/titles`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching job titles:', error);
+    throw new Error(`Failed to fetch job titles: ${error.message || 'Network error'}`);
+  }
+};
+
+export const addJobTitle = async (title) => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/job-options/titles`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title }),
+    });
+    return result;
+  } catch (error) {
+    console.error('Error adding job title:', error);
+    throw error;
+  }
+};
+
+export const deleteJobTitle = async (id) => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/job-options/titles/${id}`, {
+      method: 'DELETE',
+    });
+    return result;
+  } catch (error) {
+    console.error('Error deleting job title:', error);
+    throw error;
+  }
+};
+
+// Job Options: Areas
+export const getJobAreas = async () => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/job-options/areas`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error('Error fetching job areas:', error);
+    throw new Error(`Failed to fetch job areas: ${error.message || 'Network error'}`);
+  }
+};
+
+export const addJobArea = async (name) => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/job-options/areas`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name }),
+    });
+    return result;
+  } catch (error) {
+    console.error('Error adding job area:', error);
+    throw error;
+  }
+};
+
+export const deleteJobArea = async (id) => {
+  try {
+    const result = await handleFetchRequest(`${API_BASE_URL}/job-options/areas/${id}`, {
+      method: 'DELETE',
+    });
+    return result;
+  } catch (error) {
+    console.error('Error deleting job area:', error);
+    throw error;
+  }
+};
+

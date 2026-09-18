@@ -25,6 +25,7 @@ import myHistoryRoutes from './myHistoryRoutes.js';
 import vehiclesOwnerAdminRoutes from './vehiclesOwnerAdminRoutes.js';
 import jobGiverRoutes from './jobGiverRoutes.js';
 import jobSeekerRoutes from './jobSeekerRoutes.js';
+import jobOptionsRoutes from './jobOptionsRoutes.js';
 
 const router = Router();
 
@@ -56,5 +57,7 @@ router.use('/', newTenantRoutes);
 router.use('/', myHistoryRoutes);
 router.use('/', jobGiverRoutes);
 router.use('/', jobSeekerRoutes);
+router.use('/', jobOptionsRoutes);
 
 export default router;
+

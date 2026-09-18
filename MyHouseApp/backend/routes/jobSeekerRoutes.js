@@ -650,4 +650,64 @@ router.delete('/jobseeker/applications/:id', async (req, res) => {
   }
 });
 
+// GET all job seekers (applications) for admin view with linked company/job details
+const handleGetAllJobSeekersAdmin = async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+        js.id AS id,
+        js.id AS tenantId,
+        js.full_name AS fullName,
+        js.full_name AS tenantName,
+        js.mobile_number AS mobileNumber,
+        js.mobile_number AS phone,
+        js.age,
+        js.gender,
+        js.street,
+        js.area,
+        js.city,
+        js.contact_no AS contactNo,
+        js.aadhar_number AS aadharNumber,
+        js.profile_picture AS profilePicture,
+        js.experience,
+        js.education,
+        js.experience_years AS experienceYears,
+        js.last_working_shop AS lastWorkingShop,
+        js.add_experience AS addExperience,
+        js.can_join_immediately AS canJoinImmediately,
+        js.preferred_employment_type AS preferredEmploymentType,
+        js.job_giver_job_id AS jobGiverJobId,
+        js.job_giver_job_id AS propertyId,
+        js.status,
+        js.created_at AS createdAt,
+        jd.name AS ownerName,
+        jd.shop_name AS shopName,
+        jd.shop_type AS shopType,
+        jd.area AS shopArea,
+        jd.city AS shopCity,
+        jd.contact AS shopContact,
+        jj.job_title AS jobTitle,
+        jj.employment_type AS employmentType,
+        jsal.salary_offering AS salaryOffering,
+        jj.working_time_start AS workingTimeStart,
+        jj.working_time_end AS workingTimeEnd
+      FROM jobseeker js
+      LEFT JOIN jobgiverdet jd ON js.job_giver_job_id = jd.id
+      LEFT JOIN jobgiverjob jj ON jd.id = jj.jobgiverdet_id
+      LEFT JOIN jobgiversalary jsal ON jd.id = jsal.jobgiverdet_id
+      ORDER BY js.id DESC
+    `;
+
+    const [rows] = await pool.execute(sql);
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('[jobSeekerAdmin] Error fetching all job seekers:', error);
+    res.status(500).json({ message: 'Error fetching job seekers', error: error.message });
+  }
+};
+
+router.get('/admin/jobseeker/all', handleGetAllJobSeekersAdmin);
+router.get('/admin/jobseeker/tenants-with-properties', handleGetAllJobSeekersAdmin);
+router.get('/jobseeker/admin/all', handleGetAllJobSeekersAdmin);
+
 export default router;

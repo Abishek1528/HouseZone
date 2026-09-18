@@ -56,7 +56,7 @@ const experienceYearOptions = [
   { label: "4+ Years", value: "4plus" },
 ];
 
-const experienceFieldOptions = [
+const DEFAULT_EXPERIENCE_FIELD_OPTIONS = [
   { label: "Manager", value: "Manager" },
   { label: "Cashier", value: "Cashier" },
   { label: "Salesperson", value: "Salesperson" },
@@ -64,6 +64,7 @@ const experienceFieldOptions = [
   { label: "Supervisor", value: "Supervisor" },
   { label: "Helper", value: "Helper" },
 ];
+
 
 const canJoinImmediatelyOptions = [
   { label: "Yes", value: "yes" },
@@ -201,9 +202,33 @@ export default function JobSeekerProfileForm() {
   const [formData, setFormData] = useState(initialProfileData);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
+  const [experienceFieldOptions, setExperienceFieldOptions] = useState(DEFAULT_EXPERIENCE_FIELD_OPTIONS);
+
+  useEffect(() => {
+    const fetchTitles = async () => {
+      try {
+        const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+        const res = await fetch(`${API_BASE_URL}/job-options/titles`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const formatted = data.map(item => ({
+              label: item.title,
+              value: item.title
+            }));
+            setExperienceFieldOptions(formatted);
+          }
+        }
+      } catch (err) {
+        console.warn("[JobSeekerProfileForm] Using default experience field options:", err);
+      }
+    };
+    fetchTitles();
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
+
       const loadProfile = async () => {
         try {
           const userDetailsRaw = await AsyncStorage.getItem("userDetails");

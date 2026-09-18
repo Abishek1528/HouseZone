@@ -18,6 +18,8 @@ export default function AdminDashboard() {
     { label: "Vehicles Tenant", target: "VehiclesTenantPage" },
     { label: "Machinery Owner", target: "MachineryOwnerPage" },
     { label: "Machinery Tenant", target: "MachineryTenantPage" },
+    { label: "Job Giver", target: "JobGiverAdminPage" },
+    { label: "Job Seeker", target: "JobSeekerAdminPage" },
   ];
 
   return (
