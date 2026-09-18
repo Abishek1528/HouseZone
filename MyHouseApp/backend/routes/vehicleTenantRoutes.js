@@ -1,7 +1,29 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const vehiclesUploadsDir = path.join(__dirname, '../uploads', 'vehicles');
+
+// Robust helper to normalize image URLs into absolute URLs
+const normalizeVehicleImageUrl = (url, req) => {
+  if (!url) return null;
+  if (typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http')) return trimmed;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  // Strip any leading slashes / uploads prefix so we always build a clean URL
+  const basename = path.basename(trimmed);
+  if (!basename) return null;
+  return `${protocol}://${host}/uploads/vehicles/${basename}`;
+};
 
 // GET all available vehicles for tenant view
 router.get('/available', async (req, res) => {
@@ -18,6 +40,7 @@ router.get('/available', async (req, res) => {
         vd.ac_charge_per_day as acPrice,
         vd.nonac_charge_per_day as nonAcPrice,
         vd.vehicle_images as images,
+        vd.vehiclesowndet_id as voId,
         vo.area,
         vo.city
       FROM vehiclesdet vd
@@ -56,8 +79,12 @@ router.get('/available', async (req, res) => {
 
         const [rows] = await pool.execute(query, params);
 
-        // Parse images JSON for each vehicle
-        const origin = `${req.protocol}://${req.get('host')}`;
+        // Fallback: scan filesystem for vehicles-<voId>-* files if DB column is empty
+        let diskFiles = [];
+        try {
+          diskFiles = fs.existsSync(vehiclesUploadsDir) ? fs.readdirSync(vehiclesUploadsDir) : [];
+        } catch (_) { diskFiles = []; }
+
         const vehicles = rows.map(row => {
             let imgs = [];
             try {
@@ -66,8 +93,21 @@ router.get('/available', async (req, res) => {
                 console.error('Error parsing vehicle images:', e);
                 imgs = [];
             }
-            const normalized = Array.isArray(imgs) ? imgs.map(u => (typeof u === 'string' && u.startsWith('http')) ? u : `${origin}${u}`) : [];
-            return { ...row, images: normalized };
+            let normalized = Array.isArray(imgs)
+              ? imgs.map(u => normalizeVehicleImageUrl(u, req)).filter(Boolean)
+              : [];
+            // Fallback: use filesystem pattern match vehicles-<voId>-* if no valid images from DB
+            if (normalized.length === 0 && row.voId != null && diskFiles.length > 0) {
+              const prefix = `vehicles-${row.voId}-`;
+              const host = req.get('host');
+              const protocol = req.protocol;
+              normalized = diskFiles
+                .filter(f => typeof f === 'string' && f.startsWith(prefix))
+                .map(f => `${protocol}://${host}/uploads/vehicles/${f}`);
+            }
+            const nextRow = { ...row };
+            delete nextRow.voId;
+            return { ...nextRow, images: normalized };
         });
 
         res.status(200).json(vehicles);
@@ -103,7 +143,6 @@ router.get('/:id', async (req, res) => {
         }
 
         const vehicle = rows[0];
-        const origin = `${req.protocol}://${req.get('host')}`;
         let imgs = [];
         try {
             imgs = typeof vehicle.vehicle_images === 'string' ? JSON.parse(vehicle.vehicle_images) : (vehicle.vehicle_images || []);
@@ -111,7 +150,24 @@ router.get('/:id', async (req, res) => {
             console.error('Error parsing vehicle_images:', e);
             imgs = [];
         }
-        vehicle.vehicle_images = Array.isArray(imgs) ? imgs.map(u => (typeof u === 'string' && u.startsWith('http')) ? u : `${origin}${u}`) : [];
+        let normalized = Array.isArray(imgs)
+          ? imgs.map(u => normalizeVehicleImageUrl(u, req)).filter(Boolean)
+          : [];
+        // Fallback: filesystem pattern
+        if (normalized.length === 0 && vehicle.vehiclesowndet_id != null) {
+          let diskFiles = [];
+          try {
+            diskFiles = fs.existsSync(vehiclesUploadsDir) ? fs.readdirSync(vehiclesUploadsDir) : [];
+          } catch (_) { diskFiles = []; }
+          const prefix = `vehicles-${vehicle.vehiclesowndet_id}-`;
+          const host = req.get('host');
+          const protocol = req.protocol;
+          normalized = diskFiles
+            .filter(f => typeof f === 'string' && f.startsWith(prefix))
+            .map(f => `${protocol}://${host}/uploads/vehicles/${f}`);
+        }
+        vehicle.vehicle_images = normalized;
+        vehicle.images = normalized;
 
         res.status(200).json(vehicle);
     } catch (error) {

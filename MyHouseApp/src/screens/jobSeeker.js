@@ -11,6 +11,7 @@ import TenantFilterPanel from '../shared/components/TenantFilterPanel';
 import { useTheme } from '../context/ThemeContext';
 import { getOwnerFormThemeColors } from '../styles/ownerFormStyles';
 import { getJobListings } from './jobSeeker/logic/api';
+import { getTimeAgo } from '../shared/utils/timeUtils.js';
 
 const JobCard = ({ job, onViewDetails, tps, dark }) => {
   const { colors } = tps;
@@ -37,6 +38,9 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
         )}
         <Text style={{ color: colors.text, fontWeight: '500', fontSize: 11, marginTop: 6, textAlign: 'center' }}>
           {job.employmentType}
+        </Text>
+        <Text style={{ color: colors.subText, fontSize: 10, fontWeight: '500', marginTop: 4, textAlign: 'center' }}>
+          Posted {getTimeAgo(job.createdAt)}
         </Text>
       </View>
       {/* Right side: Company name, job title, area/salary box, view details */}

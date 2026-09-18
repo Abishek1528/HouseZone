@@ -14,7 +14,8 @@ const storage = multer.diskStorage({
     const baseDir = path.join(__dirname, '../uploads');
     const url = req.originalUrl || '';
     let category = 'general';
-    if (/residential/i.test(url)) category = 'residential';
+    if (/jobgiver|job-giver|job_giver/i.test(url)) category = 'jobgiver';
+    else if (/residential/i.test(url)) category = 'residential';
     else if (/machinery/i.test(url)) category = 'machinery';
     else if (/vehicles?/i.test(url)) category = 'vehicles';
     else if (/business/i.test(url)) category = 'business';
@@ -28,7 +29,8 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const url = req.originalUrl || '';
     let category = 'general';
-    if (/residential/i.test(url)) category = 'residential';
+    if (/jobgiver|job-giver|job_giver/i.test(url)) category = 'jobgiver';
+    else if (/residential/i.test(url)) category = 'residential';
     else if (/machinery/i.test(url)) category = 'machinery';
     else if (/vehicles?/i.test(url)) category = 'vehicles';
     else if (/business/i.test(url)) category = 'business';
@@ -37,16 +39,23 @@ const storage = multer.diskStorage({
     const moNo = req.body?.moNo;
     const voNo = req.body?.voNo;
     const boNo = req.body?.boNo;
+    const joNo = req.body?.jobGiverId;
     const anyId = req.body?.id;
     const assocId =
       (category === 'residential' && roNo) ? roNo :
       (category === 'machinery' && moNo) ? moNo :
       (category === 'vehicles' && voNo) ? voNo :
       (category === 'business' && boNo) ? boNo :
+      (category === 'jobgiver' && joNo) ? joNo :
       anyId || 'unknown';
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const safeExt = path.extname(file.originalname) || '.jpg';
-    cb(null, `${category}-${assocId}-${uniqueSuffix}${safeExt}`);
+    const fieldName = file?.fieldname;
+    const includeFieldName = fieldName && fieldName !== 'images' && typeof fieldName === 'string';
+    const baseName = includeFieldName
+      ? `${category}-${assocId}-${fieldName}-${uniqueSuffix}${safeExt}`
+      : `${category}-${assocId}-${uniqueSuffix}${safeExt}`;
+    cb(null, baseName);
   }
 });
 
