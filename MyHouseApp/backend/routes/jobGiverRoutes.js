@@ -228,4 +228,103 @@ router.put('/jobgiver/jobseekers/:id/decline', async (req, res) => {
   }
 });
 
+// Helper for normalizeImageUrl
+const normalizeImg = (url, req) => {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http')) return trimmed;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  const basename = path.basename(trimmed);
+  if (!basename) return null;
+  return `${protocol}://${host}/uploads/jobgiver/${basename}`;
+};
+
+// GET all job givers for admin view
+const handleGetAllJobGivers = async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+        jd.id,
+        jd.name AS ownerName,
+        jd.shop_name AS shopName,
+        jd.shop_type AS shopType,
+        jd.area,
+        jd.city,
+        jd.landmark,
+        jd.contact,
+        jd.created_at AS createdAt,
+        jj.job_title AS jobTitle,
+        jj.employment_type AS employmentType,
+        jj.age,
+        jj.gender,
+        jj.education,
+        jj.experience_year AS experienceYear,
+        jj.experience_field AS experienceField,
+        jj.working_time_start AS workingTimeStart,
+        jj.working_time_end AS workingTimeEnd,
+        jj.working_timings AS workingTimings,
+        js.salary_offering AS salaryOffering,
+        js.other_skills AS otherSkills,
+        js.shop_photo1 AS shopPhoto1Raw,
+        js.shop_photo2 AS shopPhoto2Raw,
+        js.shop_photo3 AS shopPhoto3Raw
+      FROM jobgiverdet jd
+      LEFT JOIN jobgiverjob jj ON jd.id = jj.jobgiverdet_id
+      LEFT JOIN jobgiversalary js ON jd.id = js.jobgiverdet_id
+      ORDER BY jd.id DESC
+    `;
+
+    const [rows] = await pool.execute(sql);
+
+    let filenames = [];
+    try {
+      filenames = fs.existsSync(jobGiverUploadsDir) ? fs.readdirSync(jobGiverUploadsDir) : [];
+    } catch (_) {
+      filenames = [];
+    }
+
+    const hostHeader = req.get('host');
+    const protocol = req.protocol || 'http';
+    const origin = hostHeader ? `${protocol}://${hostHeader}` : '';
+
+    const results = rows.map(row => {
+      const id = row.id;
+      let images = [];
+
+      const img1 = normalizeImg(row.shopPhoto1Raw, req);
+      const img2 = normalizeImg(row.shopPhoto2Raw, req);
+      const img3 = normalizeImg(row.shopPhoto3Raw, req);
+      if (img1) images.push(img1);
+      if (img2) images.push(img2);
+      if (img3) images.push(img3);
+
+      if (images.length === 0 && id != null && origin && filenames.length > 0) {
+        const prefix = `jobgiver-${id}-`;
+        images = filenames
+          .filter(fn => typeof fn === 'string' && fn.startsWith(prefix))
+          .map(fn => `${origin}/uploads/jobgiver/${fn}`);
+      }
+
+      const { shopPhoto1Raw, shopPhoto2Raw, shopPhoto3Raw, ...rest } = row;
+      return {
+        ...rest,
+        images,
+        shopPhoto1: images[0] || null,
+        shopPhoto2: images[1] || null,
+        shopPhoto3: images[2] || null
+      };
+    });
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error fetching admin job givers:', error);
+    res.status(500).json({ message: 'Error fetching job givers', error: error.message });
+  }
+};
+
+router.get('/jobgiver/owners', handleGetAllJobGivers);
+router.get('/admin/jobgiver/all', handleGetAllJobGivers);
+
 export default router;

@@ -254,9 +254,17 @@ export default function Login() {
           >
             <Text style={loginStyles.signupLinkText}>Create New Account</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[loginStyles.signupLinkContainer, { marginTop: 12, borderTopWidth: 1, borderTopColor: '#f1f5f9', paddingTop: 12 }]}
+            onPress={() => navigation.navigate("AdminDashboard")}
+          >
+            <Text style={[loginStyles.signupLinkText, { color: '#64748b', fontWeight: '700' }]}>🛡️ Open Admin Dashboard</Text>
+          </TouchableOpacity>
         </View>
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
+
   );
 }

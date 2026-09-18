@@ -367,4 +367,33 @@ CREATE TABLE IF NOT EXISTS job_seeker_profiles (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (signup_id) REFERENCES signup(id) ON DELETE SET NULL
 );
+-- 25. job_titles table (master job titles for job forms)
+CREATE TABLE IF NOT EXISTS job_titles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+-- Seed default job titles if not present
+INSERT IGNORE INTO job_titles (title) VALUES
+('Manager'),
+('Cashier'),
+('Salesperson'),
+('Accountant'),
+('Supervisor'),
+('Helper');
+
+-- 26. job_areas table (master job areas for job forms)
+CREATE TABLE IF NOT EXISTS job_areas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Seed default job areas if not present
+INSERT IGNORE INTO job_areas (name) VALUES
+('Vandigate'),
+('Ammapettai'),
+('Omakulam'),
+('Anamalai Nagar'),
+('Chidambaram Town');

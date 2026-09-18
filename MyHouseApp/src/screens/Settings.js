@@ -107,6 +107,19 @@ export default function Settings() {
 
           <View style={styles.separator} />
 
+          <TouchableOpacity style={styles.cardItem} onPress={() => navigation.navigate('AdminDashboard')} activeOpacity={0.8}>
+            <View style={styles.iconBoxAccent}>
+              <Ionicons name="construct-outline" size={22} color="#2563eb" />
+            </View>
+            <View style={styles.cardText}>
+              <Text style={styles.cardTitle}>Admin Dashboard</Text>
+              <Text style={styles.cardSubtitle}>Manage owners, tenants, and job postings</Text>
+            </View>
+            <Ionicons name="chevron-forward-outline" size={20} color="#94a3b8" />
+          </TouchableOpacity>
+
+          <View style={styles.separator} />
+
           <TouchableOpacity style={[styles.cardItem, styles.cardLastItem]} onPress={handlePrivacy} activeOpacity={0.8}>
             <View style={styles.iconBoxAccent}>
               <Ionicons name="shield-checkmark-outline" size={22} color="#2563eb" />
@@ -118,6 +131,7 @@ export default function Settings() {
             <Ionicons name="chevron-forward-outline" size={20} color="#94a3b8" />
           </TouchableOpacity>
         </View>
+
 
         <View style={styles.safeCard}>
           <View style={styles.safeIconBox}>

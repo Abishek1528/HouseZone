@@ -10,6 +10,8 @@ import VehiclesTenantPage from './VehiclesTenantPage';
 import MachineryOwnerPage from './MachineryOwnerPage';
 import MachineryTenantPage from './MachineryTenantPage';
 import ConditionsPage from './ConditionsPage';
+import JobGiverAdminPage from './JobGiverAdminPage';
+import JobSeekerAdminPage from './JobSeekerAdminPage';
 
 export { 
   AdminDashboard,
@@ -23,5 +25,7 @@ export {
   VehiclesTenantPage,
   MachineryOwnerPage,
   MachineryTenantPage,
-  ConditionsPage
-};
+  ConditionsPage,
+  JobGiverAdminPage,
+  JobSeekerAdminPage
+};

@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import OwnerFormField from "../../shared/components/OwnerFormField";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
 import OptionSelectField from "../../shared/components/OptionSelectField";
 import TimeSelectField from "../../shared/components/TimeSelectField";
 import { getOwnerFormStyles } from "../../styles/ownerFormStyles";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+const DEFAULT_JOB_TITLE_OPTIONS = [
+  { label: "Manager", value: "Manager" },
+  { label: "Cashier", value: "Cashier" },
+  { label: "Salesperson", value: "Salesperson" },
+  { label: "Accountant", value: "Accountant" },
+  { label: "Supervisor", value: "Supervisor" },
+  { label: "Helper", value: "Helper" },
+];
 
 const genderOptions = [
   { label: "Male", value: "male" },
@@ -38,17 +49,31 @@ const experienceYearOptions = [
   { label: "2+ Year", value: "2plus" },
 ];
 
-const jobTitleOptions = [
-  { label: "Manager", value: "Manager" },
-  { label: "Cashier", value: "Cashier" },
-  { label: "Salesperson", value: "Salesperson" },
-  { label: "Accountant", value: "Accountant" },
-  { label: "Supervisor", value: "Supervisor" },
-  { label: "Helper", value: "Helper" },
-];
-
 const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
   const ofs = getOwnerFormStyles(colors, dark);
+  const [jobTitleOptions, setJobTitleOptions] = useState(DEFAULT_JOB_TITLE_OPTIONS);
+
+  useEffect(() => {
+    const fetchTitles = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/job-options/titles`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const formatted = data.map(item => ({
+              label: item.title,
+              value: item.title
+            }));
+            setJobTitleOptions(formatted);
+          }
+        }
+      } catch (err) {
+        console.warn("[Step2JobDetails] Using default job title options:", err);
+      }
+    };
+    fetchTitles();
+  }, []);
+
 
   const updateWorkStart = (time) => {
     handleInputChange("workStartTime", time);
