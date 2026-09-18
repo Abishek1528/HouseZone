@@ -83,7 +83,7 @@ export default function JobDetails({ route }) {
         showsVerticalScrollIndicator={false}
       >
 
-        {/* Shop Image */}
+        {/* Shop Images */}
         {job?.shopPhoto1 && (
           <View style={{ marginVertical: 10 }}>
             <Image
@@ -91,6 +91,24 @@ export default function JobDetails({ route }) {
               style={{ width: '100%', height: 200, borderRadius: 8 }}
               resizeMode="cover"
             />
+          </View>
+        )}
+        {(job?.shopPhoto2 || job?.shopPhoto3) && (
+          <View style={{ flexDirection: 'row', gap: 10, marginVertical: 8 }}>
+            {job?.shopPhoto2 && (
+              <Image
+                source={{ uri: job.shopPhoto2 }}
+                style={{ flex: 1, height: 140, borderRadius: 8 }}
+                resizeMode="cover"
+              />
+            )}
+            {job?.shopPhoto3 && (
+              <Image
+                source={{ uri: job.shopPhoto3 }}
+                style={{ flex: 1, height: 140, borderRadius: 8 }}
+                resizeMode="cover"
+              />
+            )}
           </View>
         )}
 

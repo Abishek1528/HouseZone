@@ -10,10 +10,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const jobGiverUploadsDir = path.join(__dirname, '../uploads', 'jobgiver');
 
-// Create uploads directory if it doesn't exist
 if (!fs.existsSync(jobGiverUploadsDir)) {
-  fs.mkdirSync(jobGiverUploadsDir, { recursive: true });
+  try { fs.mkdirSync(jobGiverUploadsDir, { recursive: true }); } catch (_) {}
 }
+
+const normalizeImageUrl = (url, req) => {
+  if (!url) return null;
+  if (typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http')) return trimmed;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  const basename = path.basename(trimmed);
+  if (!basename) return null;
+  return `${protocol}://${host}/uploads/jobgiver/${basename}`;
+};
 
 // Columns that Add My Profile form expects on job_seeker_profiles.
 // Maps snake_case column name → full ALTER TABLE fragment.
@@ -244,7 +256,10 @@ router.get('/jobseeker/jobs', async (req, res) => {
       jj.experience_field,
       jj.working_time_start,
       jj.working_time_end,
-      js.salary_offering
+      js.salary_offering,
+      js.shop_photo1,
+      js.shop_photo2,
+      js.shop_photo3
     FROM jobgiverdet jd
     LEFT JOIN jobgiverjob jj ON jd.id = jj.jobgiverdet_id
     LEFT JOIN jobgiversalary js ON jd.id = js.jobgiverdet_id`;
@@ -314,17 +329,31 @@ router.get('/jobseeker/jobs', async (req, res) => {
       .filter(row => row && typeof row === 'object')
       .map(row => {
         const id = row.id;
-        let firstImage = null;
-        if (id != null && origin) {
+        let images = [];
+
+        const dbImg1 = normalizeImageUrl(row.shop_photo1, req);
+        const dbImg2 = normalizeImageUrl(row.shop_photo2, req);
+        const dbImg3 = normalizeImageUrl(row.shop_photo3, req);
+        if (dbImg1) images.push(dbImg1);
+        if (dbImg2) images.push(dbImg2);
+        if (dbImg3) images.push(dbImg3);
+
+        if (images.length === 0 && id != null && origin && filenames.length > 0) {
           const prefix = `jobgiver-${id}-`;
-          const urls = filenames
+          images = filenames
             .filter(fn => typeof fn === 'string' && fn.startsWith(prefix))
             .map(fn => `${origin}/uploads/jobgiver/${fn}`);
-          firstImage = urls.find(url => url.includes('shopPhoto1')) || urls[0] || null;
         }
+
+        const firstImage = images.find(url => url.includes('shopPhoto1')) || images[0] || null;
+
+        delete row.shop_photo1;
+        delete row.shop_photo2;
+        delete row.shop_photo3;
+
         try {
           const camelCaseRow = convertKeysToCamelCase(row);
-          return { ...camelCaseRow, shopPhoto1: firstImage };
+          return { ...camelCaseRow, shopPhoto1: firstImage, images: images };
         } catch (mapErr) {
           console.error('[jobseeker/jobs] Row transform failed for id=', id, mapErr.message);
           return null;
@@ -383,24 +412,43 @@ router.get('/jobseeker/jobs/:id', async (req, res) => {
 
     const job = rows[0];
 
-    let filenames = [];
-    try {
-      filenames = fs.readdirSync(jobGiverUploadsDir);
-    } catch (_) {
-      filenames = [];
+    let images = [];
+
+    const dbImg1 = normalizeImageUrl(job.shop_photo1, req);
+    const dbImg2 = normalizeImageUrl(job.shop_photo2, req);
+    const dbImg3 = normalizeImageUrl(job.shop_photo3, req);
+    if (dbImg1) images.push(dbImg1);
+    if (dbImg2) images.push(dbImg2);
+    if (dbImg3) images.push(dbImg3);
+
+    if (images.length === 0) {
+      let filenames = [];
+      try {
+        filenames = fs.existsSync(jobGiverUploadsDir) ? fs.readdirSync(jobGiverUploadsDir) : [];
+      } catch (_) {
+        filenames = [];
+      }
+      const origin = `${req.protocol}://${req.get('host')}`;
+      const prefix = `jobgiver-${id}-`;
+      images = filenames
+        .filter(fn => fn.startsWith(prefix))
+        .map(fn => `${origin}/uploads/jobgiver/${fn}`);
     }
-    const origin = `${req.protocol}://${req.get('host')}`;
-    const prefix = `jobgiver-${id}-`;
-    const images = filenames
-      .filter(fn => fn.startsWith(prefix))
-      .map(fn => `${origin}/uploads/jobgiver/${fn}`);
+
+    const shopPhoto1 = images.find(url => url.includes('shopPhoto1')) || images[0] || null;
+    const shopPhoto2 = images.find(url => url.includes('shopPhoto2')) || images[1] || null;
+    const shopPhoto3 = images.find(url => url.includes('shopPhoto3')) || images[2] || null;
+
+    delete job.shop_photo1;
+    delete job.shop_photo2;
+    delete job.shop_photo3;
 
     const camelCaseJob = convertKeysToCamelCase(job);
     const structuredData = {
       ...camelCaseJob,
-      shopPhoto1: images.find(url => url.includes('shopPhoto1')) || null,
-      shopPhoto2: images.find(url => url.includes('shopPhoto2')) || null,
-      shopPhoto3: images.find(url => url.includes('shopPhoto3')) || null,
+      shopPhoto1,
+      shopPhoto2,
+      shopPhoto3,
       images: images
     };
 

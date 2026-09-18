@@ -10,11 +10,50 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const businessUploadsDir = path.join(__dirname, '../uploads', 'business');
 
+const normalizeImageUrl = (url, req) => {
+  if (!url) return null;
+  if (typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http')) return trimmed;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  const basename = path.basename(trimmed);
+  if (!basename) return null;
+  return `${protocol}://${host}/uploads/business/${basename}`;
+};
+
+const loadImageColumns = async (tableName) => {
+  try {
+    const dbName = process.env.DB_NAME || 'cdmrental';
+    const [cols] = await pool.execute(
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?`,
+      [dbName, tableName]
+    );
+    const names = cols.map(c => c.COLUMN_NAME.toLowerCase());
+    const found = [];
+    const imagesCol = names.find(n => n === 'images' || n.includes('images') || n.includes('photos'));
+    if (imagesCol) found.push({ col: imagesCol, type: 'json' });
+    for (let i = 1; i <= 7; i++) {
+      const c = names.find(n => n === `image${i}` || n === `shop_photo${i}` || n === `photo${i}`);
+      if (c) found.push({ col: c, type: 'single', idx: i });
+    }
+    return found;
+  } catch (_) {
+    return [];
+  }
+};
+
 // GET all business properties for tenant view
 router.get('/business/properties', async (req, res) => {
   try {
     const { rent, area, propertyType } = req.query;
     console.log('Fetching business properties with filters:', { rent, area, propertyType });
+
+    const rentImgCols = await loadImageColumns('businessownerrent');
+
+    const imageSelectParts = rentImgCols.map(c => `br.\`${c.col}\` as br_${c.col}`);
+    const imageSelectSql = imageSelectParts.length > 0 ? ', ' + imageSelectParts.join(', ') : '';
 
     let query = `SELECT 
       bd.id,
@@ -25,6 +64,7 @@ router.get('/business/properties', async (req, res) => {
       br.monthly_rent,
       br.lease_amount as leaseAmount,
       br.lease_amount
+      ${imageSelectSql}
     FROM businessownerdet bd
     LEFT JOIN businessownerpro bp ON bd.id = bp.businessownerdet_id
     LEFT JOIN businessownerrent br ON bd.id = br.businessownerdet_id`;
@@ -63,18 +103,41 @@ router.get('/business/properties', async (req, res) => {
 
     let filenames = [];
     try {
-      filenames = fs.readdirSync(businessUploadsDir);
+      filenames = fs.existsSync(businessUploadsDir) ? fs.readdirSync(businessUploadsDir) : [];
     } catch (_) {
       filenames = [];
     }
     const origin = `${req.protocol}://${req.get('host')}`;
     const withImages = rows.map(row => {
       const id = row.id;
-      const prefix = `business-${id}-`;
-      const urls = filenames
-        .filter(fn => fn.startsWith(prefix))
-        .map(fn => `${origin}/uploads/business/${fn}`);
-      return { ...row, images: urls };
+      const images = [];
+
+      for (const imgCol of rentImgCols) {
+        const raw = row[`br_${imgCol.col}`];
+        if (imgCol.type === 'json' && raw) {
+          try {
+            const arr = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+            for (const item of arr) {
+              const n = normalizeImageUrl(item, req);
+              if (n) images.push(n);
+            }
+          } catch (_) {}
+        } else if (imgCol.type === 'single' && raw) {
+          const n = normalizeImageUrl(raw, req);
+          if (n) images.push(n);
+        }
+        delete row[`br_${imgCol.col}`];
+      }
+
+      if (images.length === 0 && filenames.length > 0) {
+        const prefix = `business-${id}-`;
+        const urls = filenames
+          .filter(fn => fn.startsWith(prefix))
+          .map(fn => `${origin}/uploads/business/${fn}`);
+        images.push(...urls);
+      }
+
+      return { ...row, images };
     });
     res.status(200).json(withImages);
   } catch (error) {
@@ -108,6 +171,10 @@ router.get('/business/properties/:id', async (req, res) => {
     const { id } = req.params;
     console.log('Fetching business property details for id:', id);
 
+    const rentImgCols = await loadImageColumns('businessownerrent');
+    const imageSelectParts = rentImgCols.map(c => `br.\`${c.col}\` as br_${c.col}`);
+    const imageSelectSql = imageSelectParts.length > 0 ? ', ' + imageSelectParts.join(', ') : '';
+
     const [rows] = await pool.execute(
       `SELECT 
         bd.id,
@@ -127,6 +194,7 @@ router.get('/business/properties/:id', async (req, res) => {
         br.advance_amount,
         br.monthly_rent,
         br.lease_amount
+        ${imageSelectSql}
       FROM businessownerdet bd
       LEFT JOIN businessownerpro bp ON bd.id = bp.businessownerdet_id
       LEFT JOIN businessownerrent br ON bd.id = br.businessownerdet_id
@@ -140,10 +208,28 @@ router.get('/business/properties/:id', async (req, res) => {
 
     const property = rows[0];
 
+    const images = [];
+    for (const imgCol of rentImgCols) {
+      const raw = property[`br_${imgCol.col}`];
+      if (imgCol.type === 'json' && raw) {
+        try {
+          const arr = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+          for (const item of arr) {
+            const n = normalizeImageUrl(item, req);
+            if (n) images.push(n);
+          }
+        } catch (_) {}
+      } else if (imgCol.type === 'single' && raw) {
+        const n = normalizeImageUrl(raw, req);
+        if (n) images.push(n);
+      }
+      delete property[`br_${imgCol.col}`];
+    }
+
     // Restructure the data to match the residential format
     const structuredData = {
       id: property.id,
-      images: [], // This will be populated next
+      images: images,
       addressDetails: {
         name_of_person: property.name_of_person,
         door_no: property.door_no,
@@ -169,17 +255,19 @@ router.get('/business/properties/:id', async (req, res) => {
       },
     };
 
-    let filenames = [];
-    try {
-      filenames = fs.readdirSync(businessUploadsDir);
-    } catch (_) {
-      filenames = [];
+    if (structuredData.images.length === 0) {
+      let filenames = [];
+      try {
+        filenames = fs.existsSync(businessUploadsDir) ? fs.readdirSync(businessUploadsDir) : [];
+      } catch (_) {
+        filenames = [];
+      }
+      const origin = `${req.protocol}://${req.get('host')}`;
+      const prefix = `business-${id}-`;
+      structuredData.images = filenames
+        .filter(fn => fn.startsWith(prefix))
+        .map(fn => `${origin}/uploads/business/${fn}`);
     }
-    const origin = `${req.protocol}://${req.get('host')}`;
-    const prefix = `business-${id}-`;
-    structuredData.images = filenames
-      .filter(fn => fn.startsWith(prefix))
-      .map(fn => `${origin}/uploads/business/${fn}`);
 
     console.log('Returning structured data:', structuredData);
     res.status(200).json(structuredData);

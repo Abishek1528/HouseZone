@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../config/database.js';
-import multer from 'multer';
+import upload from '../middleware/upload.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -10,27 +10,10 @@ const router = Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Create uploads directory for job giver if it doesn't exist
 const jobGiverUploadsDir = path.join(__dirname, '../uploads', 'jobgiver');
 if (!fs.existsSync(jobGiverUploadsDir)) {
-  fs.mkdirSync(jobGiverUploadsDir, { recursive: true });
+  try { fs.mkdirSync(jobGiverUploadsDir, { recursive: true }); } catch (_) {}
 }
-
-// Configure multer storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, jobGiverUploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const jobGiverId = req.body.jobGiverId || Date.now();
-    const fieldName = file.fieldname;
-    const ext = path.extname(file.originalname);
-    const filename = `jobgiver-${jobGiverId}-${fieldName}-${Date.now()}${ext}`;
-    cb(null, filename);
-  }
-});
-
-const upload = multer({ storage });
 
 // Save job giver step 1 (personal info)
 router.post('/jobgiver/step1', async (req, res) => {

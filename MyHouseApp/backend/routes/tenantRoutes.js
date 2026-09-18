@@ -10,12 +10,53 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const residentialUploadsDir = path.join(__dirname, '../uploads', 'residential');
 
+const normalizeImageUrl = (url, req) => {
+  if (!url) return null;
+  if (typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http')) return trimmed;
+  const host = req.get('host');
+  const protocol = req.protocol;
+  const basename = path.basename(trimmed);
+  if (!basename) return null;
+  return `${protocol}://${host}/uploads/residential/${basename}`;
+};
+
+const loadImageColumns = async (tableName) => {
+  try {
+    const dbName = process.env.DB_NAME || 'cdmrental';
+    const [cols] = await pool.execute(
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?`,
+      [dbName, tableName]
+    );
+    const names = cols.map(c => c.COLUMN_NAME.toLowerCase());
+    const found = [];
+    const imagesCol = names.find(n => n === 'images' || n.includes('images') || n.includes('photos'));
+    if (imagesCol) found.push({ col: imagesCol, type: 'json', tableAlias: null });
+    for (let i = 1; i <= 7; i++) {
+      const c = names.find(n => n === `image${i}` || n === `shop_photo${i}` || n === `photo${i}`);
+      if (c) found.push({ col: c, type: 'single', idx: i, tableAlias: null });
+    }
+    return found;
+  } catch (_) {
+    return [];
+  }
+};
+
 // API endpoint for getting all residential properties for tenant view
 router.get('/residential/properties', async (req, res) => {
   try {
     // Extract filter parameters from query
     const { rent, bedrooms, area } = req.query;
-    
+
+    const payImgCols = (await loadImageColumns('resownpay')).map(c => ({ ...c, tableAlias: 'rp' }));
+    const hoImgCols = (await loadImageColumns('resownho')).map(c => ({ ...c, tableAlias: 'rh' }));
+    const allImgCols = [...payImgCols, ...hoImgCols];
+
+    const imageSelectParts = allImgCols.map(c => `${c.tableAlias}.\`${c.col}\` as ${c.tableAlias}_${c.col}`);
+    const imageSelectSql = imageSelectParts.length > 0 ? ', ' + imageSelectParts.join(', ') : '';
+
     // Build dynamic query with filters
     let query = `
       SELECT 
@@ -24,15 +65,16 @@ router.get('/residential/properties', async (req, res) => {
         rh.number_of_bedrooms as bedrooms,
         rp.monthly_rent as rent,
         rp.lease_amount as leaseAmount
+        ${imageSelectSql}
       FROM resowndet rd
       INNER JOIN resownho rh ON rd.roNo = rh.roNo
       INNER JOIN resownpay rp ON rd.roNo = rp.roNo
     `;
-    
+
     // Build WHERE conditions
     const conditions = [];
     const params = [];
-    
+
     if (rent) {
       // Handle rent range like '2000-4000'
       if (rent.includes('-')) {
@@ -45,7 +87,7 @@ router.get('/residential/properties', async (req, res) => {
         params.push(Number(rent), Number(rent));
       }
     }
-    
+
     if (bedrooms) {
       // Handle bedroom filter
       if (bedrooms === '4') { // 3+ BHK
@@ -55,24 +97,24 @@ router.get('/residential/properties', async (req, res) => {
         params.push(Number(bedrooms));
       }
     }
-    
+
     if (area && area !== '') {
       conditions.push('rd.roArea = ?');
       params.push(area);
     }
-    
+
     // Add WHERE clause if there are conditions
     if (conditions.length > 0) {
       query += ' WHERE ' + conditions.join(' AND ');
     }
-    
+
     query += ' ORDER BY rd.roNo DESC';
-    
+
     const [rows] = await pool.execute(query, params);
 
     let filenames = [];
     try {
-      filenames = fs.readdirSync(residentialUploadsDir);
+      filenames = fs.existsSync(residentialUploadsDir) ? fs.readdirSync(residentialUploadsDir) : [];
     } catch (_) {
       filenames = [];
     }
@@ -80,13 +122,36 @@ router.get('/residential/properties', async (req, res) => {
     const origin = `${req.protocol}://${req.get('host')}`;
     const withImages = rows.map(row => {
       const id = row.id ?? row.roNo;
-      const prefix = `residential-${id}-`;
-      const urls = filenames
-        .filter(fn => fn.startsWith(prefix))
-        .map(fn => `${origin}/uploads/residential/${fn}`);
-      return { ...row, images: urls };
+      const images = [];
+
+      for (const imgCol of allImgCols) {
+        const raw = row[`${imgCol.tableAlias}_${imgCol.col}`];
+        if (imgCol.type === 'json' && raw) {
+          try {
+            const arr = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+            for (const item of arr) {
+              const n = normalizeImageUrl(item, req);
+              if (n) images.push(n);
+            }
+          } catch (_) {}
+        } else if (imgCol.type === 'single' && raw) {
+          const n = normalizeImageUrl(raw, req);
+          if (n) images.push(n);
+        }
+        delete row[`${imgCol.tableAlias}_${imgCol.col}`];
+      }
+
+      if (images.length === 0 && filenames.length > 0) {
+        const prefix = `residential-${id}-`;
+        const urls = filenames
+          .filter(fn => fn.startsWith(prefix))
+          .map(fn => `${origin}/uploads/residential/${fn}`);
+        images.push(...urls);
+      }
+
+      return { ...row, images };
     });
-    
+
     res.status(200).json(withImages);
   } catch (error) {
     console.error('Error fetching residential properties:', error);
@@ -155,7 +220,17 @@ router.get('/residential/properties/areas', async (req, res) => {
 router.get('/residential/properties/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
+    const payImgCols = (await loadImageColumns('resownpay')).map(c => ({ ...c, tableAlias: 'rp' }));
+    const hoImgCols = (await loadImageColumns('resownho')).map(c => ({ ...c, tableAlias: 'rh' }));
+    const allImgCols = [...payImgCols, ...hoImgCols];
+
+    const payImgSelect = payImgCols.map(c => `rp.\`${c.col}\` as rp_${c.col}`).join(', ');
+    const payImgSelectSql = payImgSelect ? ', ' + payImgSelect : '';
+
+    const hoImgSelect = hoImgCols.map(c => `rh.\`${c.col}\` as rh_${c.col}`).join(', ');
+    const hoImgSelectSql = hoImgSelect ? ', ' + hoImgSelect : '';
+
     // Get step 1 details (address information), location details, and conditions
     let step1Rows = [];
     try {
@@ -189,13 +264,13 @@ router.get('/residential/properties/:id', async (req, res) => {
       console.error('Error fetching step 1 details:', error);
       return res.status(500).json({ message: 'Error fetching property details', error: error.message });
     }
-    
+
     if (step1Rows.length === 0) {
       return res.status(404).json({ message: 'Property not found' });
     }
-    
+
     const propertyDetails = step1Rows[0];
-    
+
     // Get step 2 details (house details)
     let step2Rows = [];
     try {
@@ -218,6 +293,7 @@ router.get('/residential/properties/:id', async (req, res) => {
           floor_number as floorNumber,
           parking_2wheeler as parking2Wheeler,
           parking_4wheeler as parking4Wheeler
+          ${hoImgSelectSql}
         FROM resownho 
         WHERE roNo = ?`,
         [id]
@@ -226,21 +302,40 @@ router.get('/residential/properties/:id', async (req, res) => {
       console.error('Error executing step 2 query:', queryError);
       step2Rows = [];
     }
-    
+
+    const images = [];
+
     if (step2Rows.length > 0) {
       // Calculate total square feet for hall, kitchen, and bedrooms
       const step2Data = step2Rows[0];
-      
+
+      for (const imgCol of hoImgCols) {
+        const raw = step2Data[`rh_${imgCol.col}`];
+        if (imgCol.type === 'json' && raw) {
+          try {
+            const arr = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+            for (const item of arr) {
+              const n = normalizeImageUrl(item, req);
+              if (n) images.push(n);
+            }
+          } catch (_) {}
+        } else if (imgCol.type === 'single' && raw) {
+          const n = normalizeImageUrl(raw, req);
+          if (n) images.push(n);
+        }
+        delete step2Data[`rh_${imgCol.col}`];
+      }
+
       // Hall total area
       if (step2Data.hallLength && step2Data.hallBreadth) {
         step2Data.hallTotalArea = (step2Data.hallLength * step2Data.hallBreadth).toFixed(2);
       }
-      
+
       // Kitchen total area
       if (step2Data.kitchenLength && step2Data.kitchenBreadth) {
         step2Data.kitchenTotalArea = (step2Data.kitchenLength * step2Data.kitchenBreadth).toFixed(2);
       }
-      
+
       // Get bedroom sizes
       const [bedroomRows] = await pool.execute(
         `SELECT 
@@ -252,16 +347,16 @@ router.get('/residential/properties/:id', async (req, res) => {
         ORDER BY bedroom_number`,
         [id]
       );
-      
+
       // Calculate bedroom total areas
       step2Data.bedrooms = bedroomRows.map(bedroom => ({
         ...bedroom,
         totalArea: (bedroom.length * bedroom.breadth).toFixed(2)
       }));
-      
+
       propertyDetails.houseDetails = step2Data;
     }
-    
+
   // Get step 3 details (payment information)
     const [step3Rows] = await pool.execute(
       `SELECT 
@@ -269,27 +364,49 @@ router.get('/residential/properties/:id', async (req, res) => {
         advance_amount as advanceAmount,
         monthly_rent as monthlyRent,
         lease_amount as leaseAmount
+        ${payImgSelectSql}
       FROM resownpay 
       WHERE roNo = ?`,
-    
+
       [id]
     );
-    
+
     if (step3Rows.length > 0) {
-      propertyDetails.paymentDetails = step3Rows[0];
+      const payData = step3Rows[0];
+      for (const imgCol of payImgCols) {
+        const raw = payData[`rp_${imgCol.col}`];
+        if (imgCol.type === 'json' && raw) {
+          try {
+            const arr = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+            for (const item of arr) {
+              const n = normalizeImageUrl(item, req);
+              if (n) images.push(n);
+            }
+          } catch (_) {}
+        } else if (imgCol.type === 'single' && raw) {
+          const n = normalizeImageUrl(raw, req);
+          if (n) images.push(n);
+        }
+        delete payData[`rp_${imgCol.col}`];
+      }
+      propertyDetails.paymentDetails = payData;
     }
 
-    let filenames = [];
-    try {
-      filenames = fs.readdirSync(residentialUploadsDir);
-    } catch (_) {
-      filenames = [];
+    if (images.length === 0) {
+      let filenames = [];
+      try {
+        filenames = fs.existsSync(residentialUploadsDir) ? fs.readdirSync(residentialUploadsDir) : [];
+      } catch (_) {
+        filenames = [];
+      }
+      const prefix = `residential-${id}-`;
+      const origin = `${req.protocol}://${req.get('host')}`;
+      images.push(...filenames
+        .filter(fn => fn.startsWith(prefix))
+        .map(fn => `${origin}/uploads/residential/${fn}`));
     }
-    const prefix = `residential-${id}-`;
-    const origin = `${req.protocol}://${req.get('host')}`;
-    propertyDetails.images = filenames
-      .filter(fn => fn.startsWith(prefix))
-      .map(fn => `${origin}/uploads/residential/${fn}`);
+
+    propertyDetails.images = images;
 
     res.status(200).json(propertyDetails);
   } catch (error) {
