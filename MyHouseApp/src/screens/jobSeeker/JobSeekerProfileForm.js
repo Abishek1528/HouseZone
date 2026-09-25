@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
@@ -50,10 +50,10 @@ const experienceStatusOptions = [
 ];
 
 const experienceYearOptions = [
-  { label: "1 Year", value: "1year" },
-  { label: "2 Years", value: "2years" },
-  { label: "3 Years", value: "3years" },
-  { label: "4+ Years", value: "4plus" },
+  { label: "Fresher", value: "fresher" },
+  { label: "1-2 Years", value: "1-2" },
+  { label: "2-4 Years", value: "2-4" },
+  { label: "4+ Years", value: "4+" },
 ];
 
 const DEFAULT_EXPERIENCE_FIELD_OPTIONS = [
