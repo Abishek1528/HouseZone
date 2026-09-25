@@ -41,11 +41,11 @@ const Step3ShopPhotos = ({ formData, handleInputChange, colors, dark }) => {
       const result =
         source === "camera"
           ? await ImagePicker.launchCameraAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              mediaTypes: ['images'],
               quality: 0.8,
             })
           : await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              mediaTypes: ['images'],
               quality: 0.8,
             });
 

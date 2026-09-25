@@ -1,5 +1,4 @@
 import React from "react";
-import { Text } from "react-native";
 import OwnerFormField from "../../shared/components/OwnerFormField";
 import OwnerFormCard from "../../shared/components/OwnerFormCard";
 import OptionSelectField from "../../shared/components/OptionSelectField";
@@ -14,6 +13,13 @@ const educationOptions = [
 const experienceOptions = [
   { label: "Fresher", value: "fresher" },
   { label: "Experienced", value: "experienced" },
+];
+
+const experienceYearOptions = [
+  { label: "Fresher", value: "fresher" },
+  { label: "1-2 Years", value: "1-2" },
+  { label: "2-4 Years", value: "2-4" },
+  { label: "4+ Years", value: "4+" },
 ];
 
 const joinImmediatelyOptions = [
@@ -48,13 +54,14 @@ const Step2JobRelatedDetails = ({ formData, handleInputChange, colors, dark }) =
     />
     {formData.experience === "experienced" && (
       <>
-        <OwnerFormField
+        <OptionSelectField
           label="Experience Years *"
-          value={formData.experienceYears}
-          onChangeText={(value) => handleInputChange("experienceYears", value)}
+          options={experienceYearOptions}
+          selectedValue={formData.experienceYears || ""}
+          onSelect={(value) => handleInputChange("experienceYears", value)}
           colors={colors}
           dark={dark}
-          placeholder="e.g., 2, 5, etc."
+          collapsible
         />
         <OwnerFormField
           label="Last Working Company *"

@@ -63,13 +63,11 @@ const JobCard = ({ job, onViewDetails, tps, dark }) => {
           borderColor: dark ? '#374151' : '#dbeafe' 
         }}>
           <Text style={{ color: colors.text, fontWeight: '500', fontSize: 14 }}>
-            Area: {job.area}
+            📍 {job.area || 'Area not specified'}
           </Text>
-          {salaryDisplay ? (
-            <Text style={{ color: '#27ae60', fontWeight: '700', fontSize: 14, marginTop: 4 }}>
-              {salaryDisplay}
-            </Text>
-          ) : null}
+          <Text style={{ color: salaryDisplay ? '#27ae60' : '#9ca3af', fontWeight: salaryDisplay ? '700' : '400', fontSize: 14, marginTop: 4 }}>
+            {salaryDisplay ? `💰 ${salaryDisplay}` : 'Salary not specified'}
+          </Text>
         </View>
         {/* View Details button aligned to right */}
         <TouchableOpacity

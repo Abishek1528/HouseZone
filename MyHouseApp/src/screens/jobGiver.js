@@ -29,7 +29,6 @@ const GENDER_FILTER_OPTIONS = [
   { label: "Any", value: "" },
   { label: "Male", value: "male" },
   { label: "Female", value: "female" },
-  { label: "Other", value: "other" },
 ];
 
 const EDUCATION_FILTER_OPTIONS = [
@@ -322,7 +321,7 @@ export default function JobGiver() {
             style={[categoryContentStyles.button, categoryContentStyles.secondaryButton]}
             onPress={() => navigation.navigate("JobGiverJobSeekers")}
           >
-            <Text style={categoryContentStyles.buttonText}>View All Employees</Text>
+            <Text style={categoryContentStyles.buttonText}>My Applicants</Text>
           </TouchableOpacity>
         </View>
       </View>

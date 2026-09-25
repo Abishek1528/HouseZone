@@ -35,52 +35,73 @@ export const saveJobGiverStep2 = async (data) => {
   });
 };
 
-export const saveJobGiverStep3 = async (data) => {
-  try {
-    const form = new FormData();
-    form.append('jobGiverId', String(data.jobGiverId));
-    form.append('salaryOffering', data.salaryOffering);
-    if (data.otherSkills) {
-      form.append('otherSkills', data.otherSkills);
+export const saveJobGiverStep3 = (data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const form = new FormData();
+      form.append('jobGiverId', String(data.jobGiverId));
+      form.append('salaryOffering', String(data.salaryOffering || ''));
+      if (data.otherSkills) {
+        form.append('otherSkills', String(data.otherSkills));
+      }
+      if (data.shopPhoto1) {
+        form.append('shopPhoto1', {
+          uri: data.shopPhoto1,
+          name: 'shop_photo_1.jpg',
+          type: 'image/jpeg',
+        });
+      }
+      if (data.shopPhoto2) {
+        form.append('shopPhoto2', {
+          uri: data.shopPhoto2,
+          name: 'shop_photo_2.jpg',
+          type: 'image/jpeg',
+        });
+      }
+      if (data.shopPhoto3) {
+        form.append('shopPhoto3', {
+          uri: data.shopPhoto3,
+          name: 'shop_photo_3.jpg',
+          type: 'image/jpeg',
+        });
+      }
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${API_BASE_URL}/jobgiver/step3`);
+      xhr.setRequestHeader('Accept', 'application/json');
+
+      xhr.onload = () => {
+        try {
+          const result = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(result);
+          } else {
+            reject(new Error(result?.message || `HTTP ${xhr.status}`));
+          }
+        } catch (_) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve({ message: 'Success' });
+          } else {
+            reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
+          }
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Network error uploading shop photo'));
+      };
+
+      xhr.ontimeout = () => {
+        reject(new Error('Request timed out uploading shop photo'));
+      };
+
+      xhr.timeout = 30000;
+      xhr.send(form);
+    } catch (error) {
+      console.error('Error saving job giver step 3:', error);
+      reject(new Error(`Failed to save step 3: ${error.message || 'Unknown error'}`));
     }
-    if (data.shopPhoto1) {
-      const name = 'shop_photo_1.jpg';
-      const type = 'image/jpeg';
-      form.append('shopPhoto1', { uri: data.shopPhoto1, name, type });
-    }
-    if (data.shopPhoto2) {
-      const name = 'shop_photo_2.jpg';
-      const type = 'image/jpeg';
-      form.append('shopPhoto2', { uri: data.shopPhoto2, name, type });
-    }
-    if (data.shopPhoto3) {
-      const name = 'shop_photo_3.jpg';
-      const type = 'image/jpeg';
-      form.append('shopPhoto3', { uri: data.shopPhoto3, name, type });
-    }
-    const response = await fetch(`${API_BASE_URL}/jobgiver/step3`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json'
-      },
-      body: form
-    });
-    const contentType = response.headers.get('content-type') || '';
-    let result;
-    if (contentType.includes('application/json')) {
-      result = await response.json();
-    } else {
-      const text = await response.text();
-      result = { message: 'Success', data: text };
-    }
-    if (!response.ok) {
-      throw new Error(result?.message || `HTTP ${response.status}: ${response.statusText}`);
-    }
-    return result;
-  } catch (error) {
-    console.error('Error saving job giver step 3:', error);
-    throw new Error(`Failed to save step 3: ${error.message || 'Network error'}`);
-  }
+  });
 };
 
 export const getJobSeekers = async (jobGiverId = null) => {
