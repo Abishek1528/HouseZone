@@ -16,5 +16,6 @@ export const initialFormData = {
   experienceYears: "",
   lastWorkingShop: "",
   addExperience: "",
+  otherExperience: "",
   canJoinImmediately: "",
 };

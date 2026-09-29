@@ -72,25 +72,29 @@ router.post('/business/step3', async (req, res) => {
 });
 
 // Upload business property images
-router.post('/business/images', upload.array('images', 7), async (req, res) => {
-  try {
-    const boNo = req.body?.boNo;
-    if (!boNo) {
-      return res.status(400).json({ message: 'boNo is required to associate images' });
-    }
-    const files = req.files || [];
-    if (files.length === 0) {
-      return res.status(400).json({ message: 'No images uploaded' });
-    }
-    const baseDir = path.join(__dirname, '../uploads', 'business');
-    try { fs.mkdirSync(baseDir, { recursive: true }); } catch (_) {}
-    const origin = `${req.protocol}://${req.get('host')}`;
-    const urls = files.map(f => `${origin}/uploads/business/${path.basename(f.filename || f.originalname)}`);
-    res.status(201).json({ message: 'Images uploaded successfully', boNo, images: urls });
-  } catch (error) {
-    console.error('Error uploading business images:', error);
-    res.status(500).json({ message: 'Failed to upload images', error: error.message });
-  }
+// NOTE: Image saving is temporarily disabled to prevent errors.
+// router.post('/business/images', upload.array('images', 7), async (req, res) => {
+router.post('/business/images', async (req, res) => {
+  // IMAGE SAVING DISABLED
+  // try {
+  //   const boNo = req.body?.boNo;
+  //   if (!boNo) {
+  //     return res.status(400).json({ message: 'boNo is required to associate images' });
+  //   }
+  //   const files = req.files || [];
+  //   if (files.length === 0) {
+  //     return res.status(400).json({ message: 'No images uploaded' });
+  //   }
+  //   const baseDir = path.join(__dirname, '../uploads', 'business');
+  //   try { fs.mkdirSync(baseDir, { recursive: true }); } catch (_) {}
+  //   const origin = `${req.protocol}://${req.get('host')}`;
+  //   const urls = files.map(f => `${origin}/uploads/business/${path.basename(f.filename || f.originalname)}`);
+  //   res.status(201).json({ message: 'Images uploaded successfully', boNo, images: urls });
+  // } catch (error) {
+  //   console.error('Error uploading business images:', error);
+  //   res.status(500).json({ message: 'Failed to upload images', error: error.message });
+  // }
+  res.status(200).json({ message: 'Image upload disabled', images: [] });
 });
 
 export default router;

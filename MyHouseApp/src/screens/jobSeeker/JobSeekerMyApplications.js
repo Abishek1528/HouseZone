@@ -13,12 +13,21 @@ const formatSalaryForDisplay = (raw) => {
   if (raw == null) return '';
   const str = String(raw).trim();
   if (!str) return '';
+  // Handle known categorical salary keys stored in DB
+  const categoryMap = {
+    'upto_10k': '≤10K / month',
+    '10k_to_20k': '10K–20K / month',
+    'above_20k': '>20K / month',
+    'work_based': 'Work Based',
+  };
+  const lower = str.toLowerCase().replace(/\s+/g, '_');
+  if (categoryMap[lower]) return categoryMap[lower];
   let cleaned = str.replace(/^_+|_+$/g, '').replace(/_+/g, ' ');
   if (/^\d+$/.test(cleaned)) {
     const num = parseInt(cleaned, 10);
     if (num >= 1000) {
-      const k = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
-      return `${k}k / month`;
+      const K = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
+      return `${K}K / month`;
     }
     return `${num} / month`;
   }

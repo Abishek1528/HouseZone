@@ -137,15 +137,26 @@ const convertKeysToCamelCase = (obj) => {
   return obj;
 };
 
-// Parse a salary value (could be "10000", "10k-20k", "10000 to 20000/month", "15,000 Rs", etc.)
-// into its minimum numeric value for comparison purposes. Returns null if unparseable.
+// Parse a salary value (could be "10000", "upto_10k", "10k_to_20k", etc.)
+// into its representative numeric value for comparison purposes.
+// Returns null if unparseable.
 const parseSalaryToNumber = (raw) => {
   if (raw == null) return null;
   const str = String(raw).trim();
   if (!str) return null;
-  const lower = str.toLowerCase();
-  // Extract the first sequence of digits (optionally with comma/decimal separators)
-  // then handle "k" suffix / "lakh" suffix if present.
+  const lower = str.toLowerCase().replace(/\s+/g, '_');
+
+  // Handle categorical salary keys stored by the JobGiver form
+  const categoryMap = {
+    'upto_10k': 5000,      // representative midpoint for ≤10K range
+    '10k_to_20k': 15000,   // representative midpoint for 10K–20K range
+    'above_20k': 25000,    // representative value for >20K range
+  };
+  if (categoryMap.hasOwnProperty(lower)) return categoryMap[lower];
+  // work_based has no numeric value — exclude from numeric filters
+  if (lower === 'work_based') return null;
+
+  // Handle numeric strings with k/lakh suffix
   const kMatch = lower.match(/([\d][\d.,]*)\s*k/);
   if (kMatch) {
     const base = parseFloat(kMatch[1].replace(/,/g, ''));

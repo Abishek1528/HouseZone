@@ -10,6 +10,7 @@ export const initialFormData = {
 
   // Page 2 — Job Details
   jobTitle: "",
+  otherJobTitle: "",
   employmentType: "",
   age: "",
   gender: "",
