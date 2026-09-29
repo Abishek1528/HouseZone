@@ -131,13 +131,13 @@ export default function JobSeekerProfileDetails() {
             </View>
             {profile.area && (
               <View style={tps.detailRow}>
-                <Text style={tps.label}>Area</Text>
+                <Text style={tps.label}>Area/Village</Text>
                 <Text style={tps.value}>{profile.area}</Text>
               </View>
             )}
             {profile.city && (
               <View style={tps.detailRow}>
-                <Text style={tps.label}>City / Town</Text>
+                <Text style={tps.label}>Town / City</Text>
                 <Text style={tps.value}>{profile.city}</Text>
               </View>
             )}

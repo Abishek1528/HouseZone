@@ -108,17 +108,17 @@ const EMPLOYMENT_TYPE_FILTER_OPTIONS = [
 
 const SALARY_FILTER_OPTIONS = [
   { label: "Any", value: "" },
-  { label: "≤10k", value: "0-10000" },
-  { label: "10k-20k", value: "10000-20000" },
-  { label: ">20k", value: "20000-999999" },
+  { label: "≤10K", value: "0-10000" },
+  { label: "10K-20K", value: "10000-20000" },
+  { label: ">20K", value: "20000-999999" },
 ];
 
 // Get label for salary filter value
 const getSalaryLabel = (value) => {
   switch(value) {
-    case '0-10000': return '≤10k';
-    case '10000-20000': return '10k-20k';
-    case '20000-999999': return '>20k';
+    case '0-10000': return '≤10K';
+    case '10000-20000': return '10K-20K';
+    case '20000-999999': return '>20K';
     default: return '';
   }
 };
@@ -135,20 +135,28 @@ const formatSalaryForDisplay = (raw) => {
   if (raw == null) return '';
   const str = String(raw).trim();
   if (!str) return '';
+  // Handle known categorical salary keys stored in DB
+  const categoryMap = {
+    'upto_10k': '≤10K / month',
+    '10k_to_20k': '10K–20K / month',
+    'above_20k': '>20K / month',
+    'work_based': 'Work Based',
+  };
+  const lower = str.toLowerCase().replace(/\s+/g, '_');
+  if (categoryMap[lower]) return categoryMap[lower];
   // Strip any leading/trailing underscores and common placeholders
   let cleaned = str.replace(/^_+|_+$/g, '').replace(/_+/g, ' ');
   // If it looks like a pure number, format nicely
   if (/^\d+$/.test(cleaned)) {
     const num = parseInt(cleaned, 10);
     if (num >= 1000) {
-      const k = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
-      return `${k}k / month`;
+      const K = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
+      return `${K}K / month`;
     }
     return `${num} / month`;
   }
   // If it contains "month" or "/" already, just return cleaned
   if (/month|\/|\-|to/i.test(cleaned)) {
-    // Ensure "/ month" exists cleanly
     if (!/month/i.test(cleaned)) {
       return `${cleaned} / month`;
     }
@@ -294,7 +302,7 @@ export default function JobSeeker() {
             },
             {
               key: "area",
-              label: "Area",
+              label: "Area/Village",
               options: AREA_FILTER_OPTIONS,
               value: areaFilter,
               onSelect: setAreaFilter,
@@ -326,7 +334,7 @@ export default function JobSeeker() {
           tps={tps}
         />
         <SelectedFilterBox
-          label="Area"
+          label="Area/Village"
           value={areaFilter}
           onRemove={() => setAreaFilter("")}
           tps={tps}

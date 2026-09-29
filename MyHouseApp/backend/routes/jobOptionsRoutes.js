@@ -9,7 +9,8 @@ const DEFAULT_JOB_TITLES = [
   'Salesperson',
   'Accountant',
   'Supervisor',
-  'Helper'
+  'Helper',
+  'Others'
 ];
 
 const DEFAULT_JOB_AREAS = [

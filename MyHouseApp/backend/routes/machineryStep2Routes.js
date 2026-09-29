@@ -5,23 +5,22 @@ import upload from '../middleware/upload.js';
 const router = Router();
 
 // API endpoint for uploading machinery images
-router.post('/machinery/images', upload.array('images', 7), async (req, res) => {
-  try {
-    const { moNo } = req.body;
-    if (!moNo) return res.status(400).json({ message: 'moNo (machinery owner id) is required' });
-    
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const imageUrls = req.files.map(file => `${protocol}://${host}/uploads/machinery/${file.filename}`);
-    
-    res.status(200).json({
-      message: 'Images uploaded successfully',
-      images: imageUrls
-    });
-  } catch (error) {
-    console.error('Error uploading machinery images:', error);
-    res.status(500).json({ message: 'Error uploading images', error: error.message });
-  }
+// NOTE: Image saving is temporarily disabled to prevent errors.
+// router.post('/machinery/images', upload.array('images', 7), async (req, res) => {
+router.post('/machinery/images', async (req, res) => {
+  // IMAGE SAVING DISABLED
+  // try {
+  //   const { moNo } = req.body;
+  //   if (!moNo) return res.status(400).json({ message: 'moNo (machinery owner id) is required' });
+  //   const host = req.get('host');
+  //   const protocol = req.protocol;
+  //   const imageUrls = req.files.map(file => `${protocol}://${host}/uploads/machinery/${file.filename}`);
+  //   res.status(200).json({ message: 'Images uploaded successfully', images: imageUrls });
+  // } catch (error) {
+  //   console.error('Error uploading machinery images:', error);
+  //   res.status(500).json({ message: 'Error uploading images', error: error.message });
+  // }
+  res.status(200).json({ message: 'Image upload disabled', images: [] });
 });
 
 // Save machinery step 2 details into machinarydet table (robust column mapping)

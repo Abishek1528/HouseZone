@@ -25,7 +25,7 @@ import Step2JobRelatedDetails from "./Step2JobRelatedDetails";
 const MAX_STEPS = 2;
 
 const validateStep1 = (formData) => {
-  const required = ["fullName", "mobileNumber", "age", "gender"];
+  const required = ["fullName", "mobileNumber", "age", "gender", "street", "area", "city"];
   for (const field of required) {
     if (!String(formData[field] || "").trim()) {
       Alert.alert("Validation Error", "Please fill in all required personal details in Step 1.");
@@ -53,12 +53,17 @@ const validateStep2 = (formData) => {
     }
   }
   if (formData.experience === "experienced") {
-    const experienceRequired = ["experienceYears", "lastWorkingShop"];
+    const experienceRequired = ["experienceYears", "lastWorkingShop", "addExperience"];
     for (const field of experienceRequired) {
       if (!String(formData[field] || "").trim()) {
         Alert.alert("Validation Error", "Please fill in all experience details as you are experienced.");
         return false;
       }
+    }
+    const isOther = formData.addExperience === "Others" || formData.addExperience === "Other";
+    if (isOther && !String(formData.otherExperience || "").trim()) {
+      Alert.alert("Validation Error", "Please specify your other experience in Step 2.");
+      return false;
     }
   }
   return true;
@@ -148,6 +153,10 @@ export default function JobSeekerForm({ route }) {
     try {
       setIsSubmitting(true);
 
+      const effectiveExperience = (formData.addExperience === "Others" || formData.addExperience === "Other") && formData.otherExperience
+        ? formData.otherExperience
+        : formData.addExperience;
+
       // Save job seeker data to API
       const submitData = {
         fullName: formData.fullName,
@@ -164,7 +173,7 @@ export default function JobSeekerForm({ route }) {
         education: formData.education,
         experienceYears: formData.experienceYears,
         lastWorkingShop: formData.lastWorkingShop,
-        addExperience: formData.addExperience,
+        addExperience: effectiveExperience,
         canJoinImmediately: formData.canJoinImmediately,
         jobGiverJobId: job?.id
       };

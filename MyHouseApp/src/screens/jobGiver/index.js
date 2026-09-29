@@ -48,6 +48,11 @@ const validateStep2 = (formData) => {
       return false;
     }
   }
+  const isOtherTitle = formData.jobTitle === "Others" || formData.jobTitle === "Other";
+  if (isOtherTitle && !String(formData.otherJobTitle || "").trim()) {
+    Alert.alert("Validation Error", "Please specify your job title in Page 2.");
+    return false;
+  }
   // Only require experienceField if experienceYear requires specific field details (not "fresh", "fresher", or "any")
   const isExperienced =
     formData.experienceYear &&
@@ -109,10 +114,13 @@ export default function AddJobGiver() {
       const next = { ...prev, [field]: value };
       const needsExperienceField =
         next.experienceYear === "1year" || next.experienceYear === "2plus";
-      if (field === "experienceYear" && needsExperienceField && next.jobTitle) {
-        next.experienceField = next.jobTitle;
-      } else if (field === "jobTitle" && needsExperienceField) {
-        next.experienceField = value;
+      const effectiveTitle = (next.jobTitle === "Others" || next.jobTitle === "Other") && next.otherJobTitle
+        ? next.otherJobTitle
+        : next.jobTitle;
+      if (field === "experienceYear" && needsExperienceField && effectiveTitle) {
+        next.experienceField = effectiveTitle;
+      } else if ((field === "jobTitle" || field === "otherJobTitle") && needsExperienceField) {
+        next.experienceField = effectiveTitle;
       }
       return next;
     });
@@ -151,16 +159,20 @@ export default function AddJobGiver() {
       const step1Response = await saveJobGiverStep1(step1Data);
       const jobGiverId = step1Response.jobGiverId;
 
+      const effectiveJobTitle = (formData.jobTitle === "Others" || formData.jobTitle === "Other") && formData.otherJobTitle
+        ? formData.otherJobTitle
+        : formData.jobTitle;
+
       // Step 2: Save job details
       const step2Data = {
         jobGiverId: jobGiverId,
-        jobTitle: formData.jobTitle,
+        jobTitle: effectiveJobTitle,
         employmentType: formData.employmentType,
         age: formData.age,
         gender: formData.gender,
         education: formData.education,
         experienceYear: formData.experienceYear,
-        experienceField: formData.experienceField || 'N/A',
+        experienceField: formData.experienceField || effectiveJobTitle || 'N/A',
         workingTimeStart: formData.workStartTime,
         workingTimeEnd: formData.workEndTime,
       };

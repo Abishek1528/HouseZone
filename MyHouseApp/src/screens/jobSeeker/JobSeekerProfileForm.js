@@ -63,6 +63,7 @@ const DEFAULT_EXPERIENCE_FIELD_OPTIONS = [
   { label: "Accountant", value: "Accountant" },
   { label: "Supervisor", value: "Supervisor" },
   { label: "Helper", value: "Helper" },
+  { label: "Others", value: "Others" },
 ];
 
 
@@ -216,6 +217,9 @@ export default function JobSeekerProfileForm() {
               label: item.title,
               value: item.title
             }));
+            if (!formatted.some(item => item.value.toLowerCase() === 'others' || item.value.toLowerCase() === 'other')) {
+              formatted.push({ label: "Others", value: "Others" });
+            }
             setExperienceFieldOptions(formatted);
           }
         }
@@ -387,7 +391,7 @@ export default function JobSeekerProfileForm() {
         collapsible
       />
       <OwnerFormField
-        label="Street"
+        label="Street *"
         value={formData.street}
         onChangeText={(value) => handleInputChange("street", value)}
         placeholder="e.g., Main Road, 2nd Lane, Gandhi Street"
@@ -395,15 +399,15 @@ export default function JobSeekerProfileForm() {
         dark={dark}
       />
       <OwnerFormField
-        label="Area"
+        label="Area/Village *"
         value={formData.area}
         onChangeText={(value) => handleInputChange("area", value)}
-        placeholder="e.g., Local Area / Colony / Street"
+        placeholder="e.g., Local Area / Village / Colony"
         colors={ofs.themeColors}
         dark={dark}
       />
       <OwnerFormField
-        label="City/Town *"
+        label="Town/City *"
         value={formData.city}
         onChangeText={(value) => handleInputChange("city", value)}
         placeholder="e.g., Chennai / Coimbatore"

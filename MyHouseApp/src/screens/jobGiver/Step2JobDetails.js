@@ -14,6 +14,7 @@ const DEFAULT_JOB_TITLE_OPTIONS = [
   { label: "Accountant", value: "Accountant" },
   { label: "Supervisor", value: "Supervisor" },
   { label: "Helper", value: "Helper" },
+  { label: "Others", value: "Others" },
 ];
 
 const genderOptions = [
@@ -64,6 +65,9 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
               label: item.title,
               value: item.title
             }));
+            if (!formatted.some(item => item.value.toLowerCase() === 'others' || item.value.toLowerCase() === 'other')) {
+              formatted.push({ label: "Others", value: "Others" });
+            }
             setJobTitleOptions(formatted);
           }
         }
@@ -89,6 +93,8 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
     }
   };
 
+  const isOtherTitle = formData.jobTitle === "Others" || formData.jobTitle === "Other";
+
   return (
     <OwnerFormCard
       title="Job Details"
@@ -105,6 +111,16 @@ const Step2JobDetails = ({ formData, handleInputChange, colors, dark }) => {
         dark={dark}
         collapsible
       />
+      {isOtherTitle && (
+        <OwnerFormField
+          label="Specify Job Title *"
+          value={formData.otherJobTitle || ""}
+          onChangeText={(value) => handleInputChange("otherJobTitle", value)}
+          placeholder="e.g. Electrician, Driver, Tailor"
+          colors={colors}
+          dark={dark}
+        />
+      )}
       <OptionSelectField
         label="Employment Type *"
         options={employmentTypeOptions}

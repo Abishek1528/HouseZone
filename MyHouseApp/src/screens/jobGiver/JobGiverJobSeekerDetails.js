@@ -118,7 +118,7 @@ export default function JobGiverJobSeekerDetails({ route }) {
             </View>
             {jobSeeker.area && (
               <View style={tps.detailRow}>
-                <Text style={tps.label}>Area</Text>
+                <Text style={tps.label}>Area/Village</Text>
                 <Text style={tps.value}>{jobSeeker.area}</Text>
               </View>
             )}

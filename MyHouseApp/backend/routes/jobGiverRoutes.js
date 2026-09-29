@@ -70,35 +70,36 @@ router.post('/jobgiver/step2', async (req, res) => {
 });
 
 // Save job giver step 3 (salary, skills, photos)
-router.post('/jobgiver/step3', upload.fields([{ name: 'shopPhoto1' }, { name: 'shopPhoto2' }, { name: 'shopPhoto3' }]), async (req, res) => {
+// NOTE: Image saving is temporarily disabled. Uncomment image blocks to re-enable.
+router.post('/jobgiver/step3', async (req, res) => {
   try {
     console.log('Step 3 req.body:', req.body);
-    console.log('Step 3 req.files:', req.files);
     const { jobGiverId, salaryOffering, otherSkills } = req.body;
-    const files = req.files || {};
 
-    let shopPhoto1Path = null;
-    let shopPhoto2Path = null;
-    let shopPhoto3Path = null;
+    // IMAGE SAVING DISABLED - comment START
+    // const files = req.files || {};
+    // let shopPhoto1Path = null;
+    // let shopPhoto2Path = null;
+    // let shopPhoto3Path = null;
+    // if (files.shopPhoto1 && files.shopPhoto1[0]) {
+    //   shopPhoto1Path = files.shopPhoto1[0].filename;
+    // }
+    // if (files.shopPhoto2 && files.shopPhoto2[0]) {
+    //   shopPhoto2Path = files.shopPhoto2[0].filename;
+    // }
+    // if (files.shopPhoto3 && files.shopPhoto3[0]) {
+    //   shopPhoto3Path = files.shopPhoto3[0].filename;
+    // }
+    // IMAGE SAVING DISABLED - comment END
 
-    if (files.shopPhoto1 && files.shopPhoto1[0]) {
-      shopPhoto1Path = files.shopPhoto1[0].filename;
-    }
-    if (files.shopPhoto2 && files.shopPhoto2[0]) {
-      shopPhoto2Path = files.shopPhoto2[0].filename;
-    }
-    if (files.shopPhoto3 && files.shopPhoto3[0]) {
-      shopPhoto3Path = files.shopPhoto3[0].filename;
-    }
-
-    // Convert undefined to null
+    // Save only salary and skills (no photo paths)
     const values = [
       jobGiverId,
       salaryOffering,
       otherSkills !== undefined ? otherSkills : null,
-      shopPhoto1Path,
-      shopPhoto2Path,
-      shopPhoto3Path
+      null, // shopPhoto1Path disabled
+      null, // shopPhoto2Path disabled
+      null, // shopPhoto3Path disabled
     ];
 
     console.log('Inserting into jobgiversalary with values:', values);

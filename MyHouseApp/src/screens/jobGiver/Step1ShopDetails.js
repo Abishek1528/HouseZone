@@ -81,7 +81,7 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => {
       collapsible
     />
     <OptionSelectField
-      label="Area *"
+      label="Area/Village *"
       options={areaOptions}
       selectedValue={formData.area || ""}
       onSelect={(value) => handleInputChange("area", value)}
@@ -90,9 +90,10 @@ const Step1ShopDetails = ({ formData, handleInputChange, colors, dark }) => {
       collapsible
     />
     <OwnerFormField
-      label="City *"
+      label="Town/City *"
       value={formData.city}
       onChangeText={(value) => handleInputChange("city", value)}
+      placeholder="Enter town or city"
       colors={colors}
       dark={dark}
     />

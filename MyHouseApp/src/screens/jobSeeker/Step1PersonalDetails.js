@@ -99,7 +99,7 @@ const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, col
         collapsible
       />
       <OwnerFormField
-        label="Street"
+        label="Street *"
         value={formData.street}
         onChangeText={(value) => handleInputChange("street", value)}
         placeholder="Enter your street / road / lane"
@@ -107,15 +107,15 @@ const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, col
         dark={dark}
       />
       <OwnerFormField
-        label="Area"
+        label="Area/Village *"
         value={formData.area}
         onChangeText={(value) => handleInputChange("area", value)}
-        placeholder="Enter your area"
+        placeholder="Enter your area / village"
         colors={colors}
         dark={dark}
       />
       <OwnerFormField
-        label="Town / City"
+        label="Town/City *"
         value={formData.city}
         onChangeText={(value) => handleInputChange("city", value)}
         placeholder="Enter your town or city"
