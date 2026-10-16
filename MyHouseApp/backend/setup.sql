@@ -352,7 +352,7 @@ CREATE TABLE IF NOT EXISTS job_seeker_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     signup_id INT,
     name VARCHAR(255) NOT NULL,
-    age INT NOT NULL,
+    age VARCHAR(50) NOT NULL, -- age range, e.g. '18-30'
     gender VARCHAR(50) NOT NULL,
     education VARCHAR(100) NOT NULL,
     experience_status VARCHAR(20) NOT NULL, -- values: 'fresher', 'experienced'

@@ -37,11 +37,11 @@ const Step1PersonalDetails = ({ formData, handleInputChange, errors, onBlur, col
       const result =
         source === "camera"
           ? await ImagePicker.launchCameraAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              mediaTypes: ['images'],
               quality: 0.8,
             })
           : await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              mediaTypes: ['images'],
               quality: 0.8,
             });
 

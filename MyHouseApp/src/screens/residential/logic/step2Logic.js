@@ -20,6 +20,6 @@ export const step2InitialData = {
   bathroom2Access: "",
   bathroom3Access: "",
   floorNo: "",
-  parking2Wheeler: "",
+  parking2Wheeler: "No",
   parking4Wheeler: "No",
 };

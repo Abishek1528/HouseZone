@@ -31,7 +31,7 @@ router.post('/business/step2', async (req, res) => {
     };
 
     const mappings = {
-      boNo: findCol(['bo', 'bono', 'bono', 'owner_id', 'ownerno', 'roNo', 'rono', 'id']),
+      boNo: findCol(['businessownerdet_id', 'businessownerdet', 'ownerdet_id', 'ownerdet', 'bo_no', 'bono', 'owner_id', 'ownerno']),
       doorFacing: findCol(['facing', 'door_facing', 'doorfacing']),
       propertyType: findCol(['property', 'property_type', 'ptype']),
       areaLength: findCol(['length', 'area_length', 'arealength']),
@@ -54,11 +54,26 @@ router.post('/business/step2', async (req, res) => {
       return res.status(400).json({ message: 'No valid fields found for insertion into businessownerpro' });
     }
 
+    // businessownerpro has no unique key on the owner column, so upsert manually
+    // (update when a row already exists) to avoid duplicate rows per owner.
+    const ownerCol = mappings.boNo;
     const placeholders = insertCols.map(() => '?').join(', ');
-    const updatePart = insertCols.map(col => `${col} = VALUES(${col})`).join(', ');
-    const sql = `INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${placeholders}) ON DUPLICATE KEY UPDATE ${updatePart}`;
+    let existingRows = [];
+    if (ownerCol && insertCols.includes(ownerCol) && payload.boNo !== undefined && payload.boNo !== null) {
+      const [found] = await connection.execute(
+        `SELECT id FROM ${tableName} WHERE ${ownerCol} = ? LIMIT 1`,
+        [payload.boNo]
+      );
+      existingRows = found;
+    }
 
-    await connection.execute(sql, insertVals);
+    if (existingRows.length > 0) {
+      const setPart = insertCols.map(col => `${col} = ?`).join(', ');
+      await connection.execute(`UPDATE ${tableName} SET ${setPart} WHERE id = ?`, [...insertVals, existingRows[0].id]);
+    } else {
+      const sql = `INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${placeholders})`;
+      await connection.execute(sql, insertVals);
+    }
     await connection.commit();
 
     res.status(201).json({ message: 'Business step2 saved successfully' });

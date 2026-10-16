@@ -12,6 +12,14 @@ import TenantPageHeader from '../../../shared/components/TenantPageHeader';
 import TenantFormCard from '../../../shared/components/TenantFormCard';
 import { sanitizePhoneInput } from '../../../shared/utils/phoneInput';
 
+// Listing screen to return to after a successful submit, per category.
+const LIST_SCREEN_BY_CATEGORY = {
+  residential: 'PropertiesList',
+  business: 'BusinessPropertiesList',
+  machinery: 'MachineryListPage',
+  vehicles: 'VehiclesList',
+};
+
 const NewTenantForm = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -99,8 +107,14 @@ const NewTenantForm = () => {
       });
 
       Alert.alert('Success', 'Tenant details submitted successfully!', [
-        { text: 'OK', onPress: () => navigation.goBack() }
-      ]);
+        {
+          text: 'OK',
+          onPress: () => {
+            const listingScreen = LIST_SCREEN_BY_CATEGORY[category || 'residential'] || 'PropertiesList';
+            navigation.navigate(listingScreen);
+          },
+        },
+      ], { cancelable: false });
     } catch (error) {
       console.error('Error saving tenant details:', error);
       Alert.alert('Error', `Failed to save tenant details: ${error.message || 'Network connection failed.'}`);

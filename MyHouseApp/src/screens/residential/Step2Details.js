@@ -35,7 +35,7 @@ const FLOOR_OPTIONS = [
   { label: "3rd Floor", value: "3rd Floor" },
 ];
 
-const PARKING_4W_OPTIONS = [
+const PARKING_OPTIONS = [
   { label: "No", value: "No" },
   { label: "Yes", value: "Yes" },
 ];
@@ -222,7 +222,7 @@ const Step2Details = ({ formData, handleInputChange, colors, dark }) => {
 
         <OptionSelectField
           label="Parking (2-Wheeler)"
-          options={COUNT_OPTIONS}
+          options={PARKING_OPTIONS}
           selectedValue={formData.parking2Wheeler}
           onSelect={(value) => handleInputChange("parking2Wheeler", value)}
           colors={colors}
@@ -232,7 +232,7 @@ const Step2Details = ({ formData, handleInputChange, colors, dark }) => {
 
         <OptionSelectField
           label="Parking (4-Wheeler)"
-          options={PARKING_4W_OPTIONS}
+          options={PARKING_OPTIONS}
           selectedValue={formData.parking4Wheeler}
           onSelect={(value) => handleInputChange("parking4Wheeler", value)}
           colors={colors}

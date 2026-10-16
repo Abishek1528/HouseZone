@@ -241,17 +241,26 @@ export default function JobSeekerProfileForm() {
 
           let prefilledName = "";
 
-          const query = {};
-          if (signupId) query.signupId = signupId;
-          try {
-            const loaded = await getJobSeekerProfile(query);
-            if (loaded && typeof loaded === "object" && loaded.name) {
-              prefilledName = loaded.name;
-            }
-          } catch (_err) {
-            // ignore
+          // Prefer the name the user registered/logged in with.
+          if (userDetails?.name && String(userDetails.name).trim()) {
+            prefilledName = String(userDetails.name).trim();
           }
 
+          // Fall back to an existing saved profile for this account.
+          if (!prefilledName) {
+            const query = {};
+            if (signupId) query.signupId = signupId;
+            try {
+              const loaded = await getJobSeekerProfile(query);
+              if (loaded && typeof loaded === "object" && String(loaded.name || "").trim()) {
+                prefilledName = loaded.name;
+              }
+            } catch (_err) {
+              // ignore
+            }
+          }
+
+          // Last resort: locally cached profile.
           if (!prefilledName) {
             const stored = await AsyncStorage.getItem("jobSeekerProfile");
             if (stored) {
@@ -331,12 +340,17 @@ export default function JobSeekerProfileForm() {
       await AsyncStorage.setItem("jobSeekerProfile", JSON.stringify(submitData));
 
       if (saved) {
-        Alert.alert("Success", "Your profile has been saved to the database!", [
-          {
-            text: "OK",
-            onPress: () => navigation.goBack(),
-          },
-        ]);
+        Alert.alert(
+          "Success",
+          "Your profile has been saved to the database!",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("JobSeeker"),
+            },
+          ],
+          { cancelable: false }
+        );
       } else {
         Alert.alert(
           "Saved Locally",
@@ -344,9 +358,10 @@ export default function JobSeekerProfileForm() {
           [
             {
               text: "OK",
-              onPress: () => navigation.goBack(),
+              onPress: () => navigation.navigate("JobSeeker"),
             },
-          ]
+          ],
+          { cancelable: false }
         );
       }
     } catch (error) {

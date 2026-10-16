@@ -25,8 +25,8 @@ router.post('/residential/new-tenant-details', async (req, res) => {
     const categoryConfig = {
       residential: { table: 'restenant', idCol: 'roNo' },
       business: { table: 'buitenant', idCol: 'boNo' },
-      machinery: { table: 'mactenant', idCol: 'moNo' },
-      vehicles: { table: 'vehtenant', idCol: 'voNo' }
+      machinery: { table: 'mactenant', idCol: 'machineryId' },
+      vehicles: { table: 'vehtenant', idCol: 'vehicleId' }
     };
 
     const config = categoryConfig[category] || categoryConfig.residential;
@@ -148,13 +148,13 @@ router.get('/admin/machinery/tenants-with-items', async (req, res) => {
         mt.current_address as currentAddress,
         mt.mobile_number as mobileNumber,
         mt.alternate_number as alternateNumber,
-        md.owner_id as propertyId,
+        md.id as propertyId,
         md.machinery_name as itemName,
         md.machinery_type as itemType,
         md.machinery_model as model,
         md.charge_per_day as rent
       FROM mactenant mt
-      LEFT JOIN machinarydet md ON mt.moNo = md.owner_id
+      LEFT JOIN machinarydet md ON mt.machineryId = md.id
       ORDER BY mt.id DESC
     `);
 
@@ -184,7 +184,7 @@ router.get('/admin/vehicles/tenants-with-items', async (req, res) => {
         vd.vehicle_model as model,
         vd.ac_charge_per_day as rent
       FROM vehtenant vt
-      LEFT JOIN vehiclesdet vd ON vt.voNo = vd.id
+      LEFT JOIN vehiclesdet vd ON vt.vehicleId = vd.id
       ORDER BY vt.id DESC
     `);
 

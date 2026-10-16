@@ -27,7 +27,7 @@ router.get('/machinery/properties', async (req, res) => {
 
     let query = `
       SELECT
-        md.owner_id as id,
+        md.id as id,
         mo.area,
         mo.city,
         md.machinery_type,
@@ -41,7 +41,7 @@ router.get('/machinery/properties', async (req, res) => {
         md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7,
         mo.id as moNo
       FROM machinarydet md
-      JOIN machinaryowndet mo ON md.owner_id = mo.id
+      JOIN machinaryowndet mo ON md.machinaryowndet_id = mo.id
     `;
 
     const conditions = [];
@@ -72,7 +72,7 @@ router.get('/machinery/properties', async (req, res) => {
       query += ' WHERE ' + conditions.join(' AND ');
     }
 
-    query += ' ORDER BY md.owner_id DESC';
+    query += ' ORDER BY md.id DESC';
 
     const [rows] = await pool.execute(query, params);
 
@@ -120,7 +120,7 @@ router.get('/machinery/properties/:id', async (req, res) => {
 
     const query = `
       SELECT
-        md.owner_id as id,
+        md.id as id,
         mo.area,
         mo.city,
         md.machinery_type,
@@ -134,8 +134,8 @@ router.get('/machinery/properties/:id', async (req, res) => {
         md.image1, md.image2, md.image3, md.image4, md.image5, md.image6, md.image7,
         mo.id as moNo
       FROM machinarydet md
-      JOIN machinaryowndet mo ON md.owner_id = mo.id
-      WHERE md.owner_id = ?
+      JOIN machinaryowndet mo ON md.machinaryowndet_id = mo.id
+      WHERE md.id = ?
     `;
 
     const [rows] = await pool.execute(query, [id]);

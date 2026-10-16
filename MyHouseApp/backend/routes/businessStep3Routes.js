@@ -35,7 +35,7 @@ router.post('/business/step3', async (req, res) => {
     };
 
     const mappings = {
-      boNo: findCol(['bo', 'bono', 'owner_id', 'ownerno', 'id']),
+      boNo: findCol(['businessownerdet_id', 'businessownerdet', 'ownerdet_id', 'ownerdet', 'bo_no', 'bono', 'owner_id', 'ownerno']),
       advanceAmount: findCol(['advance', 'advance_amount', 'adv_amount']),
       monthlyRent: findCol(['rent', 'monthly_rent', 'rent_amount']),
       leaseAmount: findCol(['lease', 'lease_amount'])
@@ -60,9 +60,25 @@ router.post('/business/step3', async (req, res) => {
       return res.status(400).json({ message: 'No valid fields found for insertion into businessownerrent' });
     }
 
+    // businessownerrent has no unique key on the owner column, so upsert manually
+    // to avoid duplicate rent rows per owner.
+    const ownerCol = mappings.boNo;
     const placeholders = insertCols.map(() => '?').join(', ');
-    const sql = `INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${placeholders})`;
-    const [result] = await pool.execute(sql, insertVals);
+    let existingRows = [];
+    if (ownerCol && insertCols.includes(ownerCol) && payload.boNo !== undefined && payload.boNo !== null) {
+      const [found] = await pool.execute(
+        `SELECT id FROM ${tableName} WHERE ${ownerCol} = ? LIMIT 1`,
+        [payload.boNo]
+      );
+      existingRows = found;
+    }
+
+    if (existingRows.length > 0) {
+      const setPart = insertCols.map(col => `${col} = ?`).join(', ');
+      await pool.execute(`UPDATE ${tableName} SET ${setPart} WHERE id = ?`, [...insertVals, existingRows[0].id]);
+    } else {
+      await pool.execute(`INSERT INTO ${tableName} (${insertCols.join(', ')}) VALUES (${placeholders})`, insertVals);
+    }
 
     res.status(201).json({ message: 'Business step3 saved successfully' });
   } catch (error) {

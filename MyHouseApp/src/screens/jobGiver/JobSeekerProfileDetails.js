@@ -26,6 +26,14 @@ const formatExperienceYears = (val) => {
   return map[String(val).toLowerCase()] || val;
 };
 
+// Age may be a range ("18-30"), "Any", or a legacy numeric value.
+const formatAgeDisplay = (age) => {
+  const raw = String(age ?? '').trim();
+  if (!raw) return 'N/A';
+  const isRange = raw.includes('-') || raw.toLowerCase() === 'any';
+  return isRange ? raw : `${raw} years`;
+};
+
 export default function JobSeekerProfileDetails() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -123,7 +131,7 @@ export default function JobSeekerProfileDetails() {
             <Text style={tps.sectionTitle}>Personal Details</Text>
             <View style={tps.firstDetailRow}>
               <Text style={tps.label}>Age</Text>
-              <Text style={tps.value}>{profile.age ? `${profile.age} years` : 'N/A'}</Text>
+              <Text style={tps.value}>{formatAgeDisplay(profile.age)}</Text>
             </View>
             <View style={tps.detailRow}>
               <Text style={tps.label}>Gender</Text>
