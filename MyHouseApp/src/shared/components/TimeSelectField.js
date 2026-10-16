@@ -37,15 +37,19 @@ const TimeSelectField = ({ label, value, onChange, colors, dark }) => {
     setPickerDate(parseTimeString(value));
   }, [value]);
 
-  const handleChange = (event, selectedDate) => {
-    if (Platform.OS === "android") {
-      setShowPicker(false);
-      if (event?.type === "dismissed") return;
-    }
-
+  const handleChange = (_event, selectedDate) => {
     const next = selectedDate || pickerDate;
     setPickerDate(next);
     onChange(formatTime12h(next));
+    if (Platform.OS === "android") {
+      setShowPicker(false);
+    }
+  };
+
+  const handleDismiss = () => {
+    if (Platform.OS === "android") {
+      setShowPicker(false);
+    }
   };
 
   return (
@@ -76,7 +80,8 @@ const TimeSelectField = ({ label, value, onChange, colors, dark }) => {
               mode="time"
               is24Hour={false}
               display={Platform.OS === "ios" ? "spinner" : "clock"}
-              onChange={handleChange}
+              onValueChange={handleChange}
+              onDismiss={handleDismiss}
             />
           )}
 

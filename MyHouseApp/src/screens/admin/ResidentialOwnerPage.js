@@ -372,12 +372,12 @@ export default function ResidentialOwnerPage() {
               </Text>
               {item.parking2Wheeler !== undefined && (
                 <Text style={residentialOwnerStyles.detailText}>
-                  <Text style={residentialOwnerStyles.detailLabel}>Parking (2-Wheeler):</Text> <Text style={residentialOwnerStyles.detailValue}>{item.parking2Wheeler || 'N/A'}</Text>
+                  <Text style={residentialOwnerStyles.detailLabel}>Parking (2-Wheeler):</Text> <Text style={residentialOwnerStyles.detailValue}>{item.parking2Wheeler ? 'Yes' : 'No'}</Text>
                 </Text>
               )}
               {item.parking4Wheeler !== undefined && (
                 <Text style={residentialOwnerStyles.detailText}>
-                  <Text style={residentialOwnerStyles.detailLabel}>Parking (4-Wheeler):</Text> <Text style={residentialOwnerStyles.detailValue}>{item.parking4Wheeler || 'N/A'}</Text>
+                  <Text style={residentialOwnerStyles.detailLabel}>Parking (4-Wheeler):</Text> <Text style={residentialOwnerStyles.detailValue}>{item.parking4Wheeler ? 'Yes' : 'No'}</Text>
                 </Text>
               )}
             </View>

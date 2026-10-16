@@ -56,6 +56,30 @@ const JOB_SEEKER_PROFILE_EXPECTED_COLUMNS = [
   },
 ];
 
+// The Add My Profile form submits age RANGES (e.g. '18-30'). If the live column
+// is still INT (created before the range-based form), strict mode rejects the
+// INSERT with "Data truncated for column 'age'". This repair widens it to VARCHAR.
+let profileAgeColumnRepaired = false;
+const repairJobSeekerProfileAgeColumn = async () => {
+  if (profileAgeColumnRepaired) return;
+  try {
+    await pool.execute('ALTER TABLE job_seeker_profiles MODIFY COLUMN age VARCHAR(50) NOT NULL');
+    console.log('[jobSeekerProfile][repair] age column widened to VARCHAR(50).');
+  } catch (err) {
+    console.warn('[jobSeekerProfile][repair] Could not widen age column:', err.message);
+  }
+  profileAgeColumnRepaired = true;
+};
+
+const isAgeTruncationError = (err) => {
+  if (!err) return false;
+  const code = err.code || '';
+  if (code === 'WARN_DATA_TRUNCATED' || code === 'ER_TRUNCATED_WRONG_VALUE' || code === 'ER_WARN_DATA_OUT_OF_RANGE') {
+    return true;
+  }
+  return typeof err.message === 'string' && err.message.includes('Data truncated') && err.message.includes('age');
+};
+
 let profileColumnsRepaired = false;
 const repairJobSeekerProfileColumns = async () => {
   if (profileColumnsRepaired) return;
@@ -565,6 +589,11 @@ router.post('/jobseeker/profile', async (req, res) => {
         console.warn('[jobSeekerProfile] Missing columns detected. Running on-demand repair...');
         await repairJobSeekerProfileColumns();
         console.log('[jobSeekerProfile] Retrying INSERT after repair...');
+        [insertResult] = await pool.execute(insertSql, insertValues);
+      } else if (isAgeTruncationError(insertErr)) {
+        console.warn('[jobSeekerProfile] age column type mismatch detected. Widening age column...');
+        await repairJobSeekerProfileAgeColumn();
+        console.log('[jobSeekerProfile] Retrying INSERT after age repair...');
         [insertResult] = await pool.execute(insertSql, insertValues);
       } else {
         throw insertErr;

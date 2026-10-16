@@ -86,6 +86,29 @@ const getExperienceLabel = (value) => {
   return found ? found.label : '';
 };
 
+// Profile age may be a range ("18-30"), "Any", or a legacy numeric value.
+const formatAgeDisplay = (age) => {
+  const raw = String(age ?? '').trim();
+  if (!raw) return '';
+  const isRange = raw.includes('-') || raw.toLowerCase() === 'any';
+  return isRange ? raw : `${raw} yrs`;
+};
+
+const ageMatchesFilter = (profileAge, filterValue) => {
+  if (!filterValue) return true;
+  const [fMin, fMax] = filterValue.split('-').map(Number);
+  if (isNaN(fMin) || isNaN(fMax)) return true;
+  const raw = String(profileAge ?? '').trim();
+  if (!raw || raw.toLowerCase() === 'any') return true;
+  if (raw.includes('-')) {
+    const [pMin, pMax] = raw.split('-').map(Number);
+    if (isNaN(pMin) || isNaN(pMax)) return true;
+    return pMin <= fMax && pMax >= fMin;
+  }
+  const a = Number(raw);
+  return !isNaN(a) && a >= fMin && a <= fMax;
+};
+
 const ProfileCard = ({ profile, onViewDetails, tps, dark }) => {
   if (!profile) return null;
   const { colors } = tps;
@@ -114,7 +137,7 @@ const ProfileCard = ({ profile, onViewDetails, tps, dark }) => {
 
         {!!profile.age && (
           <Text style={{ fontSize: 13, color: colors.subText, marginTop: 2, fontWeight: '500' }}>
-            {profile.age} yrs
+            {formatAgeDisplay(profile.age)}
           </Text>
         )}
 
@@ -178,11 +201,7 @@ export default function JobGiver() {
   useEffect(() => {
     let result = [...profiles];
     if (ageFilter) {
-      const [min, max] = ageFilter.split('-').map(Number);
-      result = result.filter(p => {
-        const a = Number(p.age);
-        return !isNaN(a) && a >= min && a <= max;
-      });
+      result = result.filter(p => ageMatchesFilter(p.age, ageFilter));
     }
     if (genderFilter) {
       result = result.filter(p => String(p.gender || '').toLowerCase() === genderFilter.toLowerCase());

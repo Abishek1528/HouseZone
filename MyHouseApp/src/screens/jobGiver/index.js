@@ -195,16 +195,21 @@ export default function AddJobGiver() {
         console.warn('[AddJobGiver] Could not save jobGiverId to AsyncStorage:', storeErr);
       }
 
-      Alert.alert("Success", "Job posting details saved successfully!", [
-        {
-          text: "OK",
-          onPress: () => {
-            setFormData(initialFormData);
-            setStep(1);
-            navigation.goBack();
+      Alert.alert(
+        "Success",
+        "Job posting details saved successfully!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setFormData(initialFormData);
+              setStep(1);
+              navigation.navigate("JobGiver");
+            },
           },
-        },
-      ]);
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       console.error("Error submitting job giver form:", error);
       Alert.alert("Error", error.message || "Failed to save job details.");

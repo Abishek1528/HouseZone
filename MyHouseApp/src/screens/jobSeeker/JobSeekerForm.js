@@ -187,16 +187,21 @@ export default function JobSeekerForm({ route }) {
         await AsyncStorage.setItem('jobSeekerMobile', formData.mobileNumber);
       }
 
-      Alert.alert("Success", "Your job application has been submitted successfully!", [
-        {
-          text: "OK",
-          onPress: () => {
-            setFormData(initialFormData);
-            setStep(1);
-            navigation.navigate('JobSeeker');
+      Alert.alert(
+        "Success",
+        "Your job application has been submitted successfully!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setFormData(initialFormData);
+              setStep(1);
+              navigation.navigate('JobSeeker');
+            },
           },
-        },
-      ]);
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       console.error("Error submitting job seeker form:", error);
       Alert.alert("Error", error.message || "Failed to save your details.");
