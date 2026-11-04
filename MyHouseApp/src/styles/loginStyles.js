@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { responsiveFontSize } from '../shared/utils/responsive';
+import typography from './typography';
 
 const loginStyles = StyleSheet.create({
   container: {
@@ -6,9 +8,9 @@ const loginStyles = StyleSheet.create({
     backgroundColor: '#f0f0f0', 
   },
   headerSection: {
-    backgroundColor: '#1e3a5f', 
-    paddingTop: 60,
-    paddingBottom: 70,
+    backgroundColor: '#1e3a5f',
+    paddingTop: 50,
+    paddingBottom: 80,
     paddingHorizontal: 30,
     alignItems: 'flex-start',
     borderBottomLeftRadius: 30,
@@ -16,20 +18,23 @@ const loginStyles = StyleSheet.create({
     zIndex: 1,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(32),
+    fontFamily: typography.fonts.bold,
     color: '#fff',
   },
   headerSubtitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
+    fontFamily: typography.fonts.primary,
     color: '#e2e8f0',
     marginTop: 5,
   },
   contentSection: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -50, 
+    marginTop: -40, 
     marginBottom: 20,
+    zIndex: 2,
+    elevation: 10,
   },
   formCard: {
     backgroundColor: '#fff',
@@ -42,14 +47,15 @@ const loginStyles = StyleSheet.create({
     elevation: 8,
   },
   formCardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(20),
+    fontFamily: typography.fonts.bold,
     color: '#000',
     marginBottom: 5,
     textAlign: 'left',
   },
   formCardSubtitle: {
-    fontSize: 11,
+    fontSize: responsiveFontSize(11),
+    fontFamily: typography.fonts.primary,
     color: '#666',
     marginBottom: 20,
     textAlign: 'left',
@@ -58,8 +64,8 @@ const loginStyles = StyleSheet.create({
     marginBottom: 15,
   },
   label: {
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(12),
+    fontFamily: typography.fonts.bold,
     color: '#000',
     marginBottom: 8,
   },
@@ -69,7 +75,8 @@ const loginStyles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 14,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
+    fontFamily: typography.fonts.primary,
     color: '#000',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -92,7 +99,8 @@ const loginStyles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 18,
     paddingVertical: 14,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
+    fontFamily: typography.fonts.primary,
     color: '#000',
   },
   eyeIcon: {
@@ -106,13 +114,14 @@ const loginStyles = StyleSheet.create({
     marginTop: 5,
   },
   rememberText: {
-    fontSize: 11,
+    fontSize: responsiveFontSize(11),
+    fontFamily: typography.fonts.primary,
     color: '#666',
   },
   forgotText: {
-    fontSize: 11,
+    fontSize: responsiveFontSize(11),
+    fontFamily: typography.fonts.bold,
     color: '#1e3a5f',
-    fontWeight: 'bold',
   },
   loginButton: {
     backgroundColor: '#1e3a5f',
@@ -123,16 +132,16 @@ const loginStyles = StyleSheet.create({
   },
   loginButtonText: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(14),
+    fontFamily: typography.fonts.bold,
   },
   signupLinkContainer: {
     alignItems: 'center',
   },
   signupLinkText: {
     color: '#000',
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(12),
+    fontFamily: typography.fonts.bold,
   },
 });
 

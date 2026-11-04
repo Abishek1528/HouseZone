@@ -178,7 +178,9 @@ export default function PropertyDetails({ route }) {
           <View style={tps.detailRow}>
             <Text style={tps.label}>Total Area (sq ft)</Text>
             <Text style={tps.value}>
-              {property?.propertySpecs?.totalArea || property?.totalArea || 'N/A'}
+              {property?.propertySpecs?.totalArea || 
+               (parseFloat(property?.propertySpecs?.length_feet || 0) * parseFloat(property?.propertySpecs?.breadth_feet || 0)).toFixed(0) || 
+               '0'}
             </Text>
           </View>
           <View style={tps.detailRow}>

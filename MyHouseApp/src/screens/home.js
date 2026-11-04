@@ -140,7 +140,7 @@ export default function Home() {
           <Text style={homeContentStyles.headerSubtitle}>Choose a category to get started</Text>
         </Animated.View>
         <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }], marginTop: 10 }}>
-          <Text style={{ fontSize: 20, fontWeight: '800', color: '#fff' }}>Explore Categories</Text>
+          <Text style={{ fontSize: 20, fontFamily: homeContentStyles.headerTitle.fontFamily, color: '#fff' }}>Explore Categories</Text>
         </Animated.View>
       </View>
 
@@ -169,7 +169,7 @@ export default function Home() {
               }}>
                 <MaterialCommunityIcons name="home-city" size={32} color="#7F1D1D" />
               </View>
-              <Text style={[homeContentStyles.btnText, { color: '#7F1D1D', fontWeight: '800' }]}>Residential</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#7F1D1D' }]}>Residential</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -191,7 +191,7 @@ export default function Home() {
               }}>
                 <MaterialCommunityIcons name="office-building" size={32} color="#1E40AF" />
               </View>
-              <Text style={[homeContentStyles.btnText, { color: '#1E40AF', fontWeight: '800' }]}>Business</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#1E40AF' }]}>Business</Text>
             </TouchableOpacity>
           </View>
 
@@ -215,7 +215,7 @@ export default function Home() {
               }}>
                 <MaterialCommunityIcons name="car" size={32} color="#166534" />
               </View>
-              <Text style={[homeContentStyles.btnText, { color: '#166534', fontWeight: '800' }]}>Vehicles</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#166534' }]}>Vehicles</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -237,7 +237,7 @@ export default function Home() {
               }}>
                 <MaterialCommunityIcons name="cog" size={32} color="#92400E" />
               </View>
-              <Text style={[homeContentStyles.btnText, { color: '#92400E', fontWeight: '800' }]}>Machinery</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#92400E' }]}>Machinery</Text>
             </TouchableOpacity>
           </View>
 
@@ -263,7 +263,7 @@ export default function Home() {
               }}>
                 <MaterialCommunityIcons name="account-search" size={32} color="#6B21A8" />
               </View>
-              <Text style={[homeContentStyles.btnText, { color: '#6B21A8', fontWeight: '800' }]}>Job Seeker</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#6B21A8' }]}>Job Seeker</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -285,7 +285,7 @@ export default function Home() {
               }}>
                 <MaterialCommunityIcons name="briefcase-plus" size={32} color="#0F766E" />
               </View>
-              <Text style={[homeContentStyles.btnText, { color: '#0F766E', fontWeight: '800' }]}>Job Giver</Text>
+              <Text style={[homeContentStyles.btnText, { color: '#0F766E' }]}>Job Giver</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

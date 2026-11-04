@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { OWNER_COLORS, getOwnerFormThemeColors } from "./ownerFormStyles";
+import typography from "./typography";
 
 export { OWNER_COLORS as TENANT_COLORS };
 
@@ -19,16 +20,16 @@ export const tenantListStyles = StyleSheet.create({
   },
   pageHeaderTitle: {
     fontSize: 22,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     color: "#fff",
     letterSpacing: -0.4,
     textAlign: "center",
   },
   pageHeaderSubtitle: {
     fontSize: 13,
+    fontFamily: typography.fonts.primary,
     color: "#cbd5e1",
     marginTop: 4,
-    fontWeight: "500",
     textAlign: "center",
   },
   content: {
@@ -46,7 +47,7 @@ export const tenantListStyles = StyleSheet.create({
   },
   pageTitle: {
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.headerBg,
     flex: 1,
   },
@@ -61,7 +62,7 @@ export const tenantListStyles = StyleSheet.create({
   filterBtnText: {
     color: "#fff",
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
   },
   filterPanel: {
     width: "100%",
@@ -80,7 +81,7 @@ export const tenantListStyles = StyleSheet.create({
   },
   filterPanelTitle: {
     fontSize: 15,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.headerBg,
     marginBottom: 12,
     letterSpacing: -0.2,
@@ -90,7 +91,7 @@ export const tenantListStyles = StyleSheet.create({
   },
   filterSectionLabel: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
     color: C.accent,
     marginBottom: 10,
     textTransform: "uppercase",
@@ -136,7 +137,7 @@ export const tenantListStyles = StyleSheet.create({
   selectedFilterText: {
     fontSize: 13,
     color: C.accent,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
     marginRight: 8,
   },
   removeFilterButton: {
@@ -150,7 +151,7 @@ export const tenantListStyles = StyleSheet.create({
   removeFilterText: {
     color: "#fff",
     fontSize: 12,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
   },
   list: {
     flex: 1,
@@ -183,7 +184,7 @@ export const tenantListStyles = StyleSheet.create({
   imageText: {
     color: C.subText,
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
     textAlign: "center",
   },
   detailsContainer: {
@@ -192,7 +193,7 @@ export const tenantListStyles = StyleSheet.create({
   },
   location: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.headerBg,
     marginBottom: 6,
   },
@@ -204,18 +205,19 @@ export const tenantListStyles = StyleSheet.create({
   },
   infoText: {
     fontSize: 13,
+    fontFamily: typography.fonts.primary,
     color: C.subText,
     marginBottom: 4,
   },
   bedroomsText: {
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.accent,
     marginBottom: 4,
   },
   rentText: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: "#059669",
     marginTop: 4,
     paddingTop: 6,
@@ -225,21 +227,21 @@ export const tenantListStyles = StyleSheet.create({
   viewMoreText: {
     color: C.primary,
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
   },
   loadingText: {
     textAlign: "center",
     fontSize: 14,
     color: C.subText,
     marginTop: 24,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
   noPropertiesText: {
     textAlign: "center",
     fontSize: 14,
     color: C.subText,
     marginTop: 24,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
 });
 
@@ -267,7 +269,7 @@ export const tenantMachineryListStyles = StyleSheet.create({
   },
   areaText: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.headerBg,
     marginBottom: 4,
   },
@@ -279,18 +281,19 @@ export const tenantMachineryListStyles = StyleSheet.create({
   },
   typeText: {
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.primary,
     marginBottom: 2,
   },
   modelText: {
     fontSize: 13,
+    fontFamily: typography.fonts.primary,
     color: C.subText,
     marginBottom: 4,
   },
   rentText: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: "#059669",
     marginTop: 4,
     borderTopWidth: 1,
@@ -303,7 +306,7 @@ export const tenantMachineryListStyles = StyleSheet.create({
   viewMoreText: {
     color: C.primary,
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
   },
   loadingText: tenantListStyles.loadingText,
   noPropertiesText: tenantListStyles.noPropertiesText,
@@ -328,14 +331,14 @@ export const tenantDetailsStyles = StyleSheet.create({
     fontSize: 16,
     color: C.subText,
     marginTop: 30,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
   errorText: {
     textAlign: "center",
     fontSize: 16,
     color: C.subText,
     marginTop: 30,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
   section: {
     backgroundColor: C.white,
@@ -353,7 +356,7 @@ export const tenantDetailsStyles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 17,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     color: C.headerBg,
     marginBottom: 12,
     paddingBottom: 8,
@@ -384,7 +387,7 @@ export const tenantDetailsStyles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: C.subText,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
     flex: 1.2,
   },
   value: {
@@ -392,7 +395,7 @@ export const tenantDetailsStyles = StyleSheet.create({
     color: C.text,
     flex: 1,
     textAlign: "right",
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
     paddingLeft: 10,
   },
   conditionRow: {
@@ -402,7 +405,7 @@ export const tenantDetailsStyles = StyleSheet.create({
   conditionText: {
     fontSize: 14,
     color: C.text,
-    fontWeight: "500",
+    fontFamily: typography.fonts.primary,
     textAlign: "left",
     lineHeight: 22,
   },
@@ -423,7 +426,7 @@ export const tenantDetailsStyles = StyleSheet.create({
     paddingVertical: 3,
     borderBottomRightRadius: 10,
     fontSize: 11,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
   },
 });
 
@@ -443,7 +446,7 @@ export const tenantMachineryDetailsStyles = StyleSheet.create({
   centeredText: {
     fontSize: 16,
     color: C.subText,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
   contentContainer: {
     padding: 16,
@@ -451,7 +454,7 @@ export const tenantMachineryDetailsStyles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     marginBottom: 16,
     color: C.headerBg,
     textAlign: "center",
@@ -469,12 +472,13 @@ export const tenantMachineryDetailsStyles = StyleSheet.create({
   sectionTitle: tenantDetailsStyles.sectionTitle,
   detailText: {
     fontSize: 15,
+    fontFamily: typography.fonts.primary,
     color: C.text,
     marginBottom: 8,
     lineHeight: 24,
   },
   detailLabel: {
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.accent,
   },
 });
@@ -496,7 +500,7 @@ export const tenantVehicleDetailsStyles = StyleSheet.create({
   },
   vehicleName: {
     fontSize: 22,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     color: C.headerBg,
     marginBottom: 6,
   },
@@ -504,7 +508,7 @@ export const tenantVehicleDetailsStyles = StyleSheet.create({
     fontSize: 14,
     color: C.subText,
     marginBottom: 16,
-    fontWeight: "500",
+    fontFamily: typography.fonts.primary,
   },
   infoBox: {
     borderWidth: 1,
@@ -521,7 +525,7 @@ export const tenantVehicleDetailsStyles = StyleSheet.create({
   },
   boxTitle: {
     fontSize: 16,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     color: C.headerBg,
     marginBottom: 12,
     textAlign: "center",
@@ -538,13 +542,13 @@ export const tenantVehicleDetailsStyles = StyleSheet.create({
   infoLabel: {
     fontSize: 14,
     color: C.subText,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
     flex: 1,
   },
   infoValue: {
     fontSize: 14,
     color: C.text,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
     flex: 1,
     textAlign: "right",
   },
@@ -646,7 +650,7 @@ export const getTenantPageStyles = (dark = false) => {
     },
     btnPrimaryText: {
       color: "#fff",
-      fontWeight: "700",
+      fontFamily: typography.fonts.bold,
       fontSize: 14,
     },
     btnOutline: {
@@ -660,12 +664,12 @@ export const getTenantPageStyles = (dark = false) => {
     },
     btnText: {
       color: "#fff",
-      fontWeight: "700",
+      fontFamily: typography.fonts.bold,
       fontSize: 14,
     },
     btnOutlineText: {
       color: dark ? "#e5e7eb" : "#64748b",
-      fontWeight: "700",
+      fontFamily: typography.fonts.bold,
       fontSize: 14,
     },
     input: {
@@ -679,10 +683,11 @@ export const getTenantPageStyles = (dark = false) => {
       backgroundColor: dark ? "#374151" : "#f8fbff",
       color: theme.text,
       borderColor: border,
+      fontFamily: typography.fonts.primary,
     },
     fieldLabel: {
       fontSize: 14,
-      fontWeight: "700",
+      fontFamily: typography.fonts.bold,
       marginBottom: 6,
       color: theme.text,
     },

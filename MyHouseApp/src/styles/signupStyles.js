@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { responsiveFontSize } from '../shared/utils/responsive';
+import typography from './typography';
 
 const signupStyles = StyleSheet.create({
   container: {
@@ -13,14 +15,16 @@ const signupStyles = StyleSheet.create({
     alignItems: 'flex-start',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    zIndex: 1,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(32),
+    fontFamily: typography.fonts.bold,
     color: '#fff',
   },
   headerSubtitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
+    fontFamily: typography.fonts.primary,
     color: '#e2e8f0',
     marginTop: 5,
   },
@@ -29,6 +33,8 @@ const signupStyles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: -50,
     marginBottom: 20,
+    zIndex: 2,
+    elevation: 10,
   },
   formCard: {
     backgroundColor: '#fff',
@@ -41,14 +47,15 @@ const signupStyles = StyleSheet.create({
     elevation: 8,
   },
   formCardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(20),
+    fontFamily: typography.fonts.bold,
     color: '#000',
     marginBottom: 5,
     textAlign: 'left',
   },
   formCardSubtitle: {
-    fontSize: 11,
+    fontSize: responsiveFontSize(11),
+    fontFamily: typography.fonts.primary,
     color: '#666',
     marginBottom: 20,
     textAlign: 'left',
@@ -57,8 +64,8 @@ const signupStyles = StyleSheet.create({
     marginBottom: 15,
   },
   label: {
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(12),
+    fontFamily: typography.fonts.bold,
     color: '#000',
     marginBottom: 8,
   },
@@ -75,7 +82,8 @@ const signupStyles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 14,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
+    fontFamily: typography.fonts.primary,
     color: '#000',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -98,7 +106,8 @@ const signupStyles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 18,
     paddingVertical: 14,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
+    fontFamily: typography.fonts.primary,
     color: '#000',
   },
   eyeIcon: {
@@ -113,16 +122,16 @@ const signupStyles = StyleSheet.create({
   },
   signupButtonText: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(14),
+    fontFamily: typography.fonts.bold,
   },
   loginLinkContainer: {
     alignItems: 'center',
   },
   loginLinkText: {
     color: '#000',
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: responsiveFontSize(12),
+    fontFamily: typography.fonts.bold,
   },
 });
 

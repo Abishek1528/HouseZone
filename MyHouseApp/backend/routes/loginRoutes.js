@@ -4,18 +4,38 @@ import bcrypt from 'bcrypt';
 
 const router = Router();
 
+// Reuse repair logic for signup table if login fails due to missing columns
+const repairSignupTable = async () => {
+  try {
+    await pool.execute('ALTER TABLE signup ADD COLUMN IF NOT EXISTS age INT NULL AFTER name');
+    await pool.execute('ALTER TABLE signup ADD COLUMN IF NOT EXISTS contact_number VARCHAR(15) NULL AFTER age');
+  } catch (err) {
+    console.warn('[login][repair] Could not ensure signup columns:', err.message);
+  }
+};
+
 // API endpoint for user login
 router.post('/login', async (req, res) => {
   try {
     console.log('Login request body:', req.body);
     const { name, contact, password } = req.body;
     
-    // Check if user exists with provided name and contact
-    console.log('Checking user with name:', name, 'and contact:', contact);
-    const [users] = await pool.execute(
-      'SELECT id, name, contact_number, email, password FROM signup WHERE name = ? AND contact_number = ?',
-      [name, contact]
-    );
+    // Check if user exists
+    const selectSql = 'SELECT id, name, contact_number, email, password FROM signup WHERE name = ? AND contact_number = ?';
+    const selectParams = [name, contact];
+    
+    let users;
+    try {
+      [users] = await pool.execute(selectSql, selectParams);
+    } catch (selectErr) {
+      if (selectErr?.code === 'ER_BAD_FIELD_ERROR') {
+        console.warn('[login] Missing columns in signup table. Repairing...');
+        await repairSignupTable();
+        [users] = await pool.execute(selectSql, selectParams);
+      } else {
+        throw selectErr;
+      }
+    }
     
     console.log('Found users:', users.length);
     

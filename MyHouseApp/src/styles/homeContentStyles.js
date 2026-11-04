@@ -6,6 +6,7 @@ import {
   responsiveFontSize,
   isTablet 
 } from '../shared/utils/responsive';
+import typography from './typography';
 
 const homeContentStyles = StyleSheet.create({
   container: {
@@ -23,15 +24,15 @@ const homeContentStyles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: responsiveFontSize(isTablet() ? 40 : 32),
-    fontWeight: '900',
+    fontFamily: typography.fonts.black,
     color: '#fff',
     letterSpacing: -1,
   },
   headerSubtitle: {
     fontSize: responsiveFontSize(isTablet() ? 16 : 14),
+    fontFamily: typography.fonts.primary,
     color: '#e2e8f0',
     marginTop: verticalScale(4),
-    fontWeight: '500',
   },
   middle: {
     flex: 1,
@@ -46,14 +47,14 @@ const homeContentStyles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: responsiveFontSize(isTablet() ? 22 : 18),
-    fontWeight: '800',
+    fontFamily: typography.fonts.bold,
     color: '#1e3a5f',
     marginBottom: verticalScale(12),
     marginTop: verticalScale(6),
   },
   pageTitle: {
     fontSize: responsiveFontSize(isTablet() ? 32 : 26),
-    fontWeight: '800',
+    fontFamily: typography.fonts.bold,
     color: '#1a1a1a',
   },
   button: {
@@ -75,7 +76,7 @@ const homeContentStyles = StyleSheet.create({
   },
   btnText: {
     fontSize: responsiveFontSize(isTablet() ? 18 : 15),
-    fontWeight: '700',
+    fontFamily: typography.fonts.bold,
     color: '#1a1a1a',
     marginTop: verticalScale(6),
   },
@@ -94,13 +95,14 @@ const homeContentStyles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: responsiveFontSize(isTablet() ? 30 : 24),
-    fontWeight: 'bold',
+    fontFamily: typography.fonts.bold,
     color: '#1a1a1a',
     marginBottom: verticalScale(6),
     textAlign: 'center',
   },
   modalText: {
     fontSize: responsiveFontSize(isTablet() ? 18 : 15),
+    fontFamily: typography.fonts.primary,
     color: '#666',
     marginBottom: verticalScale(24),
     textAlign: 'center',
@@ -140,7 +142,7 @@ const homeContentStyles = StyleSheet.create({
   roleBtnText: {
     color: '#fff',
     fontSize: responsiveFontSize(isTablet() ? 22 : 18),
-    fontWeight: '800',
+    fontFamily: typography.fonts.bold,
     letterSpacing: 0.4,
   },
   dropdown: {
@@ -156,8 +158,8 @@ const homeContentStyles = StyleSheet.create({
   },
   dropdownText: {
     fontSize: responsiveFontSize(isTablet() ? 20 : 17),
+    fontFamily: typography.fonts.primary,
     color: '#1a1a1a',
-    fontWeight: '500',
   },
   arrow: {
     fontSize: responsiveFontSize(isTablet() ? 18 : 16),
@@ -179,6 +181,7 @@ const homeContentStyles = StyleSheet.create({
   },
   dropdownItemText: {
     fontSize: responsiveFontSize(isTablet() ? 20 : 17),
+    fontFamily: typography.fonts.primary,
     color: '#1a1a1a',
   },
   modalButtonContainer: {
@@ -202,7 +205,7 @@ const homeContentStyles = StyleSheet.create({
   modalButtonText: {
     color: '#fff',
     fontSize: responsiveFontSize(isTablet() ? 20 : 17),
-    fontWeight: 'bold',
+    fontFamily: typography.fonts.bold,
   },
 });
 

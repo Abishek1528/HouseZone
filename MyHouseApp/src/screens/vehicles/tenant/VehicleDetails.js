@@ -138,17 +138,22 @@ const VehicleDetails = () => {
                         <Text style={styles.boxTitle}>AC Pricing</Text>
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Charge/Day:</Text>
-                            <Text style={styles.infoValue}>₹{vehicle?.ac_charge_per_day || 0}</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.ac_charge_per_day ?? 0}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Charge/KM:</Text>
-                            <Text style={styles.infoValue}>₹{vehicle?.ac_charge_per_km || 0}</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.ac_charge_per_km ?? 0}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Waiting/Hour:</Text>
-                            <Text style={styles.infoValue}>₹{vehicle?.ac_waiting_charge_per_hour || 0}</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.ac_waiting_charge_per_hour ?? 0}</Text>
+                        </View>
+                        <View style={styles.divider} />
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Waiting/Night:</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.ac_waiting_charge_per_night ?? 0}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>
@@ -162,17 +167,22 @@ const VehicleDetails = () => {
                         <Text style={styles.boxTitle}>Non-AC Pricing</Text>
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Charge/Day:</Text>
-                            <Text style={styles.infoValue}>₹{vehicle?.nonac_charge_per_day || 0}</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.nonac_charge_per_day ?? 0}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Charge/KM:</Text>
-                            <Text style={styles.infoValue}>₹{vehicle?.nonac_charge_per_km || 0}</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.nonac_charge_per_km ?? 0}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Waiting/Hour:</Text>
-                            <Text style={styles.infoValue}>₹{vehicle?.nonac_waiting_charge_per_hour || 0}</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.nonac_waiting_charge_per_hour ?? 0}</Text>
+                        </View>
+                        <View style={styles.divider} />
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Waiting/Night:</Text>
+                            <Text style={styles.infoValue}>₹{vehicle?.nonac_waiting_charge_per_night ?? 0}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>

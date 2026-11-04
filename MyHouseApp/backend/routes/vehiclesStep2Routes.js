@@ -23,6 +23,9 @@ router.post('/vehicles/step2', async (req, res) => {
       throw new Error("Vehicle owner ID (voNo) is required");
     }
 
+    // Delete existing vehicles for this owner to avoid duplicates
+    await connection.execute(`DELETE FROM vehiclesdet WHERE vehiclesowndet_id = ?`, [voNo]);
+
     // Process vehicles (should be an array)
     const vehicleArray = Array.isArray(vehicles) ? vehicles : [vehicles];
     const imagesJson = JSON.stringify(images || []);

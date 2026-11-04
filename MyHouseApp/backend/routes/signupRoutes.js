@@ -4,6 +4,44 @@ import bcrypt from 'bcrypt';
 
 const router = Router();
 
+// Columns that signup table expects
+const SIGNUP_EXPECTED_COLUMNS = [
+  {
+    name: 'age',
+    alter: 'ALTER TABLE signup ADD COLUMN age INT NULL AFTER name'
+  },
+  {
+    name: 'contact_number',
+    alter: 'ALTER TABLE signup ADD COLUMN contact_number VARCHAR(15) NULL AFTER age'
+  },
+  {
+    name: 'created_at',
+    alter: 'ALTER TABLE signup ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_VALUE AFTER password'
+  }
+];
+
+// Special case for created_at DEFAULT CURRENT_TIMESTAMP which might fail if using CURRENT_VALUE
+const SIGNUP_CREATED_AT_FIX = 'ALTER TABLE signup MODIFY COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP';
+
+let signupColumnsRepaired = false;
+const repairSignupColumns = async () => {
+  if (signupColumnsRepaired) return;
+  for (const col of SIGNUP_EXPECTED_COLUMNS) {
+    try {
+      await pool.execute(col.alter);
+      console.log(`[signup][repair] Added missing column: ${col.name}`);
+    } catch (err) {
+      if (err?.code !== 'ER_DUP_FIELDNAME') {
+        console.warn(`[signup][repair] Could not ensure column ${col.name}:`, err.message);
+      }
+    }
+  }
+  try {
+    await pool.execute(SIGNUP_CREATED_AT_FIX);
+  } catch (_) {}
+  signupColumnsRepaired = true;
+};
+
 // API endpoint for user signup
 router.post('/signup', async (req, res) => {
   try {
@@ -13,28 +51,36 @@ router.post('/signup', async (req, res) => {
     // Check if user already exists
     console.log('Checking existing user with email:', email);
     const [existingUsers] = await pool.execute(
-      'SELECT email FROM signup WHERE email = ?',
-      [email]
+      'SELECT email FROM signup WHERE email = ? OR contact_number = ?',
+      [email, contact]
     );
     
     if (existingUsers.length > 0) {
-      console.log('User already exists with email:', email);
-      return res.status(400).json({ message: 'User already exists with this email' });
+      console.log('User already exists with email or contact:', email, contact);
+      return res.status(400).json({ message: 'User already exists with this email or contact number' });
     }
     
     // Hash the password
     console.log('Hashing password...');
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log('Password hashed successfully');
     
-    // Insert new user with correct column names from your table
-    console.log('Inserting new user...');
-    const [result] = await pool.execute(
-      'INSERT INTO signup (name, age, contact_number, email, password) VALUES (?, ?, ?, ?, ?)',
-      [name, age, contact, email, hashedPassword]
-    );
-    console.log('User inserted with id:', result.insertId);
+    // Insert new user
+    const insertSql = 'INSERT INTO signup (name, age, contact_number, email, password) VALUES (?, ?, ?, ?, ?)';
+    const values = [name, age, contact, email, hashedPassword];
+    
+    let result;
+    try {
+      [result] = await pool.execute(insertSql, values);
+    } catch (insertErr) {
+      if (insertErr?.code === 'ER_BAD_FIELD_ERROR') {
+        console.warn('[signup] Missing columns detected. Repairing...');
+        await repairSignupColumns();
+        [result] = await pool.execute(insertSql, values);
+      } else {
+        throw insertErr;
+      }
+    }
     
     res.status(201).json({ id: result.insertId, message: 'User registered successfully' });
   } catch (error) {
