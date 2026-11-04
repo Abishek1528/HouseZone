@@ -140,30 +140,21 @@ export default function Login() {
         <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
           <Text style={loginStyles.headerTitle}>Hello</Text>
           <Text style={loginStyles.headerSubtitle}>Welcome Back!</Text>
-          <View style={{ marginTop: 30 }}>
-            <Text style={{ 
-              fontSize: 28, 
-              fontWeight: '900', 
-              color: '#fff', 
-              marginBottom: 10,
-              letterSpacing: -0.5,
-            }}>
-              Rent Smarter. Live Easier.
-            </Text>
+          <View style={{ marginTop: 15 }}>
             <View style={{ 
               backgroundColor: 'rgba(255,255,255,0.1)', 
-              padding: 15, 
+              padding: 12, 
               borderRadius: 15,
               borderLeftWidth: 4,
               borderLeftColor: '#fff',
             }}>
               <Text style={{ 
-                fontSize: 16, 
+                fontSize: 14, 
                 color: '#e2e8f0', 
-                lineHeight: 26,
+                lineHeight: 22,
                 fontWeight: '500',
               }}>
-                Login to continue exploring rentals near you.
+                Rent Smarter. Live Easier. Login to continue.
               </Text>
             </View>
           </View>

@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { OWNER_COLORS } from "../ownerFormStyles";
+import typography from "../typography";
 
 export const ADMIN_COLORS = {
   pageBg: OWNER_COLORS.pageBg,
@@ -46,7 +47,7 @@ const adminStyles = StyleSheet.create({
   },
   pageHeaderTitle: {
     fontSize: 24,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     color: "#fff",
     letterSpacing: -0.4,
   },
@@ -54,7 +55,7 @@ const adminStyles = StyleSheet.create({
     fontSize: 14,
     color: "#cbd5e1",
     marginTop: 6,
-    fontWeight: "500",
+    fontFamily: typography.fonts.primary,
     lineHeight: 20,
   },
   body: {
@@ -65,7 +66,7 @@ const adminStyles = StyleSheet.create({
   },
   pageTitle: {
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.headerBg,
     marginBottom: 16,
     textAlign: "center",
@@ -79,7 +80,7 @@ const adminStyles = StyleSheet.create({
     color: C.subText,
     marginTop: 40,
     textAlign: "center",
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
   card: {
     backgroundColor: C.white,
@@ -117,21 +118,21 @@ const adminStyles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     color: C.headerBg,
   },
   cardSubtitle: {
     fontSize: 13,
     color: C.subText,
     marginTop: 4,
-    fontWeight: "600",
+    fontFamily: typography.fonts.bold,
   },
   cardSection: {
     marginBottom: 14,
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.accent,
     marginBottom: 10,
     textTransform: "uppercase",
@@ -145,7 +146,7 @@ const adminStyles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: typography.fonts.bold,
     color: C.subText,
     width: 110,
   },
@@ -153,7 +154,7 @@ const adminStyles = StyleSheet.create({
     fontSize: 14,
     color: C.text,
     flex: 1,
-    fontWeight: "500",
+    fontFamily: typography.fonts.primary,
   },
   noPropertyText: {
     fontSize: 14,
@@ -174,7 +175,7 @@ const adminStyles = StyleSheet.create({
   viewPropertyBtnText: {
     color: "#fff",
     fontSize: 15,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
   },
   buttonsGrid: {
     flexDirection: "row",
@@ -212,7 +213,7 @@ const adminStyles = StyleSheet.create({
   btnText: {
     color: "#fff",
     fontSize: 15,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     textAlign: "center",
   },
   input: {
@@ -227,6 +228,7 @@ const adminStyles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     color: C.text,
+    fontFamily: typography.fonts.primary,
   },
   button: {
     backgroundColor: C.accent,
@@ -254,7 +256,7 @@ const adminStyles = StyleSheet.create({
   },
   signupName: {
     fontSize: 17,
-    fontWeight: "800",
+    fontFamily: typography.fonts.bold,
     color: C.headerBg,
     marginBottom: 6,
   },
@@ -262,11 +264,13 @@ const adminStyles = StyleSheet.create({
     fontSize: 14,
     color: C.text,
     marginBottom: 3,
+    fontFamily: typography.fonts.primary,
   },
   signupMeta: {
     fontSize: 13,
     color: C.subText,
     marginTop: 4,
+    fontFamily: typography.fonts.primary,
   },
   // Legacy aliases
   container: {
@@ -278,7 +282,7 @@ const adminStyles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     marginBottom: 24,
     color: C.headerBg,
   },
@@ -313,7 +317,7 @@ const adminStyles = StyleSheet.create({
   },
   dashboardTitle: {
     fontSize: 28,
-    fontWeight: "900",
+    fontFamily: typography.fonts.black,
     marginBottom: 8,
     color: C.headerBg,
     textAlign: "center",
@@ -323,6 +327,7 @@ const adminStyles = StyleSheet.create({
     marginBottom: 20,
     color: C.subText,
     textAlign: "center",
+    fontFamily: typography.fonts.primary,
   },
 });
 

@@ -102,8 +102,13 @@ router.post('/machinery/step2', async (req, res) => {
     // Ensure we capture owner id from payload
     const moNo = payload.moNo ?? payload.mo_no ?? payload.machinaryowndet_id ?? payload.ownerId ?? null;
 
-    // Strategy 1: If table has granular columns (type/name/model), insert one row per machinery item
+          // Strategy 1: If table has granular columns (type/name/model), insert one row per machinery item
     if (typeCol || nameCol || modelCol) {
+      // Delete existing rows for this owner to avoid duplicates and ensure updates reflect
+      if (ownerIdCol && moNo !== null && moNo !== undefined) {
+        await pool.execute(`DELETE FROM ${tableName} WHERE ${ownerIdCol} = ?`, [moNo]);
+      }
+      
       const machineryArr = Array.isArray(payload.machinery) ? payload.machinery : [];
       if (machineryArr.length === 0) {
         // If no array, try to map single fields from payload root
@@ -181,6 +186,9 @@ router.post('/machinery/step2', async (req, res) => {
 
     // Strategy 2: If table has JSON columns, insert compressed payload
     if (machineryJsonCol || imagesCol) {
+      if (ownerIdCol && moNo !== null && moNo !== undefined) {
+        await pool.execute(`DELETE FROM ${tableName} WHERE ${ownerIdCol} = ?`, [moNo]);
+      }
       const cols = [];
       const vals = [];
       if (ownerIdCol && moNo !== null && moNo !== undefined) { cols.push(ownerIdCol); vals.push(moNo); }
@@ -198,6 +206,11 @@ router.post('/machinery/step2', async (req, res) => {
     // Strategy 3: Generic mapping of normalized keys to table columns
     const insertCols = [];
     const insertVals = [];
+    
+    if (ownerIdCol && moNo !== null && moNo !== undefined) {
+      await pool.execute(`DELETE FROM ${tableName} WHERE ${ownerIdCol} = ?`, [moNo]);
+    }
+    
     Object.entries(payload).forEach(([key, value]) => {
       let columnKey = normalize(key);
       if (key === 'moNo' && ownerIdCol) {

@@ -129,10 +129,10 @@ export default function MachineryDetailsPage() {
 
         <View style={tps.section}>
           <Text style={tps.sectionTitle}>Pricing</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details?.charge_per_day || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details?.charge_per_km || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details?.waiting_charge_per_hour || 'N/A'}</Text>
-          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details?.waiting_charge_per_night || 'N/A'}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Day:</Text> ₹{details?.charge_per_day ?? 0}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Charge per Km:</Text> ₹{details?.charge_per_km ?? 0}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Hour):</Text> ₹{details?.waiting_charge_per_hour ?? 0}</Text>
+          <Text style={styles.detailText}><Text style={styles.detailLabel}>Waiting Charge (Night):</Text> ₹{details?.waiting_charge_per_night ?? 0}</Text>
           <Text style={styles.detailText}><Text style={styles.detailLabel}>Fixed Rate:</Text> {details?.is_fixed ? 'Yes' : 'No'}</Text>
         </View>
       </ScrollView>
